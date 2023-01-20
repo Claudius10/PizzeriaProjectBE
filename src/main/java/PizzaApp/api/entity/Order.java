@@ -44,11 +44,22 @@ public class Order {
 	// relationship meaning it holds and manages the FK column
 	private Customer customer;
 
+	// where to deliver Order: address or store pick-up
 	// FK in customer_order(this) references address PK
 	@OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
 	@JoinColumn(name = "address_id")
 	private Address address;
 
+	/*
+	// FK in customer_order(this) references store PK
+	@ManyToOne(cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "store_pickup_id")
+	private Store storePickUp; // store selected for pickup by client
+	*/ 
+	
+	@Column(name = "store_pickup_id")
+	private Long storePickUpId;
+	
 	// FK in customer_order(this) references customer_order_details PK
 	// Order FK references OrderDetails PK
 	@OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
@@ -63,10 +74,12 @@ public class Order {
 	public Order() {
 	}
 
-	public Order(Long id, Customer customer, Address address, OrderDetails orderDetails, List<OrderItem> orderItems) {
+	public Order(Long id, Customer customer, Address address, Long storePickUpId, OrderDetails orderDetails,
+			List<OrderItem> orderItems) {
 		this.id = id;
 		this.customer = customer;
 		this.address = address;
+		this.storePickUpId = storePickUpId;
 		this.orderDetails = orderDetails;
 		this.orderItems = orderItems;
 	}
@@ -95,6 +108,14 @@ public class Order {
 		this.address = address;
 	}
 
+	public Long getStorePickUpId() {
+		return storePickUpId;
+	}
+
+	public void setStorePickUpId(Long storePickUpId) {
+		this.storePickUpId = storePickUpId;
+	}
+
 	public OrderDetails getOrderDetails() {
 		return orderDetails;
 	}
@@ -109,11 +130,5 @@ public class Order {
 
 	public void setOrderItems(List<OrderItem> orderItems) {
 		this.orderItems = orderItems;
-	}
-
-	@Override
-	public String toString() {
-		return "Order [id=" + id + ", customer=" + customer + ", address=" + address + ", orderDetails=" + orderDetails
-				+ ", orderItems=" + orderItems + "]";
 	}
 }

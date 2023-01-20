@@ -1,9 +1,7 @@
 package PizzaApp.api.repos;
 
 import java.util.List;
-
 import org.springframework.stereotype.Repository;
-
 import PizzaApp.api.entity.Store;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -22,5 +20,4 @@ public class StoreRepository {
 		List<Store> stores = query.getResultList();
 		return stores;
 	}
-
 }

@@ -28,15 +28,23 @@ public class Store {
 	@Column(name = "schedule")
 	private String schedule;
 
+	/*
+	 * // storePickUp in Order class (entity)
+	 * 
+	 * @OneToMany(mappedBy = "storePickUp", cascade =
+	 * jakarta.persistence.CascadeType.ALL) private List<Order> ordersHandled;
+	 */
+	
+	public Store() {
+	};
+
 	public Store(Long id, String name, String location, int phoneNumber, String schedule) {
 		this.id = id;
 		this.name = name;
 		this.location = location;
 		this.phoneNumber = phoneNumber;
 		this.schedule = schedule;
-	}
-
-	public Store() {
+		// this.ordersHandled = ordersHandled;
 	}
 
 	public Long getId() {
@@ -79,9 +87,10 @@ public class Store {
 		this.schedule = schedule;
 	}
 
-	@Override
-	public String toString() {
-		return "Store [id=" + id + ", name=" + name + ", location=" + location + ", phoneNumber=" + phoneNumber
-				+ ", schedule=" + schedule + "]";
-	}
+	/*
+	 * public List<Order> getOrdersHandled() { return ordersHandled; }
+	 * 
+	 * public void setOrdersHandled(List<Order> ordersHandled) { this.ordersHandled
+	 * = ordersHandled; }
+	 */
 }

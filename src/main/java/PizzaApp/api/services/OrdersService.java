@@ -17,4 +17,19 @@ public class OrdersService {
 	public void createOrder(Order order) {
 		ordersRepo.createOrder(order);
 	}
+	
+	/*
+	get orders by store
+	public List<Order> findOrdersByStore(Long storeId) {
+		
+    	// get store
+		Store store = em.find(Store.class, storeId);
+		
+		// get store's orders
+		List<Order> storeOrders = store.getOrders();
+		 
+		// return orders
+		return storeOrders;
+	}
+	*/
 }

@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "customer")
-public class Customer {
+public class CustomerOld {
 
 	@Id
 	@Column(name = "id")
@@ -36,15 +36,32 @@ public class Customer {
 	@Column(name = "email")
 	private String email;
 
-	public Customer() {
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+	private List<Address> addressList = new ArrayList<>();
+
+	public CustomerOld() {
 	}
 
-	public Customer(Long id, String firstName, String lastName, int tel, String email) {
+	public CustomerOld(Long id, String firstName, String lastName, int tel, String email, List<Address> addressList) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.tel = tel;
 		this.email = email;
+		this.addressList = addressList;
+	}
+
+	public void addAddress(Address address) {
+		this.addressList.add(address);
+	}
+
+	public void addAddressList(List<Address> addressList) {
+		this.addressList.addAll(addressList);
+	}
+
+	public void clearAddressList() {
+		this.addressList.clear();
 	}
 
 	public Long getId() {
@@ -87,9 +104,18 @@ public class Customer {
 		this.email = email;
 	}
 
+	public List<Address> getAddressList() {
+		return addressList;
+	}
+
+	public void setAddressList(List<Address> addressList) {
+		this.addressList = addressList;
+	}
+
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", tel=" + tel
-				+ ", email=" + email + "]";
+				+ ", email=" + email + ", addressList=" + addressList + "]";
 	}
+
 }

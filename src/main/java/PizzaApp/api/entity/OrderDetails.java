@@ -21,7 +21,7 @@ public class OrderDetails {
 
 	@Column(name = "delivery_hour")
 	private String deliveryHour;
-
+	
 	@Column(name = "total_quantity")
 	private int totalQuantity;
 
@@ -40,8 +40,8 @@ public class OrderDetails {
 	public OrderDetails() {
 	}
 
-	public OrderDetails(Long id, String orderDate, boolean deliverNow, String deliveryHour, int totalQuantity,
-			double totalCost, String paymentType, double paymentChange, String deliveryComment) {
+	public OrderDetails(Long id, String orderDate, String deliveryHour, int totalQuantity, double totalCost,
+			String paymentType, double paymentChange, String deliveryComment) {
 		this.id = id;
 		this.orderDate = orderDate;
 		this.deliveryHour = deliveryHour;
@@ -114,12 +114,5 @@ public class OrderDetails {
 
 	public void setDeliveryComment(String deliveryComment) {
 		this.deliveryComment = deliveryComment;
-	}
-
-	@Override
-	public String toString() {
-		return "OrderDetails [id=" + id + ", orderDate=" + orderDate + ", deliveryHour=" + deliveryHour
-				+ ", totalQuantity=" + totalQuantity + ", totalCost=" + totalCost + ", paymentType=" + paymentType
-				+ ", paymentChange=" + paymentChange + ", deliveryComment=" + deliveryComment + "]";
 	}
 }

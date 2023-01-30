@@ -2,7 +2,6 @@ package PizzaApp.api.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,8 +24,21 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	// FK in customer_order(this) references customer_order_details PK
+	// Order FK references OrderDetails PK
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "details_id")
+	private OrderDetails orderDetails;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "address_id")
+	private Address address;
+	
+	@Column(name = "store_pickup_name")
+	private String storePickUpName;
+
 	// FK in customer_order(this) references customer PK
-	@ManyToOne(cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	// EAGER fetching (default) for ManyToOne association would result in bad
 	// performance.
 	// The bidirectional association requires the child entity mapping to provide
@@ -35,36 +47,12 @@ public class Order {
 	// The @ManyToOne annotation allows you to map the Foreign Key column in the
 	// child entity mapping so that the child has a reference to its parent entity.
 	//
-	// unidirectional @OneToMany association is simpler since it’s just the
-	// parent-side that defines the relationship
 	@JoinColumn(name = "customer_id")
 	// the Many side of OneToMany / ManyToOne BI relationship must be the owning
 	// side
 	// JoinColumn defines that the orders table is the owning side of the
 	// relationship meaning it holds and manages the FK column
 	private Customer customer;
-
-	// where to deliver Order: address or store pick-up
-	// FK in customer_order(this) references address PK
-	@OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
-	@JoinColumn(name = "address_id")
-	private Address address;
-
-	/*
-	// FK in customer_order(this) references store PK
-	@ManyToOne(cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "store_pickup_id")
-	private Store storePickUp; // store selected for pickup by client
-	*/ 
-	
-	@Column(name = "store_pickup_id")
-	private Long storePickUpId;
-	
-	// FK in customer_order(this) references customer_order_details PK
-	// Order FK references OrderDetails PK
-	@OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
-	@JoinColumn(name = "details_id")
-	private OrderDetails orderDetails;
 
 	// Order PK is referenced by OrderItem FK
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -74,13 +62,13 @@ public class Order {
 	public Order() {
 	}
 
-	public Order(Long id, Customer customer, Address address, Long storePickUpId, OrderDetails orderDetails,
+	public Order(Long id, OrderDetails orderDetails, Address address, String storePickUpName, Customer customer,
 			List<OrderItem> orderItems) {
 		this.id = id;
-		this.customer = customer;
-		this.address = address;
-		this.storePickUpId = storePickUpId;
 		this.orderDetails = orderDetails;
+		this.address = address;
+		this.storePickUpName = storePickUpName;
+		this.customer = customer;
 		this.orderItems = orderItems;
 	}
 
@@ -92,12 +80,12 @@ public class Order {
 		this.id = id;
 	}
 
-	public Customer getCustomer() {
-		return customer;
+	public OrderDetails getOrderDetails() {
+		return orderDetails;
 	}
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
+	public void setOrderDetails(OrderDetails orderDetails) {
+		this.orderDetails = orderDetails;
 	}
 
 	public Address getAddress() {
@@ -108,20 +96,20 @@ public class Order {
 		this.address = address;
 	}
 
-	public Long getStorePickUpId() {
-		return storePickUpId;
+	public String getStorePickUpName() {
+		return storePickUpName;
 	}
 
-	public void setStorePickUpId(Long storePickUpId) {
-		this.storePickUpId = storePickUpId;
+	public void setStorePickUpName(String storePickUpName) {
+		this.storePickUpName = storePickUpName;
 	}
 
-	public OrderDetails getOrderDetails() {
-		return orderDetails;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setOrderDetails(OrderDetails orderDetails) {
-		this.orderDetails = orderDetails;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public List<OrderItem> getOrderItems() {

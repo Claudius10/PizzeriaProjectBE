@@ -1,5 +1,11 @@
 package PizzaApp.api.services;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
+import PizzaApp.api.entity.Address;
+import PizzaApp.api.entity.Customer;
 import PizzaApp.api.entity.Order;
 import PizzaApp.api.repos.OrdersRepository;
 import jakarta.transaction.Transactional;
@@ -18,18 +24,25 @@ public class OrdersService {
 		ordersRepo.createOrder(order);
 	}
 	
-	/*
-	get orders by store
-	public List<Order> findOrdersByStore(Long storeId) {
-		
-    	// get store
-		Store store = em.find(Store.class, storeId);
-		
-		// get store's orders
-		List<Order> storeOrders = store.getOrders();
-		 
-		// return orders
-		return storeOrders;
+	public List<Order> getOrders() {
+		return ordersRepo.getOrders();
 	}
-	*/
+
+	public List<Order> getOrdersByStore(String storeName) {
+		return ordersRepo.getOrdersByStore(storeName);
+	}
+
+	public List<Order> getOrdersByCustomer(Long customerId) {
+		return ordersRepo.getOrdersByCustomer(customerId);
+	}
+	
+	////////////////
+	
+	public List<Customer> getCustomers() {
+		return ordersRepo.getCustomers();
+	}
+
+	public List<Address> getAddress() {
+		return ordersRepo.getAddress();
+	}
 }

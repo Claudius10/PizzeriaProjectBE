@@ -23,9 +23,13 @@ public class OrdersService {
 	public void createOrder(Order order) {
 		ordersRepo.createOrder(order);
 	}
-	
+
 	public List<Order> getOrders() {
 		return ordersRepo.getOrders();
+	}
+
+	public Order findOrderById(Long id) {
+		return ordersRepo.findOrderById(id);
 	}
 
 	public List<Order> getOrdersByStore(String storeName) {
@@ -35,9 +39,9 @@ public class OrdersService {
 	public List<Order> getOrdersByCustomer(Long customerId) {
 		return ordersRepo.getOrdersByCustomer(customerId);
 	}
-	
+
 	////////////////
-	
+
 	public List<Customer> getCustomers() {
 		return ordersRepo.getCustomers();
 	}

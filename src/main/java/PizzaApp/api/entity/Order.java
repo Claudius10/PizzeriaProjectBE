@@ -29,16 +29,16 @@ public class Order {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "details_id")
 	private OrderDetails orderDetails;
-	
-	@OneToOne(cascade = CascadeType.ALL)
+
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinColumn(name = "address_id")
 	private Address address;
-	
+
 	@Column(name = "store_pickup_name")
 	private String storePickUpName;
 
 	// FK in customer_order(this) references customer PK
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	// EAGER fetching (default) for ManyToOne association would result in bad
 	// performance.
 	// The bidirectional association requires the child entity mapping to provide

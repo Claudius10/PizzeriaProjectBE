@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,13 @@ public class OrdersRestController {
 
 	@PostMapping("/order")
 	public Order createOrder(@RequestBody Order order) {
+		order.setId((long) 0);
+		ordersService.createOrder(order);
+		return order;
+	}
+	
+	@PutMapping("/order")
+	public Order updateOrder(@RequestBody Order order) {
 		ordersService.createOrder(order);
 		return order;
 	}
@@ -35,6 +43,11 @@ public class OrdersRestController {
 	@GetMapping("/orders")
 	public List<Order> getOrders() {
 		return ordersService.getOrders();
+	}
+	
+	@GetMapping("/order/{id}")
+	public Order findOrderById(@PathVariable Long id) {
+		return ordersService.findOrderById(id);
 	}
 
 	@GetMapping("/orders/{storeName}")

@@ -16,6 +16,9 @@ public class OrderItem {
 	@Column(name = "id")
 	private Long id;
 
+	@Column(name = "product_type")
+	private String productType;
+
 	@Column(name = "name")
 	private String name;
 
@@ -31,8 +34,9 @@ public class OrderItem {
 	public OrderItem() {
 	}
 
-	public OrderItem(Long id, String name, String format, int quantity, double price) {
+	public OrderItem(Long id, String productType, String name, String format, int quantity, double price) {
 		this.id = id;
+		this.productType = productType;
 		this.name = name;
 		this.format = format;
 		this.quantity = quantity;
@@ -45,6 +49,14 @@ public class OrderItem {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getProductType() {
+		return productType;
+	}
+
+	public void setProductType(String productType) {
+		this.productType = productType;
 	}
 
 	public String getName() {

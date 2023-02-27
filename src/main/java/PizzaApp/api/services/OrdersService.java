@@ -40,6 +40,10 @@ public class OrdersService {
 		return ordersRepo.getOrdersByCustomer(customerId);
 	}
 
+	public void deleteOrderById(Long id) {
+		ordersRepo.deleteOrderById(id);
+	}
+
 	////////////////
 
 	public List<Customer> getCustomers() {

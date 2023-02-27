@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import PizzaApp.api.entity.Offer;
 import PizzaApp.api.entity.Product;
 import PizzaApp.api.entity.Store;
 import PizzaApp.api.services.DataForUserService;
@@ -30,5 +32,10 @@ public class DataForUserController {
 	@GetMapping("/stores")
 	public List<Store> getAllStores() {
 		return dataForUserService.getAllStores();
+	}
+
+	@GetMapping("/offers")
+	public List<Offer> findAllOffers() {
+		return dataForUserService.findAllOffers();
 	}
 }

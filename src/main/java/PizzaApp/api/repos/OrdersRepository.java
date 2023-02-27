@@ -23,21 +23,22 @@ public class OrdersRepository {
 	// create / update
 	public void createOrder(Order order) {
 		String orderDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss"));
+
 		// create
+		// new order
 		if (order.getId() == 0) {
 
 			order.getOrderDetails().setOrderDate(orderDate);
 
+			// find if customer of new order is in db
 			Customer dbCustomer = findCustomerByTel(order.getCustomer().getTel());
 
 			if (dbCustomer != null) {
-				dbCustomer.setFirstName(order.getCustomer().getFirstName());
-				dbCustomer.setLastName(order.getCustomer().getLastName());
-				dbCustomer.setEmail(order.getCustomer().getEmail());
-				order.setCustomer(dbCustomer);
+				order.getCustomer().setId(dbCustomer.getId());
 			}
-
+			// if db is already in db, do not INSERT again
 			if (order.getAddress() != null) {
+				// check whatever address to update is already in db
 				Address dbAddress = findAddress(order.getAddress().getStreet(), order.getAddress().getStreetNr(),
 						order.getAddress().getGate(), order.getAddress().getStaircase(), order.getAddress().getFloor(),
 						order.getAddress().getDoor());
@@ -45,9 +46,6 @@ public class OrdersRepository {
 					order.setAddress(dbAddress);
 				}
 			}
-
-			Order newOrder = em.merge(order);
-			order.setId(newOrder.getId());
 
 		} else {
 			// update
@@ -63,8 +61,38 @@ public class OrdersRepository {
 			}
 
 			// there can be either an address for home delivery
-			// or a storePickUpName
-			// not both
+			// or a storePickUpName; not both
+			if (order.getAddress() != null) {
+
+				Address dbAddress = findAddress(order.getAddress().getStreet(), order.getAddress().getStreetNr(),
+						order.getAddress().getGate(), order.getAddress().getStaircase(), order.getAddress().getFloor(),
+						order.getAddress().getDoor());
+
+				// update
+				// store pick up => home delivery update
+				if (dbOrder.getStorePickUpName() != null) {
+					order.setStorePickUpName(null);
+				}
+
+				// when updating from store pick up to home delivery
+				// if incoming address is not in db
+				// do a INSERT, not UPDATE on the address with the old db
+				// from when it was fetched on the FE to proceed with the update
+				if (dbAddress == null) {
+					order.getAddress().setId(null);
+				} else {
+					order.setAddress(dbAddress);
+				}
+				// if neither the address or store pick up is being updated
+			} else if (order.getAddress() == null && order.getStorePickUpName() == null) {
+				// but order to update has home delivery address
+				if (dbOrder.getStorePickUpName() == null) {
+					order.setAddress(dbOrder.getAddress());
+					// or order to update has store pick up name
+				} else {
+					order.setStorePickUpName(dbOrder.getStorePickUpName());
+				}
+			}
 
 			// update order from home delivery to store pickup
 			// home delivery => store pick up update
@@ -72,33 +100,24 @@ public class OrdersRepository {
 				order.setAddress(null);
 			}
 
-			// update order from storePickUp to home delivery
-			// store pick up => home delivery update
-			if (dbOrder.getStorePickUpName() != null && order.getAddress() != null) {
-				order.setStorePickUpName(null);
-
-				// check whatever address is already in db
-				Address dbAddress = findAddress(order.getAddress().getStreet(), order.getAddress().getStreetNr(),
-						order.getAddress().getGate(), order.getAddress().getStaircase(), order.getAddress().getFloor(),
-						order.getAddress().getDoor());
-
-				if (dbAddress != null) {
-					// if it is, don't add it again
-					order.setAddress(dbAddress);
-				}
-
-			}
-
 			// if customer prop is not set on the FE obj cause it's not being updated
 			// set the one from the DB so when order is updated
 			// customer_id doesn't go to NULL
-			if (dbOrder.getCustomer() != null) {
+			if (order.getCustomer() == null) {
 				order.setCustomer(dbOrder.getCustomer());
+			} else {
+				Customer dbCustomer = findCustomerByTel(order.getCustomer().getTel());
+				// when updating customer, the newly entered tel is already in db
+				if (dbCustomer != null && dbCustomer.getTel() == order.getCustomer().getTel()) {
+					// then update the customer who'se tel was already in db
+					// and not INSERT a new customer with the same tel
+					order.getCustomer().setId(dbCustomer.getId());
+				}
 			}
-
-			Order updatedOrder = em.merge(order);
-			order.setId(updatedOrder.getId());
 		}
+
+		Order theOrder = em.merge(order);
+		order.setId(theOrder.getId());
 	}
 
 	// read
@@ -126,9 +145,11 @@ public class OrdersRepository {
 		return customerOrders;
 	}
 
-	// update
-
 	// delete
+	public void deleteOrderById(Long id) {
+		Order dbOrderToDelete = findOrderById(id);
+		em.remove(dbOrderToDelete);
+	}
 
 	////////////////
 
@@ -144,6 +165,8 @@ public class OrdersRepository {
 		return address;
 	}
 
+	// can refact this to have its param as an Address obj and then use it inside to
+	// get prop values
 	public Address findAddress(String oStreet, int oNumber, String oGate, String oStaircase, String oFloor,
 			String oDoor) {
 		TypedQuery<Address> query = em

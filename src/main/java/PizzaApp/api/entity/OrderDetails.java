@@ -27,9 +27,15 @@ public class OrderDetails {
 
 	@Column(name = "total_cost")
 	private double totalCost;
-
+	
+	@Column(name = "total_cost_offers")
+	private double totalCostOffers;
+	
 	@Column(name = "payment_type")
 	private String paymentType;
+	
+	@Column(name = "change_requested")
+	private double changeRequested;
 
 	@Column(name = "payment_change")
 	private double paymentChange;
@@ -41,13 +47,16 @@ public class OrderDetails {
 	}
 
 	public OrderDetails(Long id, String orderDate, String deliveryHour, int totalQuantity, double totalCost,
-			String paymentType, double paymentChange, String deliveryComment) {
+			double totalCostOffers, String paymentType, double changeRequested, double paymentChange,
+			String deliveryComment) {
 		this.id = id;
 		this.orderDate = orderDate;
 		this.deliveryHour = deliveryHour;
 		this.totalQuantity = totalQuantity;
 		this.totalCost = totalCost;
+		this.totalCostOffers = totalCostOffers;
 		this.paymentType = paymentType;
+		this.changeRequested = changeRequested;
 		this.paymentChange = paymentChange;
 		this.deliveryComment = deliveryComment;
 	}
@@ -92,12 +101,28 @@ public class OrderDetails {
 		this.totalCost = totalCost;
 	}
 
+	public double getTotalCostOffers() {
+		return totalCostOffers;
+	}
+
+	public void setTotalCostOffers(double totalCostOffers) {
+		this.totalCostOffers = totalCostOffers;
+	}
+
 	public String getPaymentType() {
 		return paymentType;
 	}
 
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
+	}
+
+	public double getChangeRequested() {
+		return changeRequested;
+	}
+
+	public void setChangeRequested(double changeRequested) {
+		this.changeRequested = changeRequested;
 	}
 
 	public double getPaymentChange() {

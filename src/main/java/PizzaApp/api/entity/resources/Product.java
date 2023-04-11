@@ -1,4 +1,4 @@
-package PizzaApp.api.entity;
+package PizzaApp.api.entity.resources;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

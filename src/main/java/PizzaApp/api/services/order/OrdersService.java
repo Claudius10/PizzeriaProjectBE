@@ -1,13 +1,8 @@
-package PizzaApp.api.services;
-
+package PizzaApp.api.services.order;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
-import PizzaApp.api.entity.Address;
-import PizzaApp.api.entity.Customer;
-import PizzaApp.api.entity.Order;
-import PizzaApp.api.repos.OrdersRepository;
+import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.repos.order.OrdersRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -42,15 +37,5 @@ public class OrdersService {
 
 	public void deleteOrderById(Long id) {
 		ordersRepo.deleteOrderById(id);
-	}
-
-	////////////////
-
-	public List<Customer> getCustomers() {
-		return ordersRepo.getCustomers();
-	}
-
-	public List<Address> getAddress() {
-		return ordersRepo.getAddress();
 	}
 }

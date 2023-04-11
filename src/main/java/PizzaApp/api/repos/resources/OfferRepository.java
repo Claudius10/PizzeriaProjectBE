@@ -1,8 +1,9 @@
-package PizzaApp.api.repos;
+package PizzaApp.api.repos.resources;
 
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.Offer;
+
+import PizzaApp.api.entity.resources.Offer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 

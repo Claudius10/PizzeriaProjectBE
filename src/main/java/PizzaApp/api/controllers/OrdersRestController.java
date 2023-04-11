@@ -1,7 +1,6 @@
 package PizzaApp.api.controllers;
-
 import java.util.List;
-
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,15 +10,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import PizzaApp.api.entity.Address;
-import PizzaApp.api.entity.Customer;
-import PizzaApp.api.entity.Order;
-import PizzaApp.api.services.OrdersService;
+import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.services.order.OrdersService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://192.168.1.11:3000")
+@Validated
 public class OrdersRestController {
 
 	private OrdersService ordersService;
@@ -29,26 +28,37 @@ public class OrdersRestController {
 	}
 
 	@PostMapping("/order")
-	public Order createOrder(@RequestBody Order order) {
+	public Long createOrder(@Valid @RequestBody Order order) {
 		order.setId((long) 0);
 		ordersService.createOrder(order);
-		return order;
+		return order.getId();
 	}
 
 	@PutMapping("/order")
-	public Order updateOrder(@RequestBody Order order) {
+	public void updateOrder(@Valid @RequestBody Order order) {
 		ordersService.createOrder(order);
-		return order;
 	}
+
+	@GetMapping("/order/{id}")
+	public Order findOrderById(
+			@PathVariable @Pattern(regexp = "^[0-9]+$", message = "El valor tiene que ser un número positivo.") String id) {
+		Long orderId = Long.parseLong(id);
+		return ordersService.findOrderById(orderId);
+	}
+
+	// delete mapping path variable doesn't need validation
+	// since it sends the id from the fetched order not from
+	// an user input
+	@DeleteMapping("/order/{id}")
+	public void deleteOrderById(@PathVariable Long id) {
+		ordersService.deleteOrderById(id);
+	}
+
+	// other Order endpoints not currently in use
 
 	@GetMapping("/orders")
 	public List<Order> getOrders() {
 		return ordersService.getOrders();
-	}
-
-	@GetMapping("/order/{id}")
-	public Order findOrderById(@PathVariable Long id) {
-		return ordersService.findOrderById(id);
 	}
 
 	@GetMapping("/orders/{storeName}")
@@ -60,22 +70,4 @@ public class OrdersRestController {
 	public List<Order> getOrdersByCustomer(@PathVariable Long customerId) {
 		return ordersService.getOrdersByCustomer(customerId);
 	}
-
-	@DeleteMapping("/order/{id}")
-	public void deleteOrderById(@PathVariable Long id) {
-		ordersService.deleteOrderById(id);
-	}
-
-	////////////////
-
-	@GetMapping("/customers")
-	public List<Customer> getCustomer() {
-		return ordersService.getCustomers();
-	}
-
-	@GetMapping("/address")
-	public List<Address> getAddress() {
-		return ordersService.getAddress();
-	}
-
 }

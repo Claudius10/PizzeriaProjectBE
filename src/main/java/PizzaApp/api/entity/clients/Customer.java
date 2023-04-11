@@ -1,23 +1,14 @@
-package PizzaApp.api.entity;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
+package PizzaApp.api.entity.clients;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "customer")
-public class CustomerOld {
+public class Customer {
 
 	@Id
 	@Column(name = "id")
@@ -36,32 +27,15 @@ public class CustomerOld {
 	@Column(name = "email")
 	private String email;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
-	private List<Address> addressList = new ArrayList<>();
-
-	public CustomerOld() {
+	public Customer() {
 	}
 
-	public CustomerOld(Long id, String firstName, String lastName, int tel, String email, List<Address> addressList) {
+	public Customer(Long id, String firstName, String lastName, int tel, String email) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.tel = tel;
 		this.email = email;
-		this.addressList = addressList;
-	}
-
-	public void addAddress(Address address) {
-		this.addressList.add(address);
-	}
-
-	public void addAddressList(List<Address> addressList) {
-		this.addressList.addAll(addressList);
-	}
-
-	public void clearAddressList() {
-		this.addressList.clear();
 	}
 
 	public Long getId() {
@@ -104,18 +78,9 @@ public class CustomerOld {
 		this.email = email;
 	}
 
-	public List<Address> getAddressList() {
-		return addressList;
-	}
-
-	public void setAddressList(List<Address> addressList) {
-		this.addressList = addressList;
-	}
-
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", tel=" + tel
-				+ ", email=" + email + ", addressList=" + addressList + "]";
+				+ ", email=" + email + "]";
 	}
-
 }

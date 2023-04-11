@@ -1,12 +1,11 @@
-package PizzaApp.api.repos;
-
+package PizzaApp.api.repos.order;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.Address;
-import PizzaApp.api.entity.Customer;
-import PizzaApp.api.entity.Order;
+import PizzaApp.api.entity.clients.Address;
+import PizzaApp.api.entity.clients.Customer;
+import PizzaApp.api.entity.order.Order;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
@@ -115,54 +114,19 @@ public class OrdersRepository {
 				}
 			}
 		}
-
 		Order theOrder = em.merge(order);
 		order.setId(theOrder.getId());
 	}
 
 	// read
-	public List<Order> getOrders() {
-		TypedQuery<Order> query = em.createQuery("from Order", Order.class);
-		List<Order> orders = query.getResultList();
-		return orders;
-	}
 
 	public Order findOrderById(Long id) {
-		return em.find(Order.class, id);
-	}
-
-	public List<Order> getOrdersByStore(String storeName) {
-		TypedQuery<Order> query = em.createQuery("FROM Order o WHERE o.storePickUpName=:storeName", Order.class);
-		query.setParameter("storeName", storeName);
-		List<Order> orders = query.getResultList();
-		return orders;
-	}
-
-	public List<Order> getOrdersByCustomer(Long customerId) {
-		TypedQuery<Order> query = em.createQuery("from Order o WHERE o.customer.id=:customerId", Order.class);
-		query.setParameter("customerId", customerId);
-		List<Order> customerOrders = query.getResultList();
-		return customerOrders;
-	}
-
-	// delete
-	public void deleteOrderById(Long id) {
-		Order dbOrderToDelete = findOrderById(id);
-		em.remove(dbOrderToDelete);
-	}
-
-	////////////////
-
-	public List<Customer> getCustomers() {
-		TypedQuery<Customer> query = em.createQuery("from Customer", Customer.class);
-		List<Customer> customers = query.getResultList();
-		return customers;
-	}
-
-	public List<Address> getAddress() {
-		TypedQuery<Address> query = em.createQuery("from Address", Address.class);
-		List<Address> address = query.getResultList();
-		return address;
+		Order order = em.find(Order.class, id);
+		if (order != null) {
+			return order;
+		} else {
+			throw new NoResultException("Pedido " + id + " no se pudo encontrar.");
+		}
 	}
 
 	// can refact this to have its param as an Address obj and then use it inside to
@@ -199,5 +163,33 @@ public class OrdersRepository {
 		} catch (NoResultException nre) {
 		}
 		return dbCustomer;
+	}
+
+	// delete
+	public void deleteOrderById(Long id) {
+		Order dbOrderToDelete = findOrderById(id);
+		em.remove(dbOrderToDelete);
+	}
+
+	// currently not in use
+
+	public List<Order> getOrders() {
+		TypedQuery<Order> query = em.createQuery("from Order", Order.class);
+		List<Order> orders = query.getResultList();
+		return orders;
+	}
+
+	public List<Order> getOrdersByStore(String storeName) {
+		TypedQuery<Order> query = em.createQuery("FROM Order o WHERE o.storePickUpName=:storeName", Order.class);
+		query.setParameter("storeName", storeName);
+		List<Order> orders = query.getResultList();
+		return orders;
+	}
+
+	public List<Order> getOrdersByCustomer(Long customerId) {
+		TypedQuery<Order> query = em.createQuery("from Order o WHERE o.customer.id=:customerId", Order.class);
+		query.setParameter("customerId", customerId);
+		List<Order> customerOrders = query.getResultList();
+		return customerOrders;
 	}
 }

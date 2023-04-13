@@ -1,5 +1,4 @@
 package PizzaApp.api.entity.order;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

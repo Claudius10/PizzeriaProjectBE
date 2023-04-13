@@ -9,33 +9,33 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class OrdersService {
 
-	private OrdersRepository ordersRepo;
+	private OrdersRepository orderRepository;
 
 	public OrdersService(OrdersRepository ordersRepo) {
-		this.ordersRepo = ordersRepo;
+		this.orderRepository = ordersRepo;
 	}
 
-	public void createOrder(Order order) {
-		ordersRepo.createOrder(order);
+	public void createOrUpdate(Order order) {
+		orderRepository.createOrUpdate(order);
+	}
+	
+	public Order findById(Long id) {
+		return orderRepository.findById(id);
 	}
 
-	public List<Order> getOrders() {
-		return ordersRepo.getOrders();
+	public void deleteById(Long id) {
+		orderRepository.deleteById(id);
 	}
 
-	public Order findOrderById(Long id) {
-		return ordersRepo.findOrderById(id);
+	public List<Order> findAll() {
+		return orderRepository.findAll();
 	}
 
-	public List<Order> getOrdersByStore(String storeName) {
-		return ordersRepo.getOrdersByStore(storeName);
+	public List<Order> findAllByStore(String storeName) {
+		return orderRepository.findAllByStore(storeName);
 	}
 
-	public List<Order> getOrdersByCustomer(Long customerId) {
-		return ordersRepo.getOrdersByCustomer(customerId);
-	}
-
-	public void deleteOrderById(Long id) {
-		ordersRepo.deleteOrderById(id);
+	public List<Order> findAllByCustomer(Long customerId) {
+		return orderRepository.findAllByCustomer(customerId);
 	}
 }

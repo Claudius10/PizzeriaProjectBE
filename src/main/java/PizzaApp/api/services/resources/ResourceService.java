@@ -26,12 +26,12 @@ public class ResourceService {
 		this.offerRepository = offerRepository;
 	}
 
-	public List<Product> getProducts(String productType) {
-		return productRepository.getProducts(productType);
+	public List<Product> findAllProductsByType(String productType) {
+		return productRepository.findAllByType(productType);
 	}
 
-	public List<Store> getAllStores() {
-		return storeRepository.getAllStores();
+	public List<Store> findAllStores() {
+		return storeRepository.findAll();
 	}
 
 	public List<Offer> findAllOffers() {

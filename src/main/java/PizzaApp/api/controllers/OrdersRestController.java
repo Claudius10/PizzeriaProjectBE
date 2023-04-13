@@ -1,5 +1,7 @@
 package PizzaApp.api.controllers;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,46 +30,54 @@ public class OrdersRestController {
 	}
 
 	@PostMapping("/order")
-	public Long createOrder(@Valid @RequestBody Order order) {
+	public ResponseEntity<Long> createOrder(@Valid @RequestBody Order order) {
 		order.setId((long) 0);
-		ordersService.createOrder(order);
-		return order.getId();
+		ordersService.createOrUpdate(order);
+		return new ResponseEntity<Long>(order.getId(), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
-	public void updateOrder(@Valid @RequestBody Order order) {
-		ordersService.createOrder(order);
+	public ResponseEntity<Long> updateOrder(@Valid @RequestBody Order order) {
+		ordersService.createOrUpdate(order);
+		// returning below ResponseEntity with statusCode is
+		// for front-end SaveOrUpdateOrder query fn
+		// in order to correctly either return responseBody or throw if error
+		return new ResponseEntity<Long>(order.getId(), HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/order/{id}")
-	public Order findOrderById(
-			@PathVariable @Pattern(regexp = "^[0-9]+$", message = "El valor tiene que ser un número positivo.") String id) {
+	public ResponseEntity<Order> findOrderById(
+			@PathVariable @Pattern(regexp = "^[0-9]{1,10}$", message = "El valor tiene que ser un número positivo. Máximo 10 digitos") String id) {
 		Long orderId = Long.parseLong(id);
-		return ordersService.findOrderById(orderId);
+		// same as others, returning 200's code makes front-end return the responseBody
+		// !response.ok from fetch API throws the responseBody with handled exception from back-end
+		return new ResponseEntity<Order>(ordersService.findById(orderId), HttpStatus.OK);
 	}
 
 	// delete mapping path variable doesn't need validation
-	// since it sends the id from the fetched order not from
-	// an user input
+	// since on the front end, the deleteOrderById query fn
+	// uses the id from the fetched order w/ findOrderById
+	// not from user input
 	@DeleteMapping("/order/{id}")
-	public void deleteOrderById(@PathVariable Long id) {
-		ordersService.deleteOrderById(id);
+	public ResponseEntity<Long> deleteById(@PathVariable Long id) {
+		ordersService.deleteById(id);
+		return new ResponseEntity<Long>(id, HttpStatus.ACCEPTED);
 	}
 
 	// other Order endpoints not currently in use
 
 	@GetMapping("/orders")
-	public List<Order> getOrders() {
-		return ordersService.getOrders();
+	public List<Order> findAll() {
+		return ordersService.findAll();
 	}
 
 	@GetMapping("/orders/{storeName}")
-	public List<Order> getOrdersByStore(@PathVariable String storeName) {
-		return ordersService.getOrdersByStore(storeName);
+	public List<Order> findAllByStore(@PathVariable String storeName) {
+		return ordersService.findAllByStore(storeName);
 	}
 
 	@GetMapping("/orders/customer/{customerId}")
-	public List<Order> getOrdersByCustomer(@PathVariable Long customerId) {
-		return ordersService.getOrdersByCustomer(customerId);
+	public List<Order> findAllByCustomer(@PathVariable Long customerId) {
+		return ordersService.findAllByCustomer(customerId);
 	}
 }

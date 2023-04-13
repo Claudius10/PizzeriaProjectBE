@@ -23,10 +23,10 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// FK in customer_order(this) references customer_order_details PK
 	// Order FK references OrderDetails PK
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "details_id")
+	@Valid
 	private OrderDetails orderDetails;
 
 	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
@@ -44,6 +44,7 @@ public class Order {
 	// FK in customer_order(this) references customer PK
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinColumn(name = "customer_id")
+	@Valid
 	private Customer customer;
 
 	public Order() {

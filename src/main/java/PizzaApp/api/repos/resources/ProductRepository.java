@@ -16,7 +16,7 @@ public class ProductRepository {
 		this.em = em;
 	}
 
-	public List<Product> getProducts(String productType) {
+	public List<Product> findAllByType(String productType) {
 		TypedQuery<Product> query = em.createQuery("FROM Product WHERE productType=:productType", Product.class);
 		query.setParameter("productType", productType);
 		List<Product> products = query.getResultList();

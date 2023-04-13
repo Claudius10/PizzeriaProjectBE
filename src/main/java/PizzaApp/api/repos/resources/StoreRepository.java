@@ -16,7 +16,7 @@ public class StoreRepository {
 		this.em = em;
 	}
 
-	public List<Store> getAllStores() {
+	public List<Store> findAll() {
 		TypedQuery<Store> query = em.createQuery("FROM Store", Store.class);
 		List<Store> stores = query.getResultList();
 		return stores;

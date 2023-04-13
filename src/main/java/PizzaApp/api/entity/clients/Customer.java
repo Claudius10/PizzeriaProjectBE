@@ -1,10 +1,14 @@
 package PizzaApp.api.entity.clients;
+import PizzaApp.api.exceptions.constraints.IntegerLength;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "customer")
@@ -16,21 +20,26 @@ public class Customer {
 	private Long id;
 
 	@Column(name = "first_name")
+	@Pattern(regexp = "^[a-zA-Z\s]{2,25}$", message = "Nombre: solo letras sin tildes (mín 2, máx 25 letras)")
 	private String firstName;
 
 	@Column(name = "last_name")
+	@Pattern(regexp = "^[a-zA-Z\s]{0,25}$", message = "Appelido: solo letras sin tildes (no mín, máx 25 letras)")
 	private String lastName;
 
 	@Column(name = "tel")
-	private int tel;
+	@IntegerLength(min = 9, max = 9, message = "Teléfono: mín 9 digitos, máx 9 digitos")
+	private Integer tel;
 
 	@Column(name = "email")
+	@Email(message = "Email: formato del email no aceptado")
+	@NotBlank(message = "Email: el valor no puede ser vacío")
 	private String email;
 
 	public Customer() {
 	}
 
-	public Customer(Long id, String firstName, String lastName, int tel, String email) {
+	public Customer(Long id, String firstName, String lastName, Integer tel, String email) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -62,11 +71,11 @@ public class Customer {
 		this.lastName = lastName;
 	}
 
-	public int getTel() {
+	public Integer getTel() {
 		return tel;
 	}
 
-	public void setTel(int tel) {
+	public void setTel(Integer tel) {
 		this.tel = tel;
 	}
 

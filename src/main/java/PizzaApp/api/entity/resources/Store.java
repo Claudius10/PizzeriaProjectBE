@@ -1,5 +1,4 @@
 package PizzaApp.api.entity.resources;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,13 +27,6 @@ public class Store {
 	@Column(name = "schedule")
 	private String schedule;
 
-	/*
-	 * // storePickUp in Order class (entity)
-	 * 
-	 * @OneToMany(mappedBy = "storePickUp", cascade =
-	 * jakarta.persistence.CascadeType.ALL) private List<Order> ordersHandled;
-	 */
-	
 	public Store() {
 	};
 
@@ -44,7 +36,6 @@ public class Store {
 		this.location = location;
 		this.phoneNumber = phoneNumber;
 		this.schedule = schedule;
-		// this.ordersHandled = ordersHandled;
 	}
 
 	public Long getId() {
@@ -86,11 +77,4 @@ public class Store {
 	public void setSchedule(String schedule) {
 		this.schedule = schedule;
 	}
-
-	/*
-	 * public List<Order> getOrdersHandled() { return ordersHandled; }
-	 * 
-	 * public void setOrdersHandled(List<Order> ordersHandled) { this.ordersHandled
-	 * = ordersHandled; }
-	 */
 }

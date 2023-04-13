@@ -1,5 +1,4 @@
 package PizzaApp.api.entity.cart;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +26,10 @@ public class Cart {
 	private int totalQuantity;
 
 	@Column(name = "total_cost")
-	private double totalCost;
+	private Double totalCost;
 
 	@Column(name = "total_cost_offers")
-	private double totalCostOffers;
+	private Double totalCostOffers;
 
 	// Cart PK is referenced by OrderItem FK
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -72,15 +71,15 @@ public class Cart {
 		this.totalQuantity = totalQuantity;
 	}
 
-	public double getTotalCost() {
+	public Double getTotalCost() {
 		return totalCost;
 	}
 
-	public void setTotalCost(double totalCost) {
+	public void setTotalCost(Double totalCost) {
 		this.totalCost = totalCost;
 	}
 
-	public double getTotalCostOffers() {
+	public Double getTotalCostOffers() {
 		return totalCostOffers;
 	}
 

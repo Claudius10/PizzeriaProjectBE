@@ -1,12 +1,12 @@
 package PizzaApp.api.entity.clients;
+import PizzaApp.api.exceptions.constraints.IntegerLength;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
-
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "address")
@@ -18,28 +18,33 @@ public class Address {
 	private Long id;
 
 	@Column(name = "street")
-	@NotEmpty(message = "El nombre de la calle no puede faltar.")
+	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{2,25}$", message = "Calle: solo letras sin tildes y números (mín 2, máx 25 letras)")
 	private String street;
 
 	@Column(name = "street_nr")
-	private int streetNr;
+	@IntegerLength(min = 1, max = 4, message = "Número de calle: mín 1 digitos, máx 4 digitos")
+	private Integer streetNr;
 
 	@Column(name = "gate")
+	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Portal: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String gate;
 
 	@Column(name = "staircase")
+	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Escalera: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String staircase;
 
 	@Column(name = "floor")
+	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Piso: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String floor;
 
 	@Column(name = "door")
+	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Puerta: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String door;
 
 	public Address() {
 	}
 
-	public Address(Long id, String street, int streetNr, String gate, String staircase, String floor, String door) {
+	public Address(Long id, String street, Integer streetNr, String gate, String staircase, String floor, String door) {
 		this.id = id;
 		this.street = street;
 		this.streetNr = streetNr;
@@ -65,11 +70,11 @@ public class Address {
 		this.street = street;
 	}
 
-	public int getStreetNr() {
+	public Integer getStreetNr() {
 		return streetNr;
 	}
 
-	public void setStreetNr(int streetNr) {
+	public void setStreetNr(Integer streetNr) {
 		this.streetNr = streetNr;
 	}
 

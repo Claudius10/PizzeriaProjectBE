@@ -9,20 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-	// exception handling for pojos validation
-	// Order entity when sending POST request from front-end for example
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -46,7 +42,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	// exception handling for path variable validation
 
 	@ExceptionHandler(ConstraintViolationException.class)
-	@ResponseBody
 	protected ResponseEntity<ApiErrorDTO> handleConstraintViolationException(HttpServletRequest request,
 			ConstraintViolationException ex) {
 
@@ -64,7 +59,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	// for findOrderById for example
 
 	@ExceptionHandler(NoResultException.class)
-	@ResponseBody
 	protected ResponseEntity<ApiErrorDTO> handleNoResult(HttpServletRequest request, NoResultException ex) {
 
 		ApiErrorDTO errorsDTO = new ApiErrorDTO();
@@ -75,5 +69,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		errorsDTO.addError(ex.getMessage());
 
 		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.NOT_FOUND);
+	}
+
+	// for the custom error for validating change requested
+	
+	@ExceptionHandler(ChangeRequestedNotValidException.class)
+	protected ResponseEntity<ApiErrorDTO> handleChangeRequestedNotValidException(HttpServletRequest request,
+			ChangeRequestedNotValidException ex) {
+		
+		ApiErrorDTO errorsDTO = new ApiErrorDTO();
+
+		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		errorsDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		errorsDTO.setPath(request.getServletPath());
+		errorsDTO.addError(ex.getMessage());
+
+		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
 	}
 }

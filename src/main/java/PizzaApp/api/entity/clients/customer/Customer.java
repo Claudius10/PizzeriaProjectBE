@@ -1,11 +1,14 @@
-package PizzaApp.api.entity.clients;
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+package PizzaApp.api.entity.clients.customer;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,24 +30,25 @@ public class Customer {
 	@Pattern(regexp = "^[a-zA-Z\s]{0,25}$", message = "Appelido: solo letras sin tildes (no mín, máx 25 letras)")
 	private String lastName;
 
-	@Column(name = "tel")
-	@IntegerLength(min = 9, max = 9, message = "Teléfono: mín 9 digitos, máx 9 digitos")
-	private Integer tel;
-
 	@Column(name = "email")
 	@Email(message = "Email: formato del email no aceptado")
 	@NotBlank(message = "Email: el valor no puede ser vacío")
 	private String email;
 
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinColumn(name = "tel_id")
+	@Valid
+	private Telephone tel;
+
 	public Customer() {
 	}
 
-	public Customer(Long id, String firstName, String lastName, Integer tel, String email) {
+	public Customer(Long id, String firstName, String lastName, String email, Telephone tel) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.tel = tel;
 		this.email = email;
+		this.tel = tel;
 	}
 
 	public Long getId() {
@@ -71,14 +75,6 @@ public class Customer {
 		this.lastName = lastName;
 	}
 
-	public Integer getTel() {
-		return tel;
-	}
-
-	public void setTel(Integer tel) {
-		this.tel = tel;
-	}
-
 	public String getEmail() {
 		return email;
 	}
@@ -87,9 +83,11 @@ public class Customer {
 		this.email = email;
 	}
 
-	@Override
-	public String toString() {
-		return "Customer [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", tel=" + tel
-				+ ", email=" + email + "]";
+	public Telephone getTel() {
+		return tel;
+	}
+
+	public void setTel(Telephone tel) {
+		this.tel = tel;
 	}
 }

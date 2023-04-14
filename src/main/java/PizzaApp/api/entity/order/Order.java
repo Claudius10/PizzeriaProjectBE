@@ -1,7 +1,7 @@
 package PizzaApp.api.entity.order;
 import PizzaApp.api.entity.cart.Cart;
 import PizzaApp.api.entity.clients.Address;
-import PizzaApp.api.entity.clients.Customer;
+import PizzaApp.api.entity.clients.customer.Customer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

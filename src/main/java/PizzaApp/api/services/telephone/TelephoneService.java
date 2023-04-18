@@ -19,13 +19,13 @@ public class TelephoneService {
 
 	public Telephone findCustomerTel(Order order) {
 
-		int telNumber = 0;
-
+		Telephone telephone = null;
+		
 		if (order.getCustomer() != null) {
-			telNumber = order.getCustomer().getTel().getNumber();
+			telephone = order.getCustomer().getTel();
 		}
 
-		return telephoneRepository.findCustomerTel(telNumber);
+		return telephoneRepository.findCustomerTel(telephone);
 	}
 
 }

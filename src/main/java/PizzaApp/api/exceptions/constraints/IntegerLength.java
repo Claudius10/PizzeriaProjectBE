@@ -9,7 +9,7 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 /**
- * Null values are NOT considered valid.
+ * Null values are not considered valid.
  * @author Claudiu Catalin
  */
 

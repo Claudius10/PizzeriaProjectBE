@@ -1,4 +1,5 @@
 package PizzaApp.api.services.order;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -13,6 +14,7 @@ import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.customer.CustomerService;
 import PizzaApp.api.services.telephone.TelephoneService;
 import PizzaApp.api.utility.order.OrderUtilityMethods;
+import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -37,8 +39,7 @@ public class OrdersService {
 
 		String orderDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss"));
 
-		// check for address and customer separately
-		// to know whatever they're already in DB
+		// check for address, customer, tel separately
 		Optional<Address> dbAddress = Optional.ofNullable(addressService.findAddress(order));
 		Optional<Telephone> dbCustomerTel = Optional.ofNullable(telephoneService.findCustomerTel(order));
 		Optional<Customer> dbCustomer = Optional.ofNullable(customerService.findCustomer(order));
@@ -53,12 +54,11 @@ public class OrdersService {
 			// to not insert the same customer tel again
 			if (dbCustomerTel.isPresent()) {
 				order.getCustomer().getTel().setId(dbCustomerTel.get().getId());
-			}
-
-			// if customer tel is in db, and customer is in db
-			// do not insert a new customer, use the same one
-			if (dbCustomerTel.isPresent() && dbCustomer.isPresent() ) {
-				order.getCustomer().setId(dbCustomer.get().getId());
+				// if customer is also in db
+				// do not insert a new customer, use the same one
+				if (dbCustomer.isPresent()) {
+					order.getCustomer().setId(dbCustomer.get().getId());
+				}
 			}
 
 			// check whatever order has an address
@@ -104,8 +104,7 @@ public class OrdersService {
 				// case 1 update consists in changing order from storePickUp to address (home
 				// delivery)
 
-				// if the address is not in db
-				// nullify the id set on the front-end
+				// if the address is not in db nullify the id set on the front-end
 				// to insert the address, not overwrite the original
 				// if it is in db, the id set on the front end will correctly update
 				// unless updating from storePickUp to address, in which case
@@ -168,7 +167,14 @@ public class OrdersService {
 	}
 
 	public Order findById(Long id) {
-		return orderRepository.findById(id);
+
+		Order order = orderRepository.findById(id);
+
+		if (order != null) {
+			return order;
+		} else {
+			throw new NoResultException("Pedido " + id + " no se pudo encontrar");
+		}
 	}
 
 	public void deleteById(Long id) {
@@ -181,9 +187,5 @@ public class OrdersService {
 
 	public List<Order> findAllByStore(String storeName) {
 		return orderRepository.findAllByStore(storeName);
-	}
-
-	public List<Order> findAllByCustomer(Long customerId) {
-		return orderRepository.findAllByCustomer(customerId);
 	}
 }

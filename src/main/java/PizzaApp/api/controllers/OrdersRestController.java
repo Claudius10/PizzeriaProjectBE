@@ -1,5 +1,4 @@
 package PizzaApp.api.controllers;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -62,22 +61,5 @@ public class OrdersRestController {
 	public ResponseEntity<Long> deleteById(@PathVariable Long id) {
 		ordersService.deleteById(id);
 		return new ResponseEntity<Long>(id, HttpStatus.ACCEPTED);
-	}
-
-	// other Order endpoints not currently in use
-
-	@GetMapping("/orders")
-	public List<Order> findAll() {
-		return ordersService.findAll();
-	}
-
-	@GetMapping("/orders/{storeName}")
-	public List<Order> findAllByStore(@PathVariable String storeName) {
-		return ordersService.findAllByStore(storeName);
-	}
-
-	@GetMapping("/orders/customer/{customerId}")
-	public List<Order> findAllByCustomer(@PathVariable Long customerId) {
-		return ordersService.findAllByCustomer(customerId);
 	}
 }

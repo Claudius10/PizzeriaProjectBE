@@ -15,11 +15,11 @@ public class TelephoneRepository {
 		this.em = em;
 	}
 
-	public Telephone findCustomerTel(int telNumber) {
+	public Telephone findCustomerTel(Telephone telephone) {
 
 		try {
 			TypedQuery<Telephone> query = em.createQuery("from Telephone t where t.number=:number", Telephone.class);
-			query.setParameter("number", telNumber);
+			query.setParameter("number", telephone.getNumber());
 
 			return query.getSingleResult();
 		} catch (NoResultException | NullPointerException e) {

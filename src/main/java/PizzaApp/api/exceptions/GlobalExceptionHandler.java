@@ -88,4 +88,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(EmptyCartException.class)
+	protected ResponseEntity<ApiErrorDTO> handleEmptyCart(HttpServletRequest request,
+			EmptyCartException ex) {
+		
+		ApiErrorDTO errorsDTO = new ApiErrorDTO();
+
+		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		errorsDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		errorsDTO.setPath(request.getServletPath());
+		errorsDTO.addError(ex.getMessage());
+
+		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
+	}
 }

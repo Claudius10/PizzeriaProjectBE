@@ -107,4 +107,10 @@ public class Order {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", orderDetails=" + orderDetails + ", address=" + address + ", cart=" + cart
+				+ ", storePickUpName=" + storePickUpName + ", customer=" + customer + "]";
+	}
 }

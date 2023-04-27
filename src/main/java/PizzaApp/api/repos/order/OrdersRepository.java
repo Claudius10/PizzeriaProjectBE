@@ -20,7 +20,7 @@ public class OrdersRepository {
 		// persist the order
 		Order theOrder = em.merge(order);
 
-		// set the newly generated id in the DB to return it to front-end
+		// set the newly generated id
 		order.setId(theOrder.getId());
 	}
 
@@ -35,7 +35,7 @@ public class OrdersRepository {
 		em.remove(findById(id));
 	}
 
-	// currently not in use
+	// not in use
 
 	public List<Order> findAll() {
 		TypedQuery<Order> query = em.createQuery("from Order", Order.class);

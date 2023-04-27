@@ -46,6 +46,13 @@ public class Cart {
 		this.totalCost = totalCost;
 		this.totalCostOffers = totalCostOffers;
 	}
+	
+	public Cart(List<OrderItem> orderItems, int totalQuantity, double totalCost, double totalCostOffers) {
+		this.orderItems = orderItems;
+		this.totalQuantity = totalQuantity;
+		this.totalCost = totalCost;
+		this.totalCostOffers = totalCostOffers;
+	}
 
 	public Long getId() {
 		return id;

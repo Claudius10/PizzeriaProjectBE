@@ -1,4 +1,5 @@
 package PizzaApp.api.repos.telephone;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.clients.customer.Telephone;
@@ -15,7 +16,7 @@ public class TelephoneRepository {
 		this.em = em;
 	}
 
-	public Telephone findCustomerTel(Telephone telephone) {
+	public Telephone findByNumber(Telephone telephone) {
 
 		try {
 			TypedQuery<Telephone> query = em.createQuery("from Telephone t where t.number=:number", Telephone.class);
@@ -24,6 +25,18 @@ public class TelephoneRepository {
 			return query.getSingleResult();
 		} catch (NoResultException | NullPointerException e) {
 			return null;
+		}
+	}
+
+	// method used for testing purposes
+	public List<Telephone> findAllByNumber(Telephone telephone) {
+		TypedQuery<Telephone> query = em.createQuery("from Telephone t where t.number=:number", Telephone.class);
+		query.setParameter("number", telephone.getNumber());
+
+		if (query.getResultList().isEmpty()) {
+			throw new NoResultException("No telephone found matching given telephone.");
+		} else {
+			return query.getResultList();
 		}
 	}
 }

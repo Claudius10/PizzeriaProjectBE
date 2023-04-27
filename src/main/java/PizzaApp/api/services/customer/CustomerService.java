@@ -1,4 +1,5 @@
 package PizzaApp.api.services.customer;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,4 +27,8 @@ public class CustomerService {
 		return customerRepository.findCustomer(customer);
 	}
 
+	// for testing
+	public List<Customer> findCustomers(Customer customer) {
+		return customerRepository.findCustomers(customer);
+	}
 }

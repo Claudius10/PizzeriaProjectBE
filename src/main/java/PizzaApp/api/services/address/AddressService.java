@@ -1,4 +1,6 @@
 package PizzaApp.api.services.address;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import PizzaApp.api.entity.clients.Address;
@@ -23,5 +25,10 @@ public class AddressService {
 		}
 		
 		return addressRepository.findAddress(address);
+	}
+	
+	// for testing
+	public List<Address> findAddresses(Address address) {
+		return addressRepository.findAddresses(address);
 	}
 }

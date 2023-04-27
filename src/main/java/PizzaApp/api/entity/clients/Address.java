@@ -53,6 +53,17 @@ public class Address {
 		this.floor = floor;
 		this.door = door;
 	}
+	
+    // constructor without id
+	public Address(String street, Integer streetNr, String gate, String staircase, String floor, String door) {
+		this.street = street;
+		this.streetNr = streetNr;
+		this.gate = gate;
+		this.staircase = staircase;
+		this.floor = floor;
+		this.door = door;
+	}
+
 
 	public Long getId() {
 		return id;

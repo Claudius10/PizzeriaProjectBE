@@ -20,28 +20,29 @@ import jakarta.validation.constraints.Pattern;
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://192.168.1.11:3000")
 @Validated
-public class OrdersRestController {
+public class OrderController {
 
 	private OrdersService ordersService;
 
-	public OrdersRestController(OrdersService ordersService) {
+	public OrderController(OrdersService ordersService) {
 		this.ordersService = ordersService;
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<Long> createOrder(@Valid @RequestBody Order order) {
+	public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order) {
 		order.setId((long) 0);
 		ordersService.createOrUpdate(order);
-		return new ResponseEntity<Long>(order.getId(), HttpStatus.CREATED);
+		return new ResponseEntity<Order>(order, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
-	public ResponseEntity<Long> updateOrder(@Valid @RequestBody Order order) {
+	public ResponseEntity<Order> updateOrder(@Valid @RequestBody Order order) {
 		ordersService.createOrUpdate(order);
 		// returning below ResponseEntity with statusCode is
 		// for front-end SaveOrUpdateOrder query fn
 		// in order to correctly either return responseBody or throw if error
-		return new ResponseEntity<Long>(order.getId(), HttpStatus.ACCEPTED);
+		// based on the statusCode
+		return new ResponseEntity<Order>(order, HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/order/{id}")

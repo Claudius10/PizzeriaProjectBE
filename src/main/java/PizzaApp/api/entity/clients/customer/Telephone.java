@@ -27,6 +27,11 @@ public class Telephone {
 		this.id = id;
 		this.number = number;
 	}
+	
+	// constructor with no id
+	public Telephone(int number) {
+		this.number = number;
+	}
 
 	public Long getId() {
 		return id;

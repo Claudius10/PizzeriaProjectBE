@@ -1,5 +1,7 @@
 package PizzaApp.api.services.telephone;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,15 +19,19 @@ public class TelephoneService {
 		this.telephoneRepository = telephoneRepository;
 	}
 
-	public Telephone findCustomerTel(Order order) {
+	public Telephone findByNumber(Order order) {
 
 		Telephone telephone = null;
-		
+
 		if (order.getCustomer() != null) {
 			telephone = order.getCustomer().getTel();
 		}
 
-		return telephoneRepository.findCustomerTel(telephone);
+		return telephoneRepository.findByNumber(telephone);
 	}
 
+	// for testing
+	public List<Telephone> findAllByNumber(Telephone telephone) {
+		return telephoneRepository.findAllByNumber(telephone);
+	}
 }

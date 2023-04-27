@@ -1,5 +1,4 @@
 package PizzaApp.api.services.order;
-
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -37,11 +36,12 @@ public class OrdersService {
 
 	public void createOrUpdate(Order order) {
 
+		// get the current date and time
 		String orderDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss"));
 
-		// check for address, customer, tel separately
+		// check for address, customer, tel 
 		Optional<Address> dbAddress = Optional.ofNullable(addressService.findAddress(order));
-		Optional<Telephone> dbCustomerTel = Optional.ofNullable(telephoneService.findCustomerTel(order));
+		Optional<Telephone> dbCustomerTel = Optional.ofNullable(telephoneService.findByNumber(order));
 		Optional<Customer> dbCustomer = Optional.ofNullable(customerService.findCustomer(order));
 
 		// create
@@ -61,59 +61,39 @@ public class OrdersService {
 				}
 			}
 
-			// check whatever order has an address
-			if (order.getAddress() != null) {
-
-				// if it is already in db, set its id
-				// to not insert the same address again with a diff id
-				if (dbAddress.isPresent()) {
-					order.getAddress().setId(dbAddress.get().getId());
-				}
+			// if order has an address and it's is already in db, set its id
+			// to not insert the same address again with a diff id
+			if (order.getAddress() != null && dbAddress.isPresent()) {
+				order.getAddress().setId(dbAddress.get().getId());
 			}
+
 		} else {
 			// update
 
-			// get original order, order with data before update
+			// get original order data
 			Order originalOrder = findById(order.getId());
 
-			// UPDATING CUSTOMER
+			// CUSTOMER
 
 			// if not updating customer, set the same one from db
 			if (order.getCustomer() == null) {
 				order.setCustomer(originalOrder.getCustomer());
 			} else {
-				// ensure that 2 customers can't have the same tel numbers
-				// if by chance, when updating, the tel-to-update (new tel) is already in the db
+				// set id to update
+				order.getCustomer().setId(originalOrder.getCustomer().getId());
+				// if the tel-to-update (new tel) is already in the db
+				// set the id to not insert
 				if (dbCustomerTel.isPresent()) {
-					// if it is, assign the id of the tel already in db
 					order.getCustomer().getTel().setId(dbCustomerTel.get().getId());
-				} else {
-					// if it's not in the db already, then nullify the id set in front-end
-					// so an INSERT happens
-					order.getCustomer().getTel().setId(null);
 				}
 			}
 
-			// UPDATING DELIVERY
-			// there can be either an address (home delivery) or a storePickUpName
-			// not both
+			// DELIVERY
 
 			// check whatever order-to-update is updating address
-			if (order.getAddress() != null) {
-
-				// case 1 update consists in changing order from storePickUp to address (home
-				// delivery)
-
-				// if the address is not in db nullify the id set on the front-end
-				// to insert the address, not overwrite the original
-				// if it is in db, the id set on the front end will correctly update
-				// unless updating from storePickUp to address, in which case
-				// have to manually set it (else block) cause on front-end it's not set
-				if (dbAddress.isEmpty()) {
-					order.getAddress().setId(null);
-				} else {
-					order.getAddress().setId(dbAddress.get().getId());
-				}
+			// if it is, set its id
+			if (order.getAddress() != null && dbAddress.isPresent()) {
+				order.getAddress().setId(dbAddress.get().getId());
 
 				// nullify storePickUp if in the DB there was one
 				if (originalOrder.getStorePickUpName() != null) {
@@ -121,15 +101,7 @@ public class OrdersService {
 				}
 			}
 
-			// case 2 update consists in changing order from address (home delivery) to
-			// storePickUp
-			if (order.getStorePickUpName() != null && originalOrder.getAddress() != null) {
-				// set order's address to null to nullify address_id col in db
-				// since now the storePickUp col will have data
-				order.setAddress(null);
-			}
-
-			// case 3 neither the address or store pick up is being updated
+			// if neither the address or store pick up is being updated
 			if (order.getAddress() == null && order.getStorePickUpName() == null) {
 				// set the address if there is no storePickUp
 				if (originalOrder.getStorePickUpName() == null) {
@@ -140,26 +112,36 @@ public class OrdersService {
 				}
 			}
 
-			// UPDATING ORDER DETAILS
+			// ORDER DETAILS
 
 			// check whatever order-to-update has orderDetails
 			if (order.getOrderDetails() == null) {
 				// if null (not updating) set from db
 				order.setOrderDetails(originalOrder.getOrderDetails());
-				// set new date to denote update date
-				order.getOrderDetails().setOrderDate(orderDate);
 			} else {
-				// if it isn't null, then it has the id from the front-end
-				// so it will UPDATE
-				order.getOrderDetails().setOrderDate(orderDate);
+				// set the id
+				order.getOrderDetails().setId(originalOrder.getOrderDetails().getId());
 			}
 
+			// set update date and time
+			order.getOrderDetails().setOrderDate(orderDate);
+
+			// CART
+
+			// set the cart if cart is not being updated
+			if (order.getCart() == null) {
+				order.setCart(originalOrder.getCart());
+			} else {
+				// it it is being updated, set its id
+				order.getCart().setId(originalOrder.getCart().getId());
+			}
 		}
 
-		// validate change requested
+		// validation
+		orderUtilityMethods.isCartEmpty(order);
 		orderUtilityMethods.isChangeRequestedValid(order);
 
-		// set the change to give back to the client
+		// set the value for the change to give back to the client
 		order.getOrderDetails().setPaymentChange(orderUtilityMethods.calculatePaymentChange(order));
 
 		//

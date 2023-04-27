@@ -41,6 +41,14 @@ public class OrderItem {
 		this.quantity = quantity;
 		this.price = price;
 	}
+	
+	public OrderItem(String productType, String name, String format, int quantity, double price) {
+		this.productType = productType;
+		this.name = name;
+		this.format = format;
+		this.quantity = quantity;
+		this.price = price;
+	}
 
 	public Long getId() {
 		return id;

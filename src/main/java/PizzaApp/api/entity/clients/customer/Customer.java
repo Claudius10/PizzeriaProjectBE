@@ -1,4 +1,5 @@
 package PizzaApp.api.entity.clients.customer;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,6 +46,14 @@ public class Customer {
 
 	public Customer(Long id, String firstName, String lastName, String email, Telephone tel) {
 		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.tel = tel;
+	}
+
+	// constructor with no id
+	public Customer(String firstName, String lastName, String email, Telephone tel) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;

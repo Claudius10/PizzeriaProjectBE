@@ -14,7 +14,7 @@ import PizzaApp.api.services.resources.ResourceService;
 
 @RestController
 @RequestMapping("/api/data")
-@CrossOrigin(origins = "http://192.168.1.11:3000")
+@CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app/")
 public class ResourceController {
 
 	private ResourceService resourceService;

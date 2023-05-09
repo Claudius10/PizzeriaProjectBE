@@ -167,7 +167,7 @@ public class UpdateOrderTests {
 
 	@Test
 	@org.junit.jupiter.api.Order(3)
-	@DisplayName("Test for updating customer")
+	@DisplayName("Test for updating customer data")
 	public void givenNewCustomer_whenCreateOrUpdate_thenReturnOrderWithNewCustomer()
 			throws JsonProcessingException, Exception {
 

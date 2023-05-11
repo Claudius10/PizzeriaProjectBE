@@ -18,7 +18,7 @@ import jakarta.validation.constraints.Pattern;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app/")
+@CrossOrigin(origins = "*")
 @Validated
 public class OrderController {
 

@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 
 @Entity
-@Table(name = "order")
+@Table(name = "customer_order")
 public class Order {
 
 	@Id

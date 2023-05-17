@@ -1,18 +1,21 @@
 package PizzaApp.api.utility.order;
 
+import org.springframework.stereotype.Component;
+
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.exceptions.ChangeRequestedNotValidException;
 import PizzaApp.api.exceptions.EmptyCartException;
 
 //utility methods for OrderRepository
-public class OrderUtilityMethods {
+@Component
+public class OrderUtilityImpl implements OrderUtility {
 
-	public OrderUtilityMethods() {
+	public OrderUtilityImpl() {
 	}
 
 	// value of requested change has to be greater than
 	// totalCost or totalOfferCost
-	// same as in front-end
+	@Override
 	public boolean isChangeRequestedValid(Order order) {
 		// if change requested == null, then it goes into DB as 0
 		// so OK
@@ -35,6 +38,7 @@ public class OrderUtilityMethods {
 		}
 	}
 
+	@Override
 	public boolean isCartEmpty(Order order) {
 		if (order.getCart() != null && !order.getCart().getOrderItems().isEmpty()
 				&& order.getCart().getTotalQuantity() > 0) {
@@ -45,7 +49,8 @@ public class OrderUtilityMethods {
 	}
 
 	// calculate totalCost or totalCostOffers - changeRequested
-	// being the change to give back to client
+	// the result being the change to give back to the client
+	@Override
 	public Double calculatePaymentChange(Order order) {
 		// check whatever user introduced any change request
 		if (order.getOrderDetails().getChangeRequested() != null) {

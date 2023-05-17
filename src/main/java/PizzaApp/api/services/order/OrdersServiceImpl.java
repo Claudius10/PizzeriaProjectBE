@@ -8,38 +8,39 @@ import PizzaApp.api.entity.clients.Address;
 import PizzaApp.api.entity.clients.customer.Customer;
 import PizzaApp.api.entity.clients.customer.Telephone;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.repos.order.OrdersRepository;
+import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.customer.CustomerService;
 import PizzaApp.api.services.telephone.TelephoneService;
-import PizzaApp.api.utility.order.OrderUtilityMethods;
+import PizzaApp.api.utility.order.OrderUtility;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class OrdersService {
+public class OrdersServiceImpl implements OrderService {
 
-	private OrdersRepository orderRepository;
+	private OrderRepository orderRepository;
 	private AddressService addressService;
 	private TelephoneService telephoneService;
 	private CustomerService customerService;
-	private OrderUtilityMethods orderUtilityMethods = new OrderUtilityMethods();
+	private OrderUtility orderUtility;
 
-	public OrdersService(OrdersRepository ordersRepo, AddressService addressService, TelephoneService telephoneService,
-			CustomerService customerService) {
+	public OrdersServiceImpl(OrderRepository ordersRepo, AddressService addressService,
+			TelephoneService telephoneService, CustomerService customerService, OrderUtility orderUtility) {
 		this.orderRepository = ordersRepo;
 		this.addressService = addressService;
 		this.telephoneService = telephoneService;
 		this.customerService = customerService;
+		this.orderUtility = orderUtility;
 	}
 
+	@Override
 	public void createOrUpdate(Order order) {
-
 		// get the current date and time
 		String orderDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss"));
 
-		// check for address, customer, tel 
+		// check for address, customer, tel
 		Optional<Address> dbAddress = Optional.ofNullable(addressService.findAddress(order));
 		Optional<Telephone> dbCustomerTel = Optional.ofNullable(telephoneService.findByNumber(order));
 		Optional<Customer> dbCustomer = Optional.ofNullable(customerService.findCustomer(order));
@@ -138,18 +139,18 @@ public class OrdersService {
 		}
 
 		// validation
-		orderUtilityMethods.isCartEmpty(order);
-		orderUtilityMethods.isChangeRequestedValid(order);
+		orderUtility.isCartEmpty(order);
+		orderUtility.isChangeRequestedValid(order);
 
 		// set the value for the change to give back to the client
-		order.getOrderDetails().setPaymentChange(orderUtilityMethods.calculatePaymentChange(order));
+		order.getOrderDetails().setPaymentChange(orderUtility.calculatePaymentChange(order));
 
 		//
 		orderRepository.createOrUpdate(order);
 	}
 
+	@Override
 	public Order findById(Long id) {
-
 		Order order = orderRepository.findById(id);
 
 		if (order != null) {
@@ -159,14 +160,17 @@ public class OrdersService {
 		}
 	}
 
+	@Override
 	public void deleteById(Long id) {
 		orderRepository.deleteById(id);
 	}
 
+	@Override
 	public List<Order> findAll() {
 		return orderRepository.findAll();
 	}
 
+	@Override
 	public List<Order> findAllByStore(String storeName) {
 		return orderRepository.findAllByStore(storeName);
 	}

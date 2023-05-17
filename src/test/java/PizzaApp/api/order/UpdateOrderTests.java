@@ -35,7 +35,7 @@ import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.exceptions.ChangeRequestedNotValidException;
 import PizzaApp.api.exceptions.EmptyCartException;
-import PizzaApp.api.services.order.OrdersService;
+import PizzaApp.api.services.order.OrdersServiceImpl;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -50,7 +50,7 @@ public class UpdateOrderTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private OrdersService ordersService;
+	private OrdersServiceImpl ordersService;
 
 	// test objects
 	private Address originalAddress;

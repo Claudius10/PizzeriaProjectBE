@@ -6,17 +6,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 @Repository
-public class OrdersRepository {
+public class OrderRepositoryImpl implements OrderRepository {
 
 	private EntityManager em;
 
-	public OrdersRepository(EntityManager em) {
+	public OrderRepositoryImpl(EntityManager em) {
 		this.em = em;
 	}
 
-	// create / update
+	@Override
 	public void createOrUpdate(Order order) {
-
 		// persist the order
 		Order theOrder = em.merge(order);
 
@@ -24,25 +23,27 @@ public class OrdersRepository {
 		order.setId(theOrder.getId());
 	}
 
-	// read
-
+	@Override
 	public Order findById(Long id) {
 		return em.find(Order.class, id);
 	}
 
-	// delete
+	@Override
 	public void deleteById(Long id) {
 		em.remove(findById(id));
+
 	}
+	
+	// not currently in use
 
-	// not in use
-
+	@Override
 	public List<Order> findAll() {
 		TypedQuery<Order> query = em.createQuery("from Order", Order.class);
 		List<Order> orders = query.getResultList();
 		return orders;
 	}
 
+	@Override
 	public List<Order> findAllByStore(String storeName) {
 		TypedQuery<Order> query = em.createQuery("FROM Order o where o.storePickUpName=:storeName", Order.class);
 		query.setParameter("storeName", storeName);
@@ -50,6 +51,7 @@ public class OrdersRepository {
 		return orders;
 	}
 
+	@Override
 	public List<Order> findAllByCustomer(Long customerId) {
 		TypedQuery<Order> query = em.createQuery("from Order o where o.customer.id=:customerId", Order.class);
 		query.setParameter("customerId", customerId);

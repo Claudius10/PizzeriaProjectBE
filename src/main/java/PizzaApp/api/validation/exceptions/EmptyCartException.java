@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions;
+package PizzaApp.api.validation.exceptions;
 
 public class EmptyCartException extends RuntimeException {
 

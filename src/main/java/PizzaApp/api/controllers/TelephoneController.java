@@ -1,16 +1,16 @@
 package PizzaApp.api.controllers;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import PizzaApp.api.entity.clients.customer.Telephone;
+import PizzaApp.api.entity.clients.Telephone;
 import PizzaApp.api.services.telephone.TelephoneService;
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/telephone")
+@RequestMapping("/api")
 public class TelephoneController {
 
 	private TelephoneService telephoneService;
@@ -19,13 +19,8 @@ public class TelephoneController {
 		this.telephoneService = telephoneService;
 	}
 
-	// endpoint for testing purposes
-	@GetMapping("/test/{number}")
-	public ResponseEntity<List<Telephone>> findByNumber(@PathVariable int number) {
-
-		Telephone tel = new Telephone();
-		tel.setNumber(number);
-
-		return new ResponseEntity<List<Telephone>>(telephoneService.findAllByNumber(tel), HttpStatus.OK);
+	@GetMapping("/telephone")
+	public ResponseEntity<Telephone> findByNumber(@RequestBody @Valid Telephone tel) {
+		return new ResponseEntity<Telephone>(telephoneService.findByNumber(tel), HttpStatus.OK);
 	}
 }

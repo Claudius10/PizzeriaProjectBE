@@ -17,6 +17,14 @@ public class OrderRepositoryImpl implements OrderRepository {
 	@Override
 	public void createOrUpdate(Order order) {
 		// persist the order
+		
+		// sync bi associations 
+		order.setOrderDetails(order.getOrderDetails());
+		order.setCart(order.getCart());
+		
+		// for orders without user
+		order.setUser(null);
+		
 		Order theOrder = em.merge(order);
 
 		// set the newly generated id
@@ -30,10 +38,13 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public void deleteById(Long id) {
-		em.remove(findById(id));
-
-	}
+		// find order
+		Order order = findById(id);
 	
+		// delete
+		em.remove(order);
+	}
+
 	// not currently in use
 
 	@Override

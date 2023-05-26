@@ -1,9 +1,6 @@
 package PizzaApp.api.repos.telephone;
-
-import java.util.List;
-
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.clients.customer.Telephone;
+import PizzaApp.api.entity.clients.Telephone;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
@@ -18,26 +15,15 @@ public class TelephoneRepositoryImpl implements TelephoneRepository {
 	}
 
 	@Override
-	public Telephone findByNumber(Telephone telephone) {
+	public Telephone findByNumber(int telNumber) {
+		
 		try {
 			TypedQuery<Telephone> query = em.createQuery("from Telephone t where t.number=:number", Telephone.class);
-			query.setParameter("number", telephone.getNumber());
+			query.setParameter("number", telNumber);
 
 			return query.getSingleResult();
-		} catch (NoResultException | NullPointerException e) {
+		} catch (NoResultException e) {
 			return null;
-		}
-	}
-
-	@Override
-	public List<Telephone> findAllByNumber(Telephone telephone) {
-		TypedQuery<Telephone> query = em.createQuery("from Telephone t where t.number=:number", Telephone.class);
-		query.setParameter("number", telephone.getNumber());
-
-		if (query.getResultList().isEmpty()) {
-			throw new NoResultException("No telephone found matching given telephone.");
-		} else {
-			return query.getResultList();
 		}
 	}
 }

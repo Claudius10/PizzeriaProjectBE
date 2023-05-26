@@ -1,11 +1,14 @@
 package PizzaApp.api.entity.order;
 
-import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import PizzaApp.api.validation.constraints.DoubleLengthNullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -15,15 +18,7 @@ import jakarta.validation.constraints.Pattern;
 public class OrderDetails {
 
 	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	// orderDate field doesn't need validation
-	// as value is being set in orderRepository
-	// when persisting to DB
-	@Column(name = "order_date")
-	private String orderDate;
 
 	@Column(name = "delivery_hour")
 	@NotBlank(message = "Hora de entrega: el valor no puede faltar. ")
@@ -44,24 +39,39 @@ public class OrderDetails {
 	// calculation in OrderRepository by calculatePaymentChange()
 	// so it doesn't need validation
 	@Column(name = "payment_change")
-	private double paymentChange;
+	private Double paymentChange;
 
 	@Column(name = "delivery_comment")
 	@Pattern(regexp = "^[a-zA-Z0-9!¡¿?.,\s]{0,150}$", message = "Observación: máximo 150 valores. Solo letras (sin tildes), dígitos, !¡ ?¿ . , : ; se aceptan.")
 	private String deliveryComment;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@MapsId
+	@JsonBackReference
+	private Order order;
+
 	public OrderDetails() {
 	}
 
-	public OrderDetails(Long id, String orderDate, String deliveryHour, String paymentType, Double changeRequested,
-			double paymentChange, String deliveryComment) {
+	public OrderDetails(Long id, String deliveryHour, String paymentType, Double changeRequested, Double paymentChange,
+			String deliveryComment, Order order) {
 		this.id = id;
-		this.orderDate = orderDate;
 		this.deliveryHour = deliveryHour;
 		this.paymentType = paymentType;
 		this.changeRequested = changeRequested;
 		this.paymentChange = paymentChange;
 		this.deliveryComment = deliveryComment;
+		this.order = order;
+	}
+
+	public OrderDetails(String deliveryHour, String paymentType, Double changeRequested, double paymentChange,
+			String deliveryComment, Order order) {
+		this.deliveryHour = deliveryHour;
+		this.paymentType = paymentType;
+		this.changeRequested = changeRequested;
+		this.paymentChange = paymentChange;
+		this.deliveryComment = deliveryComment;
+		this.order = order;
 	}
 
 	public Long getId() {
@@ -70,14 +80,6 @@ public class OrderDetails {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(String orderDate) {
-		this.orderDate = orderDate;
 	}
 
 	public String getDeliveryHour() {
@@ -104,11 +106,11 @@ public class OrderDetails {
 		this.changeRequested = changeRequested;
 	}
 
-	public double getPaymentChange() {
+	public Double getPaymentChange() {
 		return paymentChange;
 	}
 
-	public void setPaymentChange(double paymentChange) {
+	public void setPaymentChange(Double paymentChange) {
 		this.paymentChange = paymentChange;
 	}
 
@@ -118,5 +120,20 @@ public class OrderDetails {
 
 	public void setDeliveryComment(String deliveryComment) {
 		this.deliveryComment = deliveryComment;
+	}
+
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetails [id=" + id + ", deliveryHour=" + deliveryHour + ", paymentType=" + paymentType
+				+ ", changeRequested=" + changeRequested + ", paymentChange=" + paymentChange + ", deliveryComment="
+				+ deliveryComment + ", order=" + order + "]";
 	}
 }

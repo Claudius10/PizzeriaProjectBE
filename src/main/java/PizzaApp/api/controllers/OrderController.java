@@ -18,7 +18,8 @@ import jakarta.validation.constraints.Pattern;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app")
+// "https://pizzeria-project-claudius10.vercel.app"
+@CrossOrigin(origins = "http://192.168.1.11:3000")
 @Validated
 public class OrderController {
 
@@ -29,14 +30,14 @@ public class OrderController {
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order) {
-		order.setId((long) 0);
+	public ResponseEntity<Order> createOrder(@RequestBody @Valid Order order) {
+		order.setId(0L);
 		orderService.createOrUpdate(order);
 		return new ResponseEntity<Order>(order, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
-	public ResponseEntity<Order> updateOrder(@Valid @RequestBody Order order) {
+	public ResponseEntity<Order> updateOrder(@RequestBody @Valid Order order) {
 		orderService.createOrUpdate(order);
 		// returning below ResponseEntity with statusCode is
 		// for front-end SaveOrUpdateOrder query fn

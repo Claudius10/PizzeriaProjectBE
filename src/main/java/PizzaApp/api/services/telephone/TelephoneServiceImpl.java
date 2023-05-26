@@ -1,11 +1,8 @@
 package PizzaApp.api.services.telephone;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import PizzaApp.api.entity.clients.customer.Telephone;
-import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.entity.clients.Telephone;
 import PizzaApp.api.repos.telephone.TelephoneRepositoryImpl;
 
 @Service
@@ -19,19 +16,11 @@ public class TelephoneServiceImpl implements TelephoneService {
 	}
 
 	@Override
-	public Telephone findByNumber(Order order) {
-		Telephone telephone = null;
-
-		if (order.getCustomer() != null) {
-			telephone = order.getCustomer().getTel();
+	public Telephone findByNumber(Telephone telephone) {
+		try {
+			return telephoneRepository.findByNumber(telephone.getNumber());
+		} catch (NullPointerException e) {
+			return null;
 		}
-
-		return telephoneRepository.findByNumber(telephone);
 	}
-
-	@Override
-	public List<Telephone> findAllByNumber(Telephone telephone) {
-		return telephoneRepository.findAllByNumber(telephone);
-	}
-
 }

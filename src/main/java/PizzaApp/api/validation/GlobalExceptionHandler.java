@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions;
+package PizzaApp.api.validation;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import PizzaApp.api.validation.exceptions.EmptyCartException;
+import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
+import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -21,7 +25,7 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	// handle for HB validator's constraints
-	
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -74,11 +78,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	// for the custom error for validating change requested
-	
-	@ExceptionHandler(ChangeRequestedNotValidException.class)
+
+	@ExceptionHandler(InvalidChangeRequestedException.class)
 	protected ResponseEntity<ApiErrorDTO> handleChangeRequestedNotValidException(HttpServletRequest request,
-			ChangeRequestedNotValidException ex) {
-		
+			InvalidChangeRequestedException ex) {
+
 		ApiErrorDTO errorsDTO = new ApiErrorDTO();
 
 		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
@@ -88,11 +92,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@ExceptionHandler(EmptyCartException.class)
-	protected ResponseEntity<ApiErrorDTO> handleEmptyCart(HttpServletRequest request,
-			EmptyCartException ex) {
-		
+	protected ResponseEntity<ApiErrorDTO> handleEmptyCart(HttpServletRequest request, EmptyCartException ex) {
+
 		ApiErrorDTO errorsDTO = new ApiErrorDTO();
 
 		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
@@ -102,4 +105,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(InvalidContactTelephoneException.class)
+	protected ResponseEntity<ApiErrorDTO> handleInvalidContactTel(HttpServletRequest request,
+			InvalidContactTelephoneException ex) {
+
+		ApiErrorDTO errorsDTO = new ApiErrorDTO();
+
+		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		errorsDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		errorsDTO.setPath(request.getServletPath());
+		errorsDTO.addError(ex.getMessage());
+
+		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
+	}
+
 }

@@ -41,7 +41,7 @@ public class OrderItem {
 		this.quantity = quantity;
 		this.price = price;
 	}
-	
+
 	public OrderItem(String productType, String name, String format, int quantity, double price) {
 		this.productType = productType;
 		this.name = name;
@@ -96,5 +96,11 @@ public class OrderItem {
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderItem [id=" + id + ", productType=" + productType + ", name=" + name + ", format=" + format
+				+ ", quantity=" + quantity + ", price=" + price + "]";
 	}
 }

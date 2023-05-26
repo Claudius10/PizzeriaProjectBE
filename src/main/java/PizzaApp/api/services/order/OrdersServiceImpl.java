@@ -1,16 +1,15 @@
 package PizzaApp.api.services.order;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
-import PizzaApp.api.entity.clients.Address;
-import PizzaApp.api.entity.clients.customer.Customer;
-import PizzaApp.api.entity.clients.customer.Telephone;
+import PizzaApp.api.entity.dto.OrderDataDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.services.address.AddressService;
-import PizzaApp.api.services.customer.CustomerService;
+import PizzaApp.api.services.email.EmailService;
 import PizzaApp.api.services.telephone.TelephoneService;
 import PizzaApp.api.utility.order.OrderUtility;
 import jakarta.persistence.NoResultException;
@@ -21,17 +20,15 @@ import jakarta.transaction.Transactional;
 public class OrdersServiceImpl implements OrderService {
 
 	private OrderRepository orderRepository;
-	private AddressService addressService;
-	private TelephoneService telephoneService;
-	private CustomerService customerService;
+	private OrderDataInternalService orderDataInternalService;
 	private OrderUtility orderUtility;
+	private final Logger logger = Logger.getLogger(getClass().getName());
 
-	public OrdersServiceImpl(OrderRepository ordersRepo, AddressService addressService,
-			TelephoneService telephoneService, CustomerService customerService, OrderUtility orderUtility) {
-		this.orderRepository = ordersRepo;
-		this.addressService = addressService;
-		this.telephoneService = telephoneService;
-		this.customerService = customerService;
+	public OrdersServiceImpl(OrderRepository orderRepository, OrderDataInternalService orderDataInternalService,
+			AddressService addressService, TelephoneService telephoneService, EmailService emailService,
+			OrderUtility orderUtility) {
+		this.orderRepository = orderRepository;
+		this.orderDataInternalService = orderDataInternalService;
 		this.orderUtility = orderUtility;
 	}
 
@@ -40,92 +37,80 @@ public class OrdersServiceImpl implements OrderService {
 		// get the current date and time
 		String orderDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss"));
 
-		// check for address, customer, tel
-		Optional<Address> dbAddress = Optional.ofNullable(addressService.findAddress(order));
-		Optional<Telephone> dbCustomerTel = Optional.ofNullable(telephoneService.findByNumber(order));
-		Optional<Customer> dbCustomer = Optional.ofNullable(customerService.findCustomer(order));
+		// check for customer, email, tel, and address in db
+		OrderDataDTO dbOrderData = orderDataInternalService.findOrderData(order);
 
 		// create
 		if (order.getId() == 0) {
 
 			// set the current date
-			order.getOrderDetails().setOrderDate(orderDate);
+			order.setCreatedOn(orderDate);
 
-			// if customer tel is already in db, set the id from the db
-			// to not insert the same customer tel again
-			if (dbCustomerTel.isPresent()) {
-				order.getCustomer().getTel().setId(dbCustomerTel.get().getId());
-				// if customer is also in db
-				// do not insert a new customer, use the same one
-				if (dbCustomer.isPresent()) {
-					order.getCustomer().setId(dbCustomer.get().getId());
-				}
+			// if address is already in db, set it
+			// to not have duplicates
+			if (dbOrderData.getAddress() != null) {
+				order.getAddress().setId(dbOrderData.getAddress().getId());
 			}
 
-			// if order has an address and it's is already in db, set its id
-			// to not insert the same address again with a diff id
-			if (order.getAddress() != null && dbAddress.isPresent()) {
-				order.getAddress().setId(dbAddress.get().getId());
+			// same for email
+			if (dbOrderData.getEmail() != null) {
+				order.getEmail().setId(dbOrderData.getEmail().getId());
 			}
 
 		} else {
 			// update
 
 			// get original order data
+			logger.info("UPDATE: SEARCHING ORIGINAL ORDER");
 			Order originalOrder = findById(order.getId());
 
 			// CUSTOMER
 
-			// if not updating customer, set the same one from db
-			if (order.getCustomer() == null) {
-				order.setCustomer(originalOrder.getCustomer());
+			// if not updating customer data, set the same one from db
+			if (order.getCustomerFirstName() == null) {
+				order.setCustomerFirstName(originalOrder.getCustomerFirstName());
+			}
+
+			if (order.getCustomerLastName() == null && originalOrder.getCustomerLastName() != null) {
+				order.setCustomerLastName(originalOrder.getCustomerLastName());
+			}
+
+			if (order.getContactTel() == null) {
+				order.setContactTel(originalOrder.getContactTel());
+			}
+
+			if (order.getEmail() == null) {
+				order.setEmail(originalOrder.getEmail());
 			} else {
-				// set id to update
-				order.getCustomer().setId(originalOrder.getCustomer().getId());
-				// if the tel-to-update (new tel) is already in the db
-				// set the id to not insert
-				if (dbCustomerTel.isPresent()) {
-					order.getCustomer().getTel().setId(dbCustomerTel.get().getId());
+				if (dbOrderData.getEmail() != null) {
+					order.getEmail().setId(dbOrderData.getEmail().getId());
 				}
 			}
 
 			// DELIVERY
 
-			// check whatever order-to-update is updating address
-			// if it is, set its id
-			if (order.getAddress() != null && dbAddress.isPresent()) {
-				order.getAddress().setId(dbAddress.get().getId());
-
-				// nullify storePickUp if in the DB there was one
-				if (originalOrder.getStorePickUpName() != null) {
-					order.setStorePickUpName(null);
+			// check whatever updating address
+			// if it's not being updated, set it
+			if (order.getAddress() == null) {
+				order.setAddress(originalOrder.getAddress());
+			} else {
+				// if it is, set its id if it's the db
+				// else insert the new one
+				if (dbOrderData.getAddress() != null) {
+					order.getAddress().setId(dbOrderData.getAddress().getId());
 				}
 			}
+			
+			// ORDERDETAILS
 
-			// if neither the address or store pick up is being updated
-			if (order.getAddress() == null && order.getStorePickUpName() == null) {
-				// set the address if there is no storePickUp
-				if (originalOrder.getStorePickUpName() == null) {
-					order.setAddress(originalOrder.getAddress());
-				} else {
-					// set the storePickUp
-					order.setStorePickUpName(originalOrder.getStorePickUpName());
-				}
-			}
-
-			// ORDER DETAILS
-
-			// check whatever order-to-update has orderDetails
+			// check if updating orderDetails
+			// if null (not updating) set from db
 			if (order.getOrderDetails() == null) {
-				// if null (not updating) set from db
 				order.setOrderDetails(originalOrder.getOrderDetails());
 			} else {
-				// set the id
+				// if it's being updated, set the id
 				order.getOrderDetails().setId(originalOrder.getOrderDetails().getId());
 			}
-
-			// set update date and time
-			order.getOrderDetails().setOrderDate(orderDate);
 
 			// CART
 
@@ -133,19 +118,20 @@ public class OrdersServiceImpl implements OrderService {
 			if (order.getCart() == null) {
 				order.setCart(originalOrder.getCart());
 			} else {
-				// it it is being updated, set its id
 				order.getCart().setId(originalOrder.getCart().getId());
 			}
+
+			// set created on
+			order.setCreatedOn(originalOrder.getCreatedOn());
+			// set updated on
+			order.setUpdatedOn(orderDate);
 		}
 
 		// validation
-		orderUtility.isCartEmpty(order);
-		orderUtility.isChangeRequestedValid(order);
+		orderUtility.validate(order);
 
-		// set the value for the change to give back to the client
-		order.getOrderDetails().setPaymentChange(orderUtility.calculatePaymentChange(order));
-
-		//
+		// create or update order
+		logger.info("MERGING ORDER TO DB");
 		orderRepository.createOrUpdate(order);
 	}
 

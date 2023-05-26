@@ -3,14 +3,23 @@ package PizzaApp.api.utility.order;
 import org.springframework.stereotype.Component;
 
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.exceptions.ChangeRequestedNotValidException;
-import PizzaApp.api.exceptions.EmptyCartException;
+import PizzaApp.api.validation.exceptions.EmptyCartException;
+import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
+import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
 
 //utility methods for OrderRepository
 @Component
 public class OrderUtilityImpl implements OrderUtility {
 
 	public OrderUtilityImpl() {
+	}
+
+	@Override
+	public void validate(Order order) {
+		isChangeRequestedValid(order);
+		isCartEmpty(order);
+		IsContactNumberValid(order);
+		calculatePaymentChange(order);
 	}
 
 	// value of requested change has to be greater than
@@ -32,7 +41,7 @@ public class OrderUtilityImpl implements OrderUtility {
 
 		} else {
 			// here got to throw custom error and handle it in GlobalExceptionHandler
-			throw new ChangeRequestedNotValidException(
+			throw new InvalidChangeRequestedException(
 					"El valor del cambio de efectivo solicitado no puede ser menor o igual "
 							+ "que el total/total con ofertas.");
 		}
@@ -48,26 +57,47 @@ public class OrderUtilityImpl implements OrderUtility {
 		}
 	}
 
+	@Override
+	public boolean IsContactNumberValid(Order order) {
+
+		// if contact_tel isn't null
+		// validate making sure its size is min 9 and max 9
+		// else throw exception and if it's null, return true
+		// since it means it's not being updated
+		if (order.getContactTel() != null) {
+			if (String.valueOf(order.getContactTel().intValue()).length() >= 9
+					&& String.valueOf(order.getContactTel().intValue()).length() <= 9) {
+				return true;
+			} else {
+				throw new InvalidContactTelephoneException("Teléfono: mín 9 digitos, máx 9 digitos");
+			}
+		} else {
+			return true;
+		}
+	}
+
 	// calculate totalCost or totalCostOffers - changeRequested
 	// the result being the change to give back to the client
 	@Override
-	public Double calculatePaymentChange(Order order) {
+	public void calculatePaymentChange(Order order) {
 		// check whatever user introduced any change request
 		if (order.getOrderDetails().getChangeRequested() != null) {
 
 			// if yes and there is a totalCostOffers
 			if (order.getCart().getTotalCostOffers() > 0) {
-				// return the calculation
-				return order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCostOffers();
+				// set the calculation
+				order.getOrderDetails().setPaymentChange(
+						order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCostOffers());
 			} else {
 				// if yes and there is no totalCostOffers, just totalCost
-				// return the calculation
-				return order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCost();
+				// set the corresponding calculation
+				order.getOrderDetails().setPaymentChange(
+						order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCost());
 			}
 		} else {
 			// if user did not introduce any change request
 			// return for the db
-			return 0.0;
+			order.getOrderDetails().setPaymentChange(null);
 		}
 	}
 }

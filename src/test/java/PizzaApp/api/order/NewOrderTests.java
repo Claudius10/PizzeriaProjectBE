@@ -1,4 +1,5 @@
 package PizzaApp.api.order;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -8,6 +9,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,20 +26,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.cart.Cart;
+import PizzaApp.api.entity.clients.Email;
 import PizzaApp.api.entity.clients.Address;
-import PizzaApp.api.entity.clients.customer.Customer;
-import PizzaApp.api.entity.clients.customer.Telephone;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
+import PizzaApp.api.validation.exceptions.EmptyCartException;
+import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
+import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 public class NewOrderTests {
+
+	private final Logger logger = Logger.getLogger(getClass().getName());
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -46,12 +57,8 @@ public class NewOrderTests {
 	private Address firstAddress;
 	private Address secondAddress;
 
-	private Telephone firstTel;
-	private Telephone secondTel;
-
-	private Customer firstCustomer;
-	private Customer secondCustomer;
-	private Customer thirdCustomer;
+	private Email firstEmail;
+	private Email secondEmail;
 
 	private OrderDetails orderDetails;
 	private Cart cart;
@@ -60,21 +67,15 @@ public class NewOrderTests {
 	void setup() {
 
 		// address
-		firstAddress = new Address("testAddress", 5, "", "", "15", "5");
-		secondAddress = new Address("testerinoAddressino", 33, "", "", "9", "6");
+		firstAddress = new Address("FirstAddress", 5, "", "", "15", "5");
+		secondAddress = new Address("SecondAddress", 33, "", "", "9", "6");
 
-		// tel
-		firstTel = new Telephone(666333999);
-		secondTel = new Telephone(666333666);
-
-		// customer
-		firstCustomer = new Customer("FirstCustomer", "FirstTel", "firstTest@email.com", firstTel);
-		secondCustomer = new Customer("SecondCustomer", "SecondTel", "secondTest@email.com", secondTel);
-		thirdCustomer = new Customer("ThirdCustomer", "FirstTel", "testphone@email.com", firstTel);
+		// email
+		firstEmail = new Email("firstEmail@email.com");
+		secondEmail = new Email("secondEmail@email.com");
 
 		// orderDetails
 		orderDetails = new OrderDetails();
-		orderDetails.setOrderDate(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
 		orderDetails.setDeliveryHour("ASAP");
 		orderDetails.setPaymentType("Credit Card");
 
@@ -87,36 +88,38 @@ public class NewOrderTests {
 		cart = new Cart();
 		cart.setOrderItems(orderItems);
 		cart.setTotalCost(14.75);
-		cart.setTotalCostOffers(0);
+		cart.setTotalCostOffers(0D);
 		cart.setTotalQuantity(1);
 	}
 
 	@Test
-	@DisplayName("Test for creating order with new customer and new address")
+	@DisplayName("New order test #1: new email and new address")
 	public void givenOrder_whenCreateOrUpdate_thenReturnOrder() throws Exception {
 
 		// given / preparation:
-
-		// order with new customer and new address
 		Order order = new Order();
+
+		order.setCustomerFirstName("FirstCustomer");
+		order.setCustomerLastName("FirstTel");
+		order.setContactTel(666333999);
+		order.setEmail(firstEmail);
+
 		order.setAddress(firstAddress);
-		order.setCustomer(firstCustomer);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
 
-		// when action:
-		// create new order
+		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
-		// then expect/assert:
-		// the returned order data matches the data set for testing
-		System.out.println("-------- Creating order: new customer and new address --------");
+		// then expect/assert: returned data matches set data
+		logger.info("New order test #1: new email and new address");
 		orderResponse.andDo(print()).andExpect(status().isCreated())
-				.andExpect(jsonPath("$.customer.firstName", is(firstCustomer.getFirstName())))
-				.andExpect(jsonPath("$.customer.lastName", is(firstCustomer.getLastName())))
-				.andExpect(jsonPath("$.customer.tel.number", is(firstCustomer.getTel().getNumber())))
-				.andExpect(jsonPath("$.customer.email", is(firstCustomer.getEmail())))
+				.andExpect(jsonPath("$.customerFirstName", is(order.getCustomerFirstName())))
+				.andExpect(jsonPath("$.customerLastName", is(order.getCustomerLastName())))
+				.andExpect(jsonPath("$.contactTel", is(order.getContactTel())))
+				.andExpect(jsonPath("$.email.email", is(order.getEmail().getEmail())))
 				.andExpect(jsonPath("$.address.street", is(firstAddress.getStreet())))
 				.andExpect(jsonPath("$.address.streetNr", is(firstAddress.getStreetNr())))
 				.andExpect(jsonPath("$.address.gate", is(firstAddress.getGate())))
@@ -128,36 +131,38 @@ public class NewOrderTests {
 				.andExpect(jsonPath("$.cart.totalQuantity", is(1))).andExpect(jsonPath("$.cart.totalCost", is(14.75)))
 				.andExpect(jsonPath("$.cart.totalCostOffers", is(0.0)))
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)));
-		System.out.println("-------- Order created: new customer and new address --------");
+		logger.info("New order test #1: success");
+
 	}
 
 	@Test
-	@DisplayName("Test for creating order with existing customer and new address")
-	public void givenOrderWithExistingCustomer_whenCreateOrUpdate_thenUseExistingCustomer() throws Exception {
+	@DisplayName("New order test #2: existing email and new address")
+	public void givenOrderWithExistingEmail_whenCreateOrUpdate_thenUseExistingEmail() throws Exception {
 
 		// given / preparation:
-
-		// order with existing customer in database and new address
 		Order order = new Order();
+
+		order.setCustomerFirstName("FirstCustomer");
+		order.setCustomerLastName("FirstTel");
+		order.setContactTel(666333999);
+		order.setEmail(firstEmail);
+
 		order.setAddress(secondAddress);
-		order.setCustomer(firstCustomer);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
 
-		// when action:
-		// create new order
+		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
-		// then expect/assert:
-		// the returned order data matches the data set for testing
-
-		System.out.println("-------- Creating order: existing customer and new address --------");
+		// then expect/assert: returned data matches set data
+		logger.info("New order test #2: existing email and new address");
 		orderResponse.andDo(print()).andExpect(status().isCreated())
-				.andExpect(jsonPath("$.customer.firstName", is(firstCustomer.getFirstName())))
-				.andExpect(jsonPath("$.customer.lastName", is(firstCustomer.getLastName())))
-				.andExpect(jsonPath("$.customer.tel.number", is(firstCustomer.getTel().getNumber())))
-				.andExpect(jsonPath("$.customer.email", is(firstCustomer.getEmail())))
+				.andExpect(jsonPath("$.customerFirstName", is(order.getCustomerFirstName())))
+				.andExpect(jsonPath("$.customerLastName", is(order.getCustomerLastName())))
+				.andExpect(jsonPath("$.contactTel", is(order.getContactTel())))
+				.andExpect(jsonPath("$.email.email", is(order.getEmail().getEmail())))
 				.andExpect(jsonPath("$.address.street", is(secondAddress.getStreet())))
 				.andExpect(jsonPath("$.address.streetNr", is(secondAddress.getStreetNr())))
 				.andExpect(jsonPath("$.address.gate", is(secondAddress.getGate())))
@@ -169,35 +174,37 @@ public class NewOrderTests {
 				.andExpect(jsonPath("$.cart.totalQuantity", is(1))).andExpect(jsonPath("$.cart.totalCost", is(14.75)))
 				.andExpect(jsonPath("$.cart.totalCostOffers", is(0.0)))
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)));
-		System.out.println("-------- Order created: existing customer and new address --------");
+		logger.info("New order test #2: success");
 	}
 
 	@Test
-	@DisplayName("Test for creating order with new customer and existing address")
+	@DisplayName("New order test #3: new email and existing address")
 	public void givenOrderWithExistingAddress_whenCreateOrUpdate_thenUseExistingAddress() throws Exception {
 
 		// given / preparation:
 		Order order = new Order();
+
+		order.setCustomerFirstName("SecondCustomer");
+		order.setCustomerLastName("SecondTel");
+		order.setContactTel(123456789);
+		order.setEmail(secondEmail);
+
 		order.setAddress(firstAddress);
-		order.setCustomer(secondCustomer);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
 
-		// when action:
-
-		// create order with new customer, but with an address already in db
+		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
-		// then expect/assert:
-		// the returned order data matches with the set data for testing
-
-		System.out.println("-------- Creating order: new customer and existing address --------");
+		// then expect/assert: returned data matches set data
+		logger.info("New order test #3: new email and existing address");
 		orderResponse.andDo(print()).andExpect(status().isCreated())
-				.andExpect(jsonPath("$.customer.firstName", is(secondCustomer.getFirstName())))
-				.andExpect(jsonPath("$.customer.lastName", is(secondCustomer.getLastName())))
-				.andExpect(jsonPath("$.customer.tel.number", is(secondCustomer.getTel().getNumber())))
-				.andExpect(jsonPath("$.customer.email", is(secondCustomer.getEmail())))
+				.andExpect(jsonPath("$.customerFirstName", is(order.getCustomerFirstName())))
+				.andExpect(jsonPath("$.customerLastName", is(order.getCustomerLastName())))
+				.andExpect(jsonPath("$.contactTel", is(order.getContactTel())))
+				.andExpect(jsonPath("$.email.email", is(order.getEmail().getEmail())))
 				.andExpect(jsonPath("$.address.street", is(firstAddress.getStreet())))
 				.andExpect(jsonPath("$.address.streetNr", is(firstAddress.getStreetNr())))
 				.andExpect(jsonPath("$.address.gate", is(firstAddress.getGate())))
@@ -209,73 +216,38 @@ public class NewOrderTests {
 				.andExpect(jsonPath("$.cart.totalQuantity", is(1))).andExpect(jsonPath("$.cart.totalCost", is(14.75)))
 				.andExpect(jsonPath("$.cart.totalCostOffers", is(0.0)))
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)));
-		System.out.println("-------- Order created: new customer and existing address --------");
+		logger.info("New order test #3: success");
 	}
 
 	@Test
-	@DisplayName("Test for creating order with new customer, existing telephone, and store pickup")
-	public void givenOrderWithExistingTelephone_whenCreateOrUpdate_thenUseExistingTelephone() throws Exception {
-
-		// given / preparation:
-
-		// order with existing telephone in database
-		// thirdCustomer has same tel number as firstCustomer, which is already in db
-		Order order = new Order();
-		order.setStorePickUpName("StoreName");
-		order.setCustomer(thirdCustomer);
-		order.setOrderDetails(orderDetails);
-		order.setCart(cart);
-
-		// when action:
-		// create new order
-		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(order)));
-
-		// then expect/assert:
-		// the returned order data matches the data set for testing
-
-		System.out.println("-------- Creating order: new customer, existing telephone, and store pickup --------");
-		orderResponse.andDo(print()).andExpect(status().isCreated())
-				.andExpect(jsonPath("$.customer.firstName", is(thirdCustomer.getFirstName())))
-				.andExpect(jsonPath("$.customer.lastName", is(thirdCustomer.getLastName())))
-				.andExpect(jsonPath("$.customer.tel.number", is(thirdCustomer.getTel().getNumber())))
-				.andExpect(jsonPath("$.customer.email", is(thirdCustomer.getEmail())))
-				.andExpect(jsonPath("$.storePickUpName", is("StoreName")))
-				.andExpect(jsonPath("$.orderDetails.deliveryHour", is(orderDetails.getDeliveryHour())))
-				.andExpect(jsonPath("$.orderDetails.paymentType", is(orderDetails.getPaymentType())))
-				.andExpect(jsonPath("$.cart.totalQuantity", is(1))).andExpect(jsonPath("$.cart.totalCost", is(14.75)))
-				.andExpect(jsonPath("$.cart.totalCostOffers", is(0.0)))
-				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)));
-		System.out.println("-------- Order created: new customer, existing telephone, and store pickup --------");
-	}
-
-	@Test
-	@DisplayName("Test for creating order with existing customer data and existing tel, and existing address")
-	public void givenOrderWithExistingCustomerWithTelAndAddress_whenCreateOrUpdate_thenUseExistingCustomerAndAddress()
+	@DisplayName("New order test #4: existing email and existing address")
+	public void givenOrderWithExistingEmailAndAddress_whenCreateOrUpdate_thenUseExistingEmailAndAddress()
 			throws Exception {
 
 		// given / preparation:
 		Order order = new Order();
+
+		order.setCustomerFirstName("FirstCustomer");
+		order.setCustomerLastName("FirstTel");
+		order.setContactTel(666333999);
+		order.setEmail(firstEmail);
+
 		order.setAddress(firstAddress);
-		order.setCustomer(thirdCustomer);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
 
-		// when action:
-
-		// create order with the customer (and tel) and address already in db
+		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
-		// then expect/assert:
-
-		System.out.println(
-				"-------- Creating order: existing customer data and existing tel, and existing address --------");
+		// then expect/assert: returned data matches set data
+		logger.info("New order test #4: existing email and existing address");
 		orderResponse.andDo(print()).andExpect(status().isCreated())
-				.andExpect(jsonPath("$.customer.firstName", is(thirdCustomer.getFirstName())))
-				.andExpect(jsonPath("$.customer.lastName", is(thirdCustomer.getLastName())))
-				.andExpect(jsonPath("$.customer.tel.number", is(thirdCustomer.getTel().getNumber())))
-				.andExpect(jsonPath("$.customer.email", is(thirdCustomer.getEmail())))
+				.andExpect(jsonPath("$.customerFirstName", is(order.getCustomerFirstName())))
+				.andExpect(jsonPath("$.customerLastName", is(order.getCustomerLastName())))
+				.andExpect(jsonPath("$.contactTel", is(order.getContactTel())))
+				.andExpect(jsonPath("$.email.email", is(order.getEmail().getEmail())))
 				.andExpect(jsonPath("$.address.street", is(firstAddress.getStreet())))
 				.andExpect(jsonPath("$.address.streetNr", is(firstAddress.getStreetNr())))
 				.andExpect(jsonPath("$.address.gate", is(firstAddress.getGate())))
@@ -287,7 +259,124 @@ public class NewOrderTests {
 				.andExpect(jsonPath("$.cart.totalQuantity", is(1))).andExpect(jsonPath("$.cart.totalCost", is(14.75)))
 				.andExpect(jsonPath("$.cart.totalCostOffers", is(0.0)))
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)));
-		System.out.println(
-				"-------- Order created: existing customer data and existing tel, and existing address --------");
+		logger.info("New order test #4: success");
+	}
+
+	@Test
+	@DisplayName("New order test #5: invalid contact number")
+	public void givenOrderWithInvalidContactNumber_whenCreateOrUpdate_thenThrowException() throws Exception {
+
+		// given / preparation:
+		Order order = new Order();
+
+		order.setCustomerFirstName("InvalidContactNumber");
+		order.setContactTel(123);
+		order.setEmail(new Email("invalidContactTel@email.com"));
+
+		order.setAddress(firstAddress);
+		order.setOrderDetails(orderDetails);
+		order.setCart(cart);
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+
+		// when action: send post request
+		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(order)));
+
+		// then expect/assert: exception is thrown
+		logger.info("New order test #5: invalid contact number");
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(InvalidContactTelephoneException.class))).andDo(print());
+		logger.info("New order test #5: success");
+	}
+
+	@Test
+	@DisplayName("New order test #6: invalid change request")
+	public void givenOrderWithInvalidChangeRequest_whenCreateOrUpdate_thenThrowException() throws Exception {
+
+		// given / preparation:
+		Order order = new Order();
+
+		order.setCustomerFirstName("InvalidChangeRequest");
+		order.setContactTel(123456789);
+		order.setEmail(new Email("invalidChangeRequest@email.com"));
+
+		order.setAddress(firstAddress);
+		order.setOrderDetails(orderDetails);
+		order.getOrderDetails().setPaymentType("Cash");
+		order.getOrderDetails().setChangeRequested(10D);
+
+		order.setCart(cart);
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+
+		// when action: send post request
+		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(order)));
+
+		// then expect/assert: exception is thrown
+		logger.info("New order test #6: invalid change request");
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(InvalidChangeRequestedException.class))).andDo(print());
+		logger.info("New order test #6: success");
+	}
+
+	@Test
+	@DisplayName("New order test #7: empty cart")
+	public void givenOrderWithEmptyCart_whenCreateOrUpdate_thenThrowException() throws Exception {
+
+		// given / preparation:
+		Order order = new Order();
+
+		order.setCustomerFirstName("InvalidChangeRequest");
+		order.setContactTel(123456789);
+		order.setEmail(new Email("invalidChangeRequest@email.com"));
+
+		order.setAddress(firstAddress);
+		order.setOrderDetails(orderDetails);
+
+		Cart emptyCart = new Cart();
+		emptyCart.setTotalQuantity(0);
+		order.setCart(emptyCart);
+
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+
+		// when action: send post request
+		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(order)));
+
+		// then expect/assert: exception is thrown
+		logger.info("New order test #7: empty cart");
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(EmptyCartException.class))).andDo(print());
+		logger.info("New order test #7: success");
+	}
+
+	@Test
+	@DisplayName("New order test #8: invalid first name, invalid address fields, empty email")
+	public void givenOrderInvalidFirstNameAndAddressAndEmptyEmail_whenCreateOrUpdate_thenThrowException()
+			throws Exception {
+
+		// given / preparation:
+		Order order = new Order();
+
+		order.setCustomerFirstName("asd321%$·-%%");
+		order.setContactTel(123456789);
+		order.setEmail(new Email(""));
+
+		order.setAddress(new Address("4325vf·!", 15, "·$%", "", "%·", "--sdf$·"));
+		order.setOrderDetails(orderDetails);
+		order.setCart(cart);
+
+		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+
+		// when action: send post request
+		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(order)));
+
+		// then expect/assert: exception is thrown
+		logger.info("New order test #8: invalid first name, invalid address fields, empty email");
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(MethodArgumentNotValidException.class))).andDo(print());
+		logger.info("New order test #8: success");
+
 	}
 }

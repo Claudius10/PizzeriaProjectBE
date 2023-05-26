@@ -1,5 +1,5 @@
 package PizzaApp.api.entity.clients;
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.validation.constraints.IntegerLength;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

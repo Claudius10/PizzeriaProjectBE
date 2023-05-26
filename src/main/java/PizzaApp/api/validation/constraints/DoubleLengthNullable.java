@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions.constraints;
+package PizzaApp.api.validation.constraints;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

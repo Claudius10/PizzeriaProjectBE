@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions;
+package PizzaApp.api.validation;
 import java.util.ArrayList;
 import java.util.List;
 

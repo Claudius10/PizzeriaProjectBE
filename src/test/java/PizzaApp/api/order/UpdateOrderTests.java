@@ -5,8 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -84,7 +83,6 @@ public class UpdateOrderTests {
 
 		// order
 		order = new Order();
-		order.setId(0L);
 
 		order.setCustomerFirstName("OriginalCustomer");
 		order.setContactTel(333666999);
@@ -94,10 +92,9 @@ public class UpdateOrderTests {
 		order.setAddress(originalAddress);
 		order.setOrderDetails(originalOrderDetails);
 		order.setCart(originalCart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
-		ordersService.createOrUpdate(order);
-		savedOrderId = order.getId();
+		savedOrderId = ordersService.createOrUpdate(order).getId();
 	}
 
 	@Test
@@ -140,7 +137,7 @@ public class UpdateOrderTests {
 		theOrder.setCustomerLastName("NewCustomerTester");
 		theOrder.setContactTel(123456789);
 		theOrder.setEmail(originalEmail);
-		theOrder.setUpdatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -174,7 +171,7 @@ public class UpdateOrderTests {
 		theOrder.setCustomerLastName("CustomerTwo");
 		theOrder.setContactTel(123456789);
 		theOrder.setEmail(new Email("NewEmail@email.com"));
-		theOrder.setUpdatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -207,7 +204,7 @@ public class UpdateOrderTests {
 
 		Order theOrder = new Order();
 		theOrder.setAddress(newAddress);
-		theOrder.setUpdatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -247,7 +244,7 @@ public class UpdateOrderTests {
 
 		Order theOrder = new Order();
 		theOrder.setOrderDetails(newOrderDetails);
-		theOrder.setUpdatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -301,7 +298,7 @@ public class UpdateOrderTests {
 		Order theOrder = new Order();
 		theOrder.setCart(newCart);
 		theOrder.setOrderDetails(orderDetails);
-		theOrder.setUpdatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);

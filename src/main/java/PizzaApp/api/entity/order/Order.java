@@ -1,4 +1,6 @@
 package PizzaApp.api.entity.order;
+
+import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.cart.Cart;
 import PizzaApp.api.entity.clients.Address;
@@ -20,9 +22,8 @@ import jakarta.validation.constraints.Pattern;
 @Entity
 @Table(name = "customer_order")
 public class Order {
-	
-	//TODO: Create OrderTDO to fetch order data without User
-	//TODO: make Cart / OrderItem mapping into a bi and sync it
+
+	// TODO: Create OrderTDO to fetch order data without User
 
 	@Id
 	@Column(name = "id")
@@ -30,10 +31,10 @@ public class Order {
 	private Long id;
 
 	@Column(name = "created_on")
-	private String createdOn;
+	private LocalDateTime createdOn;
 
 	@Column(name = "updated_on")
-	private String updatedOn;
+	private LocalDateTime updatedOn;
 
 	@Column(name = "c_first_name", nullable = true)
 	@Pattern(regexp = "^[a-zA-Z\s]{2,25}$", message = "Nombre: solo letras sin tildes (mín 2, máx 25 letras)")
@@ -54,12 +55,12 @@ public class Order {
 	@Valid
 	private Email email;
 
-	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@Valid
 	private OrderDetails orderDetails;
 
-	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private Cart cart;
 
@@ -69,8 +70,9 @@ public class Order {
 	public Order() {
 	}
 
-	public Order(Long id, String createdOn, String updatedOn, String customerFirstName, String customerLastName,
-			Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart, User user) {
+	public Order(Long id, LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName,
+			String customerLastName, Integer contactTel, Email email, Address address, OrderDetails orderDetails,
+			Cart cart, User user) {
 		this.id = id;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
@@ -84,7 +86,7 @@ public class Order {
 		this.user = user;
 	}
 
-	public Order(String createdOn, String updatedOn, String customerFirstName, String customerLastName,
+	public Order(LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName, String customerLastName,
 			Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart, User user) {
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
@@ -98,7 +100,7 @@ public class Order {
 		this.user = user;
 	}
 
-	public Order(String createdOn, String updatedOn, String customerFirstName, String customerLastName,
+	public Order(LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName, String customerLastName,
 			Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart) {
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
@@ -141,19 +143,19 @@ public class Order {
 		this.id = id;
 	}
 
-	public String getCreatedOn() {
+	public LocalDateTime getCreatedOn() {
 		return createdOn;
 	}
 
-	public void setCreatedOn(String createdOn) {
+	public void setCreatedOn(LocalDateTime createdOn) {
 		this.createdOn = createdOn;
 	}
 
-	public String getUpdatedOn() {
+	public LocalDateTime getUpdatedOn() {
 		return updatedOn;
 	}
 
-	public void setUpdatedOn(String updatedOn) {
+	public void setUpdatedOn(LocalDateTime updatedOn) {
 		this.updatedOn = updatedOn;
 	}
 
@@ -181,20 +183,20 @@ public class Order {
 		this.contactTel = contactTel;
 	}
 
-	public Email getEmail() {
-		return email;
-	}
-
-	public void setEmail(Email email) {
-		this.email = email;
-	}
-
 	public Address getAddress() {
 		return address;
 	}
 
 	public void setAddress(Address address) {
 		this.address = address;
+	}
+
+	public Email getEmail() {
+		return email;
+	}
+
+	public void setEmail(Email email) {
+		this.email = email;
 	}
 
 	public OrderDetails getOrderDetails() {
@@ -233,7 +235,6 @@ public class Order {
 	public String toString() {
 		return "Order [id=" + id + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + ", customerFirstName="
 				+ customerFirstName + ", customerLastName=" + customerLastName + ", contactTel=" + contactTel
-				+ ", address=" + address + ", email=" + email + ", orderDetails=" + orderDetails + ", cart=" + cart
-				+ "]";
+				+ ", address=" + address + ", email=" + email + "]";
 	}
 }

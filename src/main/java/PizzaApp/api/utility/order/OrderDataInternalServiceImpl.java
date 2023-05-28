@@ -1,9 +1,9 @@
-package PizzaApp.api.services.order;
+package PizzaApp.api.utility.order;
 
 import java.util.logging.Logger;
 
 import org.springframework.stereotype.Component;
-import PizzaApp.api.entity.dto.OrderDataDTO;
+
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.email.EmailService;
@@ -21,8 +21,8 @@ public class OrderDataInternalServiceImpl implements OrderDataInternalService {
 	}
 
 	@Override
-	public OrderDataDTO findOrderData(Order order) {
-		OrderDataDTO orderDataDTO = new OrderDataDTO();
+	public OrderData findOrderData(Order order) {
+		OrderData orderDataDTO = new OrderData();
 
 		if (order.getEmail() != null) {
 			logger.info("createOrUpdate order: EMAIL NOT NULL, SEARCHING");

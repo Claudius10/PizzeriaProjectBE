@@ -5,12 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -107,7 +105,7 @@ public class NewOrderTests {
 		order.setAddress(firstAddress);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -150,7 +148,7 @@ public class NewOrderTests {
 		order.setAddress(secondAddress);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -192,7 +190,7 @@ public class NewOrderTests {
 		order.setAddress(firstAddress);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -235,7 +233,7 @@ public class NewOrderTests {
 		order.setAddress(firstAddress);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -276,7 +274,7 @@ public class NewOrderTests {
 		order.setAddress(firstAddress);
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -306,7 +304,7 @@ public class NewOrderTests {
 		order.getOrderDetails().setChangeRequested(10D);
 
 		order.setCart(cart);
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -337,7 +335,7 @@ public class NewOrderTests {
 		emptyCart.setTotalQuantity(0);
 		order.setCart(emptyCart);
 
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
@@ -366,7 +364,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		order.setCreatedOn(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		order.setCreatedOn(LocalDateTime.now().plusHours(2));
 
 		// when action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)

@@ -1,11 +1,8 @@
 package PizzaApp.api.entity.order;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import PizzaApp.api.validation.constraints.DoubleLengthNullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
@@ -28,16 +25,10 @@ public class OrderDetails {
 	@NotBlank(message = "Forma de pago: el valor no puede faltar. ")
 	private String paymentType;
 
-	// isChangeRequestedValid() validates changeRequested field against
-	// totalCost / totalCostOffers in OrderRepository
-	// before persisting Order to Db
 	@Column(name = "change_requested")
 	@DoubleLengthNullable(min = 0, max = 5, message = "Cambio de efectivo: mín 0, máx 5 digitos; ejemplo: 25.55 ")
 	private Double changeRequested;
 
-	// this field's value is the result of an internal
-	// calculation in OrderRepository by calculatePaymentChange()
-	// so it doesn't need validation
 	@Column(name = "payment_change")
 	private Double paymentChange;
 
@@ -45,7 +36,7 @@ public class OrderDetails {
 	@Pattern(regexp = "^[a-zA-Z0-9!¡¿?.,\s]{0,150}$", message = "Observación: máximo 150 valores. Solo letras (sin tildes), dígitos, !¡ ?¿ . , : ; se aceptan.")
 	private String deliveryComment;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@MapsId
 	@JsonBackReference
 	private Order order;
@@ -134,6 +125,6 @@ public class OrderDetails {
 	public String toString() {
 		return "OrderDetails [id=" + id + ", deliveryHour=" + deliveryHour + ", paymentType=" + paymentType
 				+ ", changeRequested=" + changeRequested + ", paymentChange=" + paymentChange + ", deliveryComment="
-				+ deliveryComment + ", order=" + order + "]";
+				+ deliveryComment + "]";
 	}
 }

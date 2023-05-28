@@ -1,4 +1,5 @@
 package PizzaApp.api.repos.telephone;
+
 import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.clients.Telephone;
 import jakarta.persistence.EntityManager;
@@ -16,7 +17,6 @@ public class TelephoneRepositoryImpl implements TelephoneRepository {
 
 	@Override
 	public Telephone findByNumber(int telNumber) {
-		
 		try {
 			TypedQuery<Telephone> query = em.createQuery("from Telephone t where t.number=:number", Telephone.class);
 			query.setParameter("number", telNumber);

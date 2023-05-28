@@ -1,16 +1,15 @@
 package PizzaApp.api.services.order;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
-import PizzaApp.api.entity.dto.OrderDataDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.email.EmailService;
 import PizzaApp.api.services.telephone.TelephoneService;
+import PizzaApp.api.utility.order.OrderData;
+import PizzaApp.api.utility.order.OrderDataInternalService;
 import PizzaApp.api.utility.order.OrderUtility;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
@@ -33,18 +32,18 @@ public class OrdersServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void createOrUpdate(Order order) {
-		// get the current date and time
-		String orderDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss"));
+	public Order createOrUpdate(Order order) {
+		// get UTC+2 date and time
+		LocalDateTime now = LocalDateTime.now().plusHours(2);
 
 		// check for customer, email, tel, and address in db
-		OrderDataDTO dbOrderData = orderDataInternalService.findOrderData(order);
+		OrderData dbOrderData = orderDataInternalService.findOrderData(order);
 
 		// create
-		if (order.getId() == 0) {
+		if (order.getId() == null) {
 
 			// set the current date
-			order.setCreatedOn(orderDate);
+			order.setCreatedOn(now);
 
 			// if address is already in db, set it
 			// to not have duplicates
@@ -100,7 +99,7 @@ public class OrdersServiceImpl implements OrderService {
 					order.getAddress().setId(dbOrderData.getAddress().getId());
 				}
 			}
-			
+
 			// ORDERDETAILS
 
 			// check if updating orderDetails
@@ -124,15 +123,15 @@ public class OrdersServiceImpl implements OrderService {
 			// set created on
 			order.setCreatedOn(originalOrder.getCreatedOn());
 			// set updated on
-			order.setUpdatedOn(orderDate);
+			order.setUpdatedOn(now);
 		}
 
 		// validation
 		orderUtility.validate(order);
 
 		// create or update order
-		logger.info("MERGING ORDER TO DB");
-		orderRepository.createOrUpdate(order);
+		logger.info("SAVING ORDER TO DB");
+		return orderRepository.createOrUpdate(order);
 	}
 
 	@Override
@@ -149,15 +148,5 @@ public class OrdersServiceImpl implements OrderService {
 	@Override
 	public void deleteById(Long id) {
 		orderRepository.deleteById(id);
-	}
-
-	@Override
-	public List<Order> findAll() {
-		return orderRepository.findAll();
-	}
-
-	@Override
-	public List<Order> findAllByStore(String storeName) {
-		return orderRepository.findAllByStore(storeName);
 	}
 }

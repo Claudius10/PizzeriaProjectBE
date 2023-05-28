@@ -1,7 +1,9 @@
 package PizzaApp.api.entity.cart;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import jakarta.persistence.CascadeType;
@@ -9,7 +11,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -31,11 +32,11 @@ public class Cart {
 	@Column(name = "total_cost_offers")
 	private Double totalCostOffers;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "cart_id")
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@JsonManagedReference
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@MapsId
 	@JsonBackReference
 	private Order order;
@@ -59,6 +60,16 @@ public class Cart {
 		this.totalCostOffers = totalCostOffers;
 		this.orderItems = orderItems;
 		this.order = order;
+	}
+
+	public void addItem(OrderItem item) {
+		orderItems.add(item);
+		item.setCart(this);
+	}
+
+	public void removeItem(OrderItem item) {
+		orderItems.remove(item);
+		item.setCart(null);
 	}
 
 	public Long getId() {
@@ -112,6 +123,6 @@ public class Cart {
 	@Override
 	public String toString() {
 		return "Cart [id=" + id + ", totalQuantity=" + totalQuantity + ", totalCost=" + totalCost + ", totalCostOffers="
-				+ totalCostOffers + ", orderItems=" + orderItems + ", order=" + order + "]";
+				+ totalCostOffers + "]";
 	}
 }

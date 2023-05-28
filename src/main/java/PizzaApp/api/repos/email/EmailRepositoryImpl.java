@@ -1,4 +1,5 @@
 package PizzaApp.api.repos.email;
+
 import org.springframework.stereotype.Repository;
 
 import PizzaApp.api.entity.clients.Email;
@@ -21,7 +22,6 @@ public class EmailRepositoryImpl implements EmailRepository {
 			TypedQuery<Email> query = em.createQuery("from Email e where e.email=:address", Email.class);
 			query.setParameter("address", address);
 			return query.getSingleResult();
-			
 		} catch (NoResultException e) {
 			return null;
 		}

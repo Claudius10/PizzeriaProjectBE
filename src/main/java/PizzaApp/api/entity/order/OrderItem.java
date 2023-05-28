@@ -1,9 +1,14 @@
 package PizzaApp.api.entity.order;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import PizzaApp.api.entity.cart.Cart;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -30,16 +35,30 @@ public class OrderItem {
 	@Column(name = "price")
 	private double price;
 
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Cart cart;
+
 	public OrderItem() {
 	}
 
-	public OrderItem(Long id, String productType, String name, String format, int quantity, double price) {
+	public OrderItem(Long id, String productType, String name, String format, int quantity, double price, Cart cart) {
 		this.id = id;
 		this.productType = productType;
 		this.name = name;
 		this.format = format;
 		this.quantity = quantity;
 		this.price = price;
+		this.cart = cart;
+	}
+
+	public OrderItem(String productType, String name, String format, int quantity, double price, Cart cart) {
+		this.productType = productType;
+		this.name = name;
+		this.format = format;
+		this.quantity = quantity;
+		this.price = price;
+		this.cart = cart;
 	}
 
 	public OrderItem(String productType, String name, String format, int quantity, double price) {
@@ -96,6 +115,30 @@ public class OrderItem {
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	public Cart getCart() {
+		return cart;
+	}
+
+	public void setCart(Cart cart) {
+		this.cart = cart;
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+
+		if (!(obj instanceof OrderItem))
+			return false;
+
+		return id != null && id.equals(((OrderItem) obj).getId());
 	}
 
 	@Override

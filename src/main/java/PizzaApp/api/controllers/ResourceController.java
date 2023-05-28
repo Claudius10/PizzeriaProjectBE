@@ -1,4 +1,5 @@
 package PizzaApp.api.controllers;
+
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ public class ResourceController {
 
 	@GetMapping("/products/{productType}")
 	public ResponseEntity<List<Product>> findAllProductsByType(@PathVariable String productType) {
-		return new ResponseEntity<List<Product>>(resourceService.findAllProductsByType(productType), HttpStatus.ACCEPTED);
+		return new ResponseEntity<List<Product>>(resourceService.findAllProductsByType(productType),
+				HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/stores")

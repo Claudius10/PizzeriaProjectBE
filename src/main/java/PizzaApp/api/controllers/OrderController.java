@@ -1,4 +1,5 @@
 package PizzaApp.api.controllers;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,19 +32,18 @@ public class OrderController {
 
 	@PostMapping("/order")
 	public ResponseEntity<Order> createOrder(@RequestBody @Valid Order order) {
-		order.setId(0L);
-		orderService.createOrUpdate(order);
-		return new ResponseEntity<Order>(order, HttpStatus.CREATED);
+		Order theOrder = orderService.createOrUpdate(order);
+		return new ResponseEntity<Order>(theOrder, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
 	public ResponseEntity<Order> updateOrder(@RequestBody @Valid Order order) {
-		orderService.createOrUpdate(order);
+		Order theOrder = orderService.createOrUpdate(order);
 		// returning below ResponseEntity with statusCode is
 		// for front-end SaveOrUpdateOrder query fn
 		// in order to correctly either return responseBody or throw if error
 		// based on the statusCode
-		return new ResponseEntity<Order>(order, HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(theOrder, HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/order/{id}")

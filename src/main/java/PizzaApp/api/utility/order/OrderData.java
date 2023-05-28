@@ -1,16 +1,16 @@
-package PizzaApp.api.entity.dto;
+package PizzaApp.api.utility.order;
 import PizzaApp.api.entity.clients.Address;
 import PizzaApp.api.entity.clients.Email;
 
-public class OrderDataDTO {
+public class OrderData {
 
 	private Address address;
 	private Email email;
 
-	public OrderDataDTO() {
+	public OrderData() {
 	}
 
-	public OrderDataDTO(Address address, Email email) {
+	public OrderData(Address address, Email email) {
 		this.address = address;
 		this.email = email;
 	}

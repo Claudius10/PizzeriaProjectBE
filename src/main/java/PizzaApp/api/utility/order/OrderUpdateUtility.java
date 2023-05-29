@@ -24,7 +24,7 @@ public class OrderUpdateUtility implements OrderUpdateTimeLimits {
 	}
 
 	@Override
-	public OrderUpdateTimeLimits get(LocalDateTime orderCreatedOn) {
+	public OrderUpdateUtility get(LocalDateTime orderCreatedOn) {
 		setCreatedOn(orderCreatedOn);
 		setHoursDiff(ChronoUnit.HOURS.between(orderCreatedOn, now));
 		setMinutesDiff(ChronoUnit.MINUTES.between(orderCreatedOn, now));

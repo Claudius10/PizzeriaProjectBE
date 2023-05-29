@@ -1,14 +1,17 @@
 package PizzaApp.api.order;
+
 import static org.hamcrest.CoreMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +34,9 @@ import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.services.order.OrdersServiceImpl;
+import PizzaApp.api.validation.exceptions.CartUpdateTimeLimitException;
+import PizzaApp.api.validation.exceptions.OrderDataUpdateTimeLimitException;
+import PizzaApp.api.validation.exceptions.OrderDeleteTimeLimitException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -92,7 +98,7 @@ public class UpdateOrderTests {
 		order.setAddress(originalAddress);
 		order.setOrderDetails(originalOrderDetails);
 		order.setCart(originalCart);
-		order.setCreatedOn(LocalDateTime.now().plusHours(2));
+		order.setCreatedOn(LocalDateTime.now());
 
 		savedOrderId = ordersService.createOrUpdate(order).getId();
 	}
@@ -107,7 +113,7 @@ public class UpdateOrderTests {
 
 		// then expect/assert the returned order data matches the data set for testing
 		logger.info("Update order test #1: correctly created original order");
-		orderResponse.andDo(print()).andExpect(status().isOk())
+		orderResponse.andExpect(status().isOk())
 				.andExpect(jsonPath("$.customerFirstName", is(order.getCustomerFirstName())))
 				.andExpect(jsonPath("$.contactTel", is(order.getContactTel())))
 				.andExpect(jsonPath("$.email.email", is(order.getEmail().getEmail())))
@@ -122,7 +128,7 @@ public class UpdateOrderTests {
 				.andExpect(jsonPath("$.cart.totalQuantity", is(originalCart.getTotalQuantity())))
 				.andExpect(jsonPath("$.cart.totalCost", is(originalCart.getTotalCost())))
 				.andExpect(jsonPath("$.cart.totalCostOffers", is(originalCart.getTotalCostOffers())));
-		logger.info("Update order test #0: success");
+		logger.info("Update order test #1: successfully created original order");
 	}
 
 	@Test
@@ -137,7 +143,6 @@ public class UpdateOrderTests {
 		theOrder.setCustomerLastName("NewCustomerTester");
 		theOrder.setContactTel(123456789);
 		theOrder.setEmail(originalEmail);
-		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -148,7 +153,7 @@ public class UpdateOrderTests {
 
 		// then expect/assert the returned order data matches the data set for testing
 		logger.info("Update order test #2: update customer data");
-		orderResponse.andDo(print()).andExpect(status().isAccepted())
+		orderResponse.andExpect(status().isAccepted())
 				.andExpect(jsonPath("$.customerFirstName", is(theOrder.getCustomerFirstName())))
 				.andExpect(jsonPath("$.customerLastName", is(theOrder.getCustomerLastName())))
 				.andExpect(jsonPath("$.contactTel", is(theOrder.getContactTel())))
@@ -156,7 +161,7 @@ public class UpdateOrderTests {
 				.andExpect(jsonPath("$.address").exists()).andExpect(jsonPath("$.cart").exists())
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)))
 				.andExpect(jsonPath("$.orderDetails").exists());
-		logger.info("Update order test #2: customer data successfully updated");
+		logger.info("Update order test #2: successfully updated customer data");
 	}
 
 	@Test
@@ -171,7 +176,6 @@ public class UpdateOrderTests {
 		theOrder.setCustomerLastName("CustomerTwo");
 		theOrder.setContactTel(123456789);
 		theOrder.setEmail(new Email("NewEmail@email.com"));
-		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -182,7 +186,7 @@ public class UpdateOrderTests {
 
 		// then expect/assert the returned order data matches the data set for testing
 		logger.info("Update order test #3: update email");
-		orderResponse.andDo(print()).andExpect(status().isAccepted())
+		orderResponse.andExpect(status().isAccepted())
 				.andExpect(jsonPath("$.customerFirstName", is(theOrder.getCustomerFirstName())))
 				.andExpect(jsonPath("$.customerLastName", is(theOrder.getCustomerLastName())))
 				.andExpect(jsonPath("$.contactTel", is(theOrder.getContactTel())))
@@ -190,7 +194,7 @@ public class UpdateOrderTests {
 				.andExpect(jsonPath("$.address").exists()).andExpect(jsonPath("$.cart").exists())
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)))
 				.andExpect(jsonPath("$.orderDetails").exists());
-		logger.info("Update order test #3: email successfully updated");
+		logger.info("Update order test #3: successfully updated email");
 	}
 
 	@Test
@@ -204,7 +208,6 @@ public class UpdateOrderTests {
 
 		Order theOrder = new Order();
 		theOrder.setAddress(newAddress);
-		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -215,7 +218,7 @@ public class UpdateOrderTests {
 
 		// then expect/assert the returned order data matches the data set for testing
 		logger.info("Update order test #4: update address");
-		orderResponse.andDo(print()).andExpect(status().isAccepted())
+		orderResponse.andExpect(status().isAccepted())
 				.andExpect(jsonPath("$.address.street", is(newAddress.getStreet())))
 				.andExpect(jsonPath("$.address.streetNr", is(newAddress.getStreetNr())))
 				.andExpect(jsonPath("$.address.gate", is(newAddress.getGate())))
@@ -226,7 +229,7 @@ public class UpdateOrderTests {
 				.andExpect(jsonPath("$.contactTel").exists()).andExpect(jsonPath("$.cart").exists())
 				.andExpect(jsonPath("$.cart.orderItems.length()", is(1)))
 				.andExpect(jsonPath("$.orderDetails").exists());
-		logger.info("Update order test #4: address successfully updated");
+		logger.info("Update order test #4: successfully updated address");
 	}
 
 	@Test
@@ -244,7 +247,6 @@ public class UpdateOrderTests {
 
 		Order theOrder = new Order();
 		theOrder.setOrderDetails(newOrderDetails);
-		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -255,7 +257,7 @@ public class UpdateOrderTests {
 
 		// then expect/assert the returned order data matches the data set for testing
 		logger.info("Update order test #5: update orderDetails");
-		orderResponse.andDo(print()).andExpect(status().isAccepted())
+		orderResponse.andExpect(status().isAccepted())
 				.andExpect(jsonPath("$.orderDetails.deliveryHour", is(newOrderDetails.getDeliveryHour())))
 				.andExpect(jsonPath("$.orderDetails.paymentType", is(newOrderDetails.getPaymentType())))
 				.andExpect(jsonPath("$.orderDetails.changeRequested", is(newOrderDetails.getChangeRequested())))
@@ -264,7 +266,7 @@ public class UpdateOrderTests {
 				.andExpect(jsonPath("$.contactTel").exists()).andExpect(jsonPath("$.address").exists())
 				.andExpect(jsonPath("$.cart").exists()).andExpect(jsonPath("$.cart.orderItems.length()", is(1)))
 				.andExpect(jsonPath("$.orderDetails").exists());
-		logger.info("Update order test #5: orderDetails successfully updated");
+		logger.info("Update order test #5: successfully updated orderDetails");
 	}
 
 	@Test
@@ -298,7 +300,6 @@ public class UpdateOrderTests {
 		Order theOrder = new Order();
 		theOrder.setCart(newCart);
 		theOrder.setOrderDetails(orderDetails);
-		theOrder.setUpdatedOn(LocalDateTime.now().plusHours(2));
 
 		// set the order id
 		theOrder.setId(savedOrderId);
@@ -309,7 +310,7 @@ public class UpdateOrderTests {
 
 		// then expect/assert the returned order data matches the data set for testing
 		logger.info("Update order test #6: update cart");
-		orderResponse.andDo(print()).andExpect(status().isAccepted())
+		orderResponse.andExpect(status().isAccepted())
 				.andExpect(jsonPath("$.cart.totalCost", is(newCart.getTotalCost())))
 				.andExpect(jsonPath("$.cart.totalCostOffers", is(newCart.getTotalCostOffers())))
 				.andExpect(jsonPath("$.cart.totalQuantity", is(newCart.getTotalQuantity())))
@@ -317,6 +318,213 @@ public class UpdateOrderTests {
 				.andExpect(jsonPath("$.customerFirstName").exists()).andExpect(jsonPath("$.customerLastName").exists())
 				.andExpect(jsonPath("$.contactTel").exists()).andExpect(jsonPath("$.address").exists())
 				.andExpect(jsonPath("$.orderDetails").exists());
-		logger.info("Update order test #6: cart successfully updated");
+		logger.info("Update order test #6: successfully updated cart");
+	}
+
+	@Test
+	@org.junit.jupiter.api.Order(7)
+	@DisplayName("Update order test #7: update cart after time limit")
+	public void givenCartUpdateAfterTimeLimit_whenCreateOrUpdate_thenThrowException()
+			throws JsonProcessingException, Exception {
+
+		// create order which will be used to perform test
+
+		Order orderUpdateCartTimeLimit = new Order();
+		orderUpdateCartTimeLimit.setCustomerFirstName("CartUpdateTimeLimit");
+		orderUpdateCartTimeLimit.setContactTel(666999666);
+		orderUpdateCartTimeLimit.setAddress(originalAddress);
+		orderUpdateCartTimeLimit.setEmail(originalEmail);
+		orderUpdateCartTimeLimit.setUser(null);
+		orderUpdateCartTimeLimit.setOrderDetails(originalOrderDetails);
+		orderUpdateCartTimeLimit.setCart(originalCart);
+		// see appropiate createdOn for the test to work
+		orderUpdateCartTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(16));
+
+		Long orderCartTimeLimitId = ordersService.createOrUpdate(orderUpdateCartTimeLimit).getId();
+
+		// given / preparation:
+
+		// items
+		List<OrderItem> orderItems = new ArrayList<>();
+		OrderItem testItem = new OrderItem("pizza", "Roni Pepperoni", "Familiar", 1, 18.30);
+		orderItems.add(testItem);
+
+		// cart
+		Cart newCart = new Cart();
+		newCart.setOrderItems(orderItems);
+		newCart.setTotalCost(18.30);
+		newCart.setTotalCostOffers(0D);
+		newCart.setTotalQuantity(1);
+
+		// set new order details change request value to not trigger exception
+		OrderDetails orderDetails = new OrderDetails();
+		orderDetails.setDeliveryHour("ASAP");
+		orderDetails.setPaymentType("Card");
+		orderDetails.setDeliveryComment("Well cut and hot");
+
+		Order theOrder = new Order();
+		theOrder.setCart(newCart);
+		theOrder.setOrderDetails(orderDetails);
+
+		// set the order id
+		theOrder.setId(orderCartTimeLimitId);
+
+		// when action: update order
+		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(theOrder)));
+
+		// check if exception is thrown
+		logger.info("Update order test #7: update cart after time limit");
+
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(CartUpdateTimeLimitException.class)));
+
+		logger.info("Update order test #7: cart successfully NOT updated due to time limit constraint");
+	}
+
+	@Test
+	@org.junit.jupiter.api.Order(8)
+	@DisplayName("Update order test #8: update order data after time limit")
+	public void givenOrderDataUpdateAfterTimeLimit_whenCreateOrUpdate_thenThrowException()
+			throws JsonProcessingException, Exception {
+
+		// order data = customer data (fName, lName, tel, email), address, orderDetails
+
+		// create order which will be used to perform test
+
+		Order orderUpdateDataTimeLimit = new Order();
+		orderUpdateDataTimeLimit.setCustomerFirstName("OrderDataUpdateTimeLimit");
+		orderUpdateDataTimeLimit.setContactTel(333999333);
+		orderUpdateDataTimeLimit.setAddress(originalAddress);
+		orderUpdateDataTimeLimit.setEmail(originalEmail);
+		orderUpdateDataTimeLimit.setUser(null);
+		orderUpdateDataTimeLimit.setOrderDetails(originalOrderDetails);
+		orderUpdateDataTimeLimit.setCart(originalCart);
+		// see appropiate createdOn for the test to work
+		orderUpdateDataTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(21));
+
+		Long orderDataTimeLimitId = ordersService.createOrUpdate(orderUpdateDataTimeLimit).getId();
+
+		// given / preparation:
+
+		OrderDetails orderDetails = new OrderDetails();
+		orderDetails.setDeliveryHour("22:30");
+		orderDetails.setPaymentType("Tarjeta");
+		orderDetails.setDeliveryComment("No llamar al timbre duerme el bebe");
+
+		Order theOrder = new Order();
+		theOrder.setCustomerFirstName("ExceptionToCatch");
+		theOrder.setContactTel(123123123);
+		theOrder.setOrderDetails(orderDetails);
+
+		// set the order id
+		theOrder.setId(orderDataTimeLimitId);
+
+		// when action: update order
+		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(theOrder)));
+
+		// check exception is thrown
+		logger.info("Update order test #8: update order data after time limit");
+
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(OrderDataUpdateTimeLimitException.class)));
+
+		logger.info("Update order test #8: order data successfully NOT updated due to time limit constraint");
+	}
+
+	@Test
+	@org.junit.jupiter.api.Order(9)
+	@DisplayName("Update order test #9: update order data after cart update time limit but before order data update time limit")
+	public void givenOrderDataUpdateAfterCartTimeLimitButBeforeOrderDataTimeLimit_whenCreateOrUpdate_thenReturnOrder()
+			throws JsonProcessingException, Exception {
+
+		// order data = customer data (fName, lName, tel, email), address, orderDetails
+
+		// create order which will be used to perform test
+
+		Order orderUpdateDataTimeLimit = new Order();
+		orderUpdateDataTimeLimit.setCustomerFirstName("OrderDataUpdate");
+		orderUpdateDataTimeLimit.setCustomerLastName("AfterCartTimeLimit");
+		orderUpdateDataTimeLimit.setContactTel(888555888);
+		orderUpdateDataTimeLimit.setAddress(originalAddress);
+		orderUpdateDataTimeLimit.setEmail(originalEmail);
+		orderUpdateDataTimeLimit.setUser(null);
+		orderUpdateDataTimeLimit.setOrderDetails(originalOrderDetails);
+		orderUpdateDataTimeLimit.setCart(originalCart);
+		// see appropiate createdOn for the test to work
+		orderUpdateDataTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(16));
+
+		Long orderDataTimeLimitId = ordersService.createOrUpdate(orderUpdateDataTimeLimit).getId();
+
+		// given / preparation:
+
+		Order theOrder = new Order();
+		theOrder.setCustomerFirstName("OrderDataUpate");
+		theOrder.setCustomerLastName("Success");
+		theOrder.setContactTel(999111999);
+		theOrder.setEmail(new Email("afterCartLimitEmailUpdated@Email.com"));
+		theOrder.setAddress(new Address("TestAfterCartTimeLimit", 9, "", "Der", "17", "2A"));
+
+		// set the order id
+		theOrder.setId(orderDataTimeLimitId);
+
+		// when action: update order
+		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(theOrder)));
+
+		// check exception is thrown
+		logger.info(
+				"Update order test #9: update order data after cart update time limit but before order data update time limit");
+		orderResponse.andExpect(status().isAccepted())
+				.andExpect(jsonPath("$.customerFirstName", is(theOrder.getCustomerFirstName())))
+				.andExpect(jsonPath("$.contactTel", is(theOrder.getContactTel())))
+				.andExpect(jsonPath("$.email.email", is(theOrder.getEmail().getEmail())))
+				.andExpect(jsonPath("$.address.street", is(theOrder.getAddress().getStreet())))
+				.andExpect(jsonPath("$.address.streetNr", is(theOrder.getAddress().getStreetNr())))
+				.andExpect(jsonPath("$.address.gate", is(theOrder.getAddress().getGate())))
+				.andExpect(jsonPath("$.address.staircase", is(theOrder.getAddress().getStaircase())))
+				.andExpect(jsonPath("$.address.floor", is(theOrder.getAddress().getFloor())))
+				.andExpect(jsonPath("$.address.door", is(theOrder.getAddress().getDoor())))
+				.andExpect(jsonPath("$.orderDetails.deliveryHour", is(originalOrderDetails.getDeliveryHour())))
+				.andExpect(jsonPath("$.orderDetails.paymentType", is(originalOrderDetails.getPaymentType())))
+				.andExpect(jsonPath("$.cart.totalQuantity", is(originalCart.getTotalQuantity())))
+				.andExpect(jsonPath("$.cart.totalCost", is(originalCart.getTotalCost())))
+				.andExpect(jsonPath("$.cart.totalCostOffers", is(originalCart.getTotalCostOffers())));
+		logger.info(
+				"Update order test #9: successfully updated order data after cart update time limit but before order data update time limit");
+	}
+
+	@Test
+	@org.junit.jupiter.api.Order(10)
+	@DisplayName("Update order test #10: delete order after time limit")
+	public void givenOrderDeleteAfterTimeLimit_whenCreateOrUpdate_thenThrowException()
+			throws JsonProcessingException, Exception {
+
+		// create order which will be used to perform test
+
+		Order orderDeleteTimeLimit = new Order();
+		orderDeleteTimeLimit.setCustomerFirstName("OrderDeleteTimeLimit");
+		orderDeleteTimeLimit.setContactTel(777333777);
+		orderDeleteTimeLimit.setAddress(originalAddress);
+		orderDeleteTimeLimit.setEmail(originalEmail);
+		orderDeleteTimeLimit.setUser(null);
+		orderDeleteTimeLimit.setOrderDetails(originalOrderDetails);
+		orderDeleteTimeLimit.setCart(originalCart);
+		// see appropiate createdOn for the test to work
+		orderDeleteTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(36));
+
+		Long orderDeleteTimeLimitId = ordersService.createOrUpdate(orderDeleteTimeLimit).getId();
+
+		// when action: delete order
+		ResultActions orderResponse = mockMvc.perform(delete("/api/order/{id}", orderDeleteTimeLimitId));
+
+		// check exception is thrown
+		logger.info("Update order test #10: delete order after time limit");
+
+		orderResponse.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+				CoreMatchers.instanceOf(OrderDeleteTimeLimitException.class)));
+
+		logger.info("Update order test #10: order successfully NOT deleted due to time limit constraint");
 	}
 }

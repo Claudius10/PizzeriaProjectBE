@@ -1,5 +1,7 @@
 package PizzaApp.api.controllers;
 
+import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.services.order.OrderService;
 import jakarta.validation.Valid;
@@ -32,12 +36,18 @@ public class OrderController {
 
 	@PostMapping("/order")
 	public ResponseEntity<Order> createOrder(@RequestBody @Valid Order order) {
+		// set created on
+		order.setCreatedOn(LocalDateTime.now());
+
 		Order theOrder = orderService.createOrUpdate(order);
 		return new ResponseEntity<Order>(theOrder, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
 	public ResponseEntity<Order> updateOrder(@RequestBody @Valid Order order) {
+		// set updated on
+		order.setUpdatedOn(LocalDateTime.now());
+
 		Order theOrder = orderService.createOrUpdate(order);
 		// returning below ResponseEntity with statusCode is
 		// for front-end SaveOrUpdateOrder query fn
@@ -47,13 +57,13 @@ public class OrderController {
 	}
 
 	@GetMapping("/order/{id}")
-	public ResponseEntity<Order> findOrderById(
+	public ResponseEntity<OrderDTO> findOrderById(
 			@PathVariable @Pattern(regexp = "^[0-9]{1,10}$", message = "El valor tiene que ser un número positivo. Máximo 10 digitos") String id) {
 		Long orderId = Long.parseLong(id);
 		// same as others, returning 200's code makes front-end return the responseBody
 		// !response.ok from fetch API throws the responseBody with handled exception
 		// from back-end
-		return new ResponseEntity<Order>(orderService.findById(orderId), HttpStatus.OK);
+		return new ResponseEntity<OrderDTO>(orderService.findDTOById(orderId), HttpStatus.OK);
 	}
 
 	// delete mapping path variable doesn't need validation

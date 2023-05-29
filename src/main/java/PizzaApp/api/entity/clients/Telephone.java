@@ -4,7 +4,6 @@ import PizzaApp.api.entity.clients.user.User;
 import PizzaApp.api.validation.constraints.IntegerLength;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
@@ -22,7 +21,7 @@ public class Telephone {
 	@IntegerLength(min = 9, max = 9, message = "Teléfono: mín 9 digitos, máx 9 digitos")
 	private int number;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@MapsId
 	@JsonBackReference
 	@Valid

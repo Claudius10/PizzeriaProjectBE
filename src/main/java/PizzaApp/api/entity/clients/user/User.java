@@ -40,7 +40,7 @@ public class User {
 	@Column(name = "password")
 	private String password;
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@Valid
 	private Telephone tel;
@@ -48,20 +48,18 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orders = new ArrayList<>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
-			CascadeType.DETACH })
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "users_addresses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
-	private List<Address> addressList = new ArrayList<>();
+	private Set<Address> addressList = new HashSet<>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
-			CascadeType.DETACH })
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
 	public User() {
 	}
 
-	public User(Long id, String username, String password, Telephone tel, List<Order> orders, List<Address> addressList,
+	public User(Long id, String username, String password, Telephone tel, List<Order> orders, Set<Address> addressList,
 			Set<Role> roles) {
 		this.id = id;
 		this.username = username;
@@ -73,7 +71,7 @@ public class User {
 	}
 
 	public User(Long id, String username, String password, Telephone tel, List<Order> orders,
-			List<Address> addressList) {
+			Set<Address> addressList) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
@@ -82,7 +80,7 @@ public class User {
 		this.addressList = addressList;
 	}
 
-	public User(String username, String password, Telephone tel, List<Order> orders, List<Address> addressList) {
+	public User(String username, String password, Telephone tel, List<Order> orders, Set<Address> addressList) {
 		this.username = username;
 		this.password = password;
 		this.tel = tel;
@@ -154,11 +152,11 @@ public class User {
 		this.orders = orders;
 	}
 
-	public List<Address> getAddressList() {
+	public Set<Address> getAddressList() {
 		return addressList;
 	}
 
-	public void setAddressList(List<Address> addressList) {
+	public void setAddressList(Set<Address> addressList) {
 		this.addressList = addressList;
 	}
 

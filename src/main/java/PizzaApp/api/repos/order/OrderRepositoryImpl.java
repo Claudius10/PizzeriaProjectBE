@@ -3,6 +3,9 @@ package PizzaApp.api.repos.order;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+
+import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
+import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import jakarta.persistence.EntityManager;
@@ -47,9 +50,43 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
+	public OrderDTO findDTOById(Long id) {
+		OrderDTO order = em.createQuery("""
+				select new OrderDTO(
+				   o.id,
+				   o.createdOn,
+				   o.updatedOn,
+				   o.customerFirstName,
+				   o.customerLastName,
+				   o.contactTel,
+				   o.address,
+				   o.email,
+				   o.orderDetails,
+				   o.cart
+				)
+				from Order o
+				where o.id=: orderId
+				""", OrderDTO.class).setParameter("orderId", id).getSingleResult();
+		return order;
+	}
+
+	@Override
+	public OrderCreatedOnDTO findCreatedOnById(Long id) {
+		OrderCreatedOnDTO order = em.createQuery("""
+				select new OrderCreatedOnDTO(
+				   o.id,
+				   o.createdOn
+				)
+				from Order o
+				where o.id=: orderId
+				""", OrderCreatedOnDTO.class).setParameter("orderId", id).getSingleResult();
+		return order;
+	}
+
+	@Override
 	public void deleteById(Long id) {
 		// find order
-		Order order = findById(id);
+		Order order = em.find(Order.class, id);
 
 		// delete
 		em.remove(order);

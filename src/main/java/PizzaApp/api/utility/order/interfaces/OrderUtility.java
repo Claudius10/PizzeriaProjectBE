@@ -1,16 +1,16 @@
-package PizzaApp.api.utility.order;
+package PizzaApp.api.utility.order.interfaces;
 
 import PizzaApp.api.entity.order.Order;
 
 public interface OrderUtility {
 
+	public void validate(Order order);
+
 	public boolean isChangeRequestedValid(Order order);
 
 	public boolean IsContactNumberValid(Order order);
 
-	public boolean isCartEmpty(Order order);
+	public boolean isCartValid(Order order);
 
 	public void calculatePaymentChange(Order order);
-
-	public void validate(Order order);
 }

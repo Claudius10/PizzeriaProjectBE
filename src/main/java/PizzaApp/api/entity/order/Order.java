@@ -23,8 +23,6 @@ import jakarta.validation.constraints.Pattern;
 @Table(name = "customer_order")
 public class Order {
 
-	// TODO: Create OrderTDO to fetch order data without User
-
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

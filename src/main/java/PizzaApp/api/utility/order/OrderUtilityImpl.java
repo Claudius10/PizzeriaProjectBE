@@ -1,23 +1,23 @@
 package PizzaApp.api.utility.order;
 
 import org.springframework.stereotype.Component;
-
 import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.utility.order.interfaces.OrderUtility;
 import PizzaApp.api.validation.exceptions.EmptyCartException;
 import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
 import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
 
-//utility methods for OrderRepository
 @Component
 public class OrderUtilityImpl implements OrderUtility {
 
 	public OrderUtilityImpl() {
+
 	}
 
 	@Override
 	public void validate(Order order) {
 		isChangeRequestedValid(order);
-		isCartEmpty(order);
+		isCartValid(order);
 		IsContactNumberValid(order);
 		calculatePaymentChange(order);
 	}
@@ -48,7 +48,7 @@ public class OrderUtilityImpl implements OrderUtility {
 	}
 
 	@Override
-	public boolean isCartEmpty(Order order) {
+	public boolean isCartValid(Order order) {
 		if (order.getCart() != null && !order.getCart().getOrderItems().isEmpty()
 				&& order.getCart().getTotalQuantity() > 0) {
 			return true;
@@ -62,8 +62,8 @@ public class OrderUtilityImpl implements OrderUtility {
 
 		// if contact_tel isn't null
 		// validate making sure its size is min 9 and max 9
-		// else throw exception and if it's null, return true
-		// since it means it's not being updated
+		// if it's not, throw exception
+		// if it's null, return true since it means it's not being updated
 		if (order.getContactTel() != null) {
 			if (String.valueOf(order.getContactTel().intValue()).length() >= 9
 					&& String.valueOf(order.getContactTel().intValue()).length() <= 9) {

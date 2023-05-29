@@ -3,7 +3,6 @@ package PizzaApp.api.order;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.ArrayList;
@@ -88,15 +87,14 @@ public class OrderDataDuplicatesTests {
 		logger.info("Duplicates test #1: Checking for duplicate addresses in DB");
 		for (Address address : addressList) {
 
-			// send a get for findAddress for every address obj
+			// send a get to findAddress for every address obj
 			ResultActions addressResponse = mockMvc.perform(get("/api/address").contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(address)));
 
 			// check for every obj that no exception is thrown
 			// it there is, then it means there is a duplicate
 			assertDoesNotThrow(() -> {
-				addressResponse.andDo(print()).andExpect(status().isOk())
-						.andExpect(jsonPath("$.street", is(address.getStreet())))
+				addressResponse.andExpect(status().isOk()).andExpect(jsonPath("$.street", is(address.getStreet())))
 						.andExpect(jsonPath("$.streetNr", is(address.getStreetNr())))
 						.andExpect(jsonPath("$.gate", is(address.getGate())))
 						.andExpect(jsonPath("$.staircase", is(address.getStaircase())))
@@ -114,15 +112,14 @@ public class OrderDataDuplicatesTests {
 		logger.info("Duplicates test #2: Checking for duplicate emails in DB");
 		for (Email email : emailList) {
 
-			// send a get for findByAddress for every email obj
+			// send a get to findByAddress for every email obj
 			ResultActions emailResponse = mockMvc.perform(get("/api/email").contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(email)));
 
 			// check for every obj that no exception is thrown
 			// it there is, then it means there is a duplicate
 			assertDoesNotThrow(() -> {
-				emailResponse.andDo(print()).andExpect(status().isOk())
-						.andExpect(jsonPath("$.email", is(email.getEmail())));
+				emailResponse.andExpect(status().isOk()).andExpect(jsonPath("$.email", is(email.getEmail())));
 			});
 
 		}

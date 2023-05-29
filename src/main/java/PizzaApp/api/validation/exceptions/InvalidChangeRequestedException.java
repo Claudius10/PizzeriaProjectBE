@@ -5,7 +5,7 @@ public class InvalidChangeRequestedException extends RuntimeException {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3L;
 
 	public InvalidChangeRequestedException(String message, Throwable cause) {
 		super(message, cause);

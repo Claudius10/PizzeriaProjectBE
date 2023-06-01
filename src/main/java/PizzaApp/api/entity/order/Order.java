@@ -42,16 +42,20 @@ public class Order {
 	@Pattern(regexp = "^[a-zA-Z\s]{0,25}$", message = "Appelido: solo letras sin tildes (no mín, máx 25 letras)")
 	private String customerLastName;
 
+	// for contactTel there can't be field validation
+	// cause when receiving Order obj for update without
+	// contactTel, it will insta reject before being able
+	// to do logic in orderServiceImpl
 	@Column(name = "contact_tel", nullable = true)
 	private Integer contactTel;
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@Valid
-	private Address address;
+	private Email email;
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@Valid
-	private Email email;
+	private Address address;
 
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference

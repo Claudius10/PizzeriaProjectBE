@@ -1,22 +1,16 @@
 package PizzaApp.api.utility.order.interfaces;
 
 import java.time.LocalDateTime;
-import PizzaApp.api.entity.cart.Cart;
-import PizzaApp.api.utility.order.OrderUpdateUtility;
+import PizzaApp.api.entity.order.Order;
 
 public interface OrderUpdateTimeLimits {
 
-	public OrderUpdateUtility get(LocalDateTime createdOn, Cart cart);
+	public void validate(Order order);
 
-	public OrderUpdateUtility get(LocalDateTime createdOn);
+	public void isCartUpdateTimeLimitValid(Order order);
 
-	public void validate();
+	public void isOrderDataUpdateTimeLimitValid();
 
-	public void validateDelete();
+	public void isOrderDeleteTimeLimitValid(LocalDateTime createdOn);
 
-	public boolean isCartUpdateTimeLimitValid();
-
-	public boolean isOrderDataUpdateTimeLimitValid();
-
-	public boolean isOrderDeleteTimeLimitValid();
 }

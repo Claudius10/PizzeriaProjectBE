@@ -17,6 +17,10 @@ public class OrderDTO {
 
 	private LocalDateTime updatedOn;
 
+	private String formattedCreatedOn;
+
+	private String formattedUpdatedOn;
+
 	private String customerFirstName;
 
 	private String customerLastName;
@@ -68,6 +72,22 @@ public class OrderDTO {
 
 	public void setUpdatedOn(LocalDateTime updatedOn) {
 		this.updatedOn = updatedOn;
+	}
+
+	public String getFormattedCreatedOn() {
+		return formattedCreatedOn;
+	}
+
+	public void setFormattedCreatedOn(String formattedCreatedOn) {
+		this.formattedCreatedOn = formattedCreatedOn;
+	}
+
+	public String getFormattedUpdatedOn() {
+		return formattedUpdatedOn;
+	}
+
+	public void setFormattedUpdatedOn(String formattedUpdatedOn) {
+		this.formattedUpdatedOn = formattedUpdatedOn;
 	}
 
 	public String getCustomerFirstName() {

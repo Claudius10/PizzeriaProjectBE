@@ -18,7 +18,7 @@ public class StoreRepositoryImpl implements StoreRepository {
 
 	@Override
 	public List<Store> findAll() {
-		TypedQuery<Store> query = em.createQuery("FROM Store", Store.class);
+		TypedQuery<Store> query = em.createQuery("from Store st JOIN FETCH st.address add ", Store.class);
 		List<Store> stores = query.getResultList();
 		return stores;
 	}

@@ -17,9 +17,11 @@ public class AddressRepositoryImpl implements AddressRepository {
 
 	@Override
 	public Address findAddress(Address address) {
+
 		try {
 			TypedQuery<Address> query = em.createQuery(
-					"from Address a where a.street=:oStreet and a.streetNr=:oNumber and a.gate=:oGate and a.staircase=:oStaircase and a.floor=:oFloor and a.door=:oDoor",
+					"from Address a where a.street=:oStreet and a.streetNr=:oNumber and (:oGate is null or a.gate = :oGate) "
+							+ "and (:oStaircase is null or a.staircase= :oStaircase) and (:oFloor is null or a.floor= :oFloor) and (:oDoor is null or a.door= :oDoor)",
 					Address.class);
 
 			query.setParameter("oStreet", address.getStreet());
@@ -30,7 +32,7 @@ public class AddressRepositoryImpl implements AddressRepository {
 			query.setParameter("oDoor", address.getDoor());
 
 			return query.getSingleResult();
-		} catch (NoResultException e) {
+		} catch (NoResultException nre) {
 			return null;
 		}
 	}

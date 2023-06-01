@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import PizzaApp.api.validation.exceptions.CartUpdateTimeLimitException;
 import PizzaApp.api.validation.exceptions.EmptyCartException;
 import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
 import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
@@ -123,20 +121,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(CartUpdateTimeLimitException.class)
-	protected ResponseEntity<ApiErrorDTO> handleCartUpdateTimeLimit(HttpServletRequest request,
-			CartUpdateTimeLimitException ex) {
-
-		ApiErrorDTO errorsDTO = new ApiErrorDTO();
-
-		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
-		errorsDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
-		errorsDTO.setPath(request.getServletPath());
-		errorsDTO.addError(ex.getMessage());
-
-		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
-	}
-
 	@ExceptionHandler(OrderDataUpdateTimeLimitException.class)
 	protected ResponseEntity<ApiErrorDTO> handleOrderDataUpdateTimeLimit(HttpServletRequest request,
 			OrderDataUpdateTimeLimitException ex) {
@@ -164,5 +148,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
 	}
-
 }

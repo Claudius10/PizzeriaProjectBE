@@ -9,8 +9,7 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 /**
- * Null values are considered valid. The decimal separating dot (.) counts as 1
- * to the length.
+ * Null values are not considered valid.
  * 
  * @author Claudiu Catalin
  */
@@ -18,16 +17,16 @@ import jakarta.validation.Payload;
 @Documented
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = DoubleLengthValidator.class)
+@Constraint(validatedBy = LongLengthValidator.class)
 
-public @interface DoubleLengthNullable {
+public @interface LongLength {
 	String message() default "Valor númerico no acceptado";
 
 	Class<?>[] groups() default {};
 
 	Class<? extends Payload>[] payload() default {};
 
-	double min();
+	long min();
 
-	double max();
+	long max();
 }

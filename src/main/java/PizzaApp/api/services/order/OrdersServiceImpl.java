@@ -1,10 +1,12 @@
 package PizzaApp.api.services.order;
 
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.utility.order.OrderData;
 import PizzaApp.api.utility.order.OrderUpdateUtility;
@@ -32,7 +34,7 @@ public class OrdersServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Order createOrUpdate(Order order) {
+	public Long createOrUpdate(Order order) {
 		// check for email and address in db
 		OrderData dbOrderData = orderDataInternalService.findOrderData(order);
 
@@ -50,20 +52,24 @@ public class OrdersServiceImpl implements OrderService {
 				order.getEmail().setId(dbOrderData.getEmail().getId());
 			}
 
+			// remove id's from items that come from front end
+			// so Hibernate doesn't perform extra unnecessary opertations
+			for (OrderItem item : order.getCart().getOrderItems()) {
+				item.setId(null);
+			}
+
 		} else {
 			// update
 
 			// get original order data
 			logger.info("UPDATE: SEARCHING ORIGINAL ORDER");
 			Order originalOrder = findById(order.getId());
+
+			// setting originalCreatedOn here, not on the front-end
 			order.setCreatedOn(originalOrder.getCreatedOn());
 
 			// validation for updating
-			if (order.getCart() == null) {
-				orderUpdateUtility.get(order.getCreatedOn()).validate();
-			} else {
-				orderUpdateUtility.get(order.getCreatedOn(), order.getCart()).validate();
-			}
+			orderUpdateUtility.validate(order);
 
 			// CUSTOMER
 
@@ -110,16 +116,16 @@ public class OrdersServiceImpl implements OrderService {
 				order.setOrderDetails(originalOrder.getOrderDetails());
 			} else {
 				// if it's being updated, set the id
-				order.getOrderDetails().setId(originalOrder.getOrderDetails().getId());
+				order.getOrderDetails().setId(originalOrder.getId());
 			}
 
 			// CART
-
-			// set the cart if cart is not being updated
 			if (order.getCart() == null) {
+				// cart is set to null if now is after cartUpdateTimeLimit
+				// by orderUpdateUtility.validate()
 				order.setCart(originalOrder.getCart());
 			} else {
-				order.getCart().setId(originalOrder.getCart().getId());
+				order.getCart().setId(originalOrder.getId());
 			}
 		}
 
@@ -137,15 +143,26 @@ public class OrdersServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderDTO findDTOById(Long id) {
-		OrderDTO order = orderRepository.findDTOById(id);
+	public OrderDTO findDTOByIdAndTel(String id, String orderContactTel) {
+
+		OrderDTO order = orderRepository.findDTOByIdAndTel(id, orderContactTel);
 
 		if (order != null) {
+
+			// format createdOn
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+			order.setFormattedCreatedOn(order.getCreatedOn().format(formatter));
+
+			// format updatedOn if it exists
+			if (order.getUpdatedOn() != null) {
+				order.setFormattedUpdatedOn(order.getUpdatedOn().format(formatter));
+			}
+
 			return order;
 		} else {
-			throw new NoResultException("Pedido " + id + " no se pudo encontrar");
+			throw new NoResultException(
+					"El pedido " + id + " asociado al teléfono " + orderContactTel + " no se pudo encontrar");
 		}
-
 	}
 
 	@Override
@@ -158,7 +175,7 @@ public class OrdersServiceImpl implements OrderService {
 		// get order createdOn
 		OrderCreatedOnDTO order = findCreatedOnById(id);
 		// validate whatever delete time limit passed
-		orderUpdateUtility.get(order.getCreatedOn()).validateDelete();
+		orderUpdateUtility.isOrderDeleteTimeLimitValid(order.getCreatedOn());
 		// delete order if time limit did not pass
 		orderRepository.deleteById(id);
 	}

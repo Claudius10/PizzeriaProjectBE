@@ -1,7 +1,6 @@
 package PizzaApp.api.controllers;
 
 import java.time.LocalDateTime;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.services.order.OrderService;
@@ -23,8 +21,7 @@ import jakarta.validation.constraints.Pattern;
 
 @RestController
 @RequestMapping("/api")
-// "https://pizzeria-project-claudius10.vercel.app"
-@CrossOrigin(origins = "http://192.168.1.11:3000")
+@CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app")
 @Validated
 public class OrderController {
 
@@ -35,35 +32,35 @@ public class OrderController {
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<Order> createOrder(@RequestBody @Valid Order order) {
+	public ResponseEntity<Long> createOrder(@RequestBody @Valid Order order) {
 		// set created on
 		order.setCreatedOn(LocalDateTime.now());
 
-		Order theOrder = orderService.createOrUpdate(order);
-		return new ResponseEntity<Order>(theOrder, HttpStatus.CREATED);
+		Long id = orderService.createOrUpdate(order);
+		return new ResponseEntity<Long>(id, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
-	public ResponseEntity<Order> updateOrder(@RequestBody @Valid Order order) {
+	public ResponseEntity<Long> updateOrder(@RequestBody @Valid Order order) {
 		// set updated on
 		order.setUpdatedOn(LocalDateTime.now());
 
-		Order theOrder = orderService.createOrUpdate(order);
+		Long id = orderService.createOrUpdate(order);
 		// returning below ResponseEntity with statusCode is
 		// for front-end SaveOrUpdateOrder query fn
 		// in order to correctly either return responseBody or throw if error
 		// based on the statusCode
-		return new ResponseEntity<>(theOrder, HttpStatus.ACCEPTED);
+		return new ResponseEntity<Long>(id, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/order/{id}")
-	public ResponseEntity<OrderDTO> findOrderById(
-			@PathVariable @Pattern(regexp = "^[0-9]{1,10}$", message = "El valor tiene que ser un número positivo. Máximo 10 digitos") String id) {
-		Long orderId = Long.parseLong(id);
+	@GetMapping("/order/{id}/{orderContactTel}")
+	public ResponseEntity<OrderDTO> findDTOByIdAndTel(
+			@PathVariable @Pattern(regexp = "^[0-9]{1,10}$", message = "Id: mín 1 digito, máx 10 digitos") String id,
+			@PathVariable @Pattern(regexp = "^[0-9]{9,9}$", message = "Teléfono: mín 9 digitos, máx 9 digitos") String orderContactTel) {
 		// same as others, returning 200's code makes front-end return the responseBody
 		// !response.ok from fetch API throws the responseBody with handled exception
 		// from back-end
-		return new ResponseEntity<OrderDTO>(orderService.findDTOById(orderId), HttpStatus.OK);
+		return new ResponseEntity<OrderDTO>(orderService.findDTOByIdAndTel(id, orderContactTel), HttpStatus.OK);
 	}
 
 	// delete mapping path variable doesn't need validation

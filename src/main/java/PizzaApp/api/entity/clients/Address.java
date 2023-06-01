@@ -1,4 +1,5 @@
 package PizzaApp.api.entity.clients;
+
 import PizzaApp.api.validation.constraints.IntegerLength;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,7 @@ public class Address {
 	private Long id;
 
 	@Column(name = "street")
-	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{2,25}$", message = "Calle: solo letras sin tildes y números (mín 2, máx 25 letras)")
+	@Pattern(regexp = "^[a-zA-Z0-9.,:;()\s]{2,25}$", message = "Calle: solo letras sin tildes y números (mín 2, máx 25 letras)")
 	private String street;
 
 	@Column(name = "street_nr")
@@ -53,8 +54,8 @@ public class Address {
 		this.floor = floor;
 		this.door = door;
 	}
-	
-    // constructor without id
+
+	// constructor without id
 	public Address(String street, Integer streetNr, String gate, String staircase, String floor, String door) {
 		this.street = street;
 		this.streetNr = streetNr;
@@ -63,7 +64,6 @@ public class Address {
 		this.floor = floor;
 		this.door = door;
 	}
-
 
 	public Long getId() {
 		return id;

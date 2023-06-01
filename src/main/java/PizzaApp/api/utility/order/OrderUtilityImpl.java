@@ -16,10 +16,32 @@ public class OrderUtilityImpl implements OrderUtility {
 
 	@Override
 	public void validate(Order order) {
-		isChangeRequestedValid(order);
-		isCartValid(order);
 		IsContactNumberValid(order);
+		isCartValid(order);
+		isChangeRequestedValid(order);
 		calculatePaymentChange(order);
+	}
+
+	@Override
+	public boolean IsContactNumberValid(Order order) {
+		// validate making sure its size is min 9 and max 9
+		// if it's not, throw exception
+		if (order.getContactTel() != null && String.valueOf(order.getContactTel().intValue()).length() >= 9
+				&& String.valueOf(order.getContactTel().intValue()).length() <= 9) {
+			return true;
+		} else {
+			throw new InvalidContactTelephoneException("Teléfono: mín 9 digitos, máx 9 digitos");
+		}
+	}
+
+	@Override
+	public boolean isCartValid(Order order) {
+		if (order.getCart() != null && !order.getCart().getOrderItems().isEmpty()
+				&& order.getCart().getTotalQuantity() > 0) {
+			return true;
+		} else {
+			throw new EmptyCartException("La cesta no puede ser vacía.");
+		}
 	}
 
 	// value of requested change has to be greater than
@@ -44,35 +66,6 @@ public class OrderUtilityImpl implements OrderUtility {
 			throw new InvalidChangeRequestedException(
 					"El valor del cambio de efectivo solicitado no puede ser menor o igual "
 							+ "que el total/total con ofertas.");
-		}
-	}
-
-	@Override
-	public boolean isCartValid(Order order) {
-		if (order.getCart() != null && !order.getCart().getOrderItems().isEmpty()
-				&& order.getCart().getTotalQuantity() > 0) {
-			return true;
-		} else {
-			throw new EmptyCartException("La cesta no puede ser vacía.");
-		}
-	}
-
-	@Override
-	public boolean IsContactNumberValid(Order order) {
-
-		// if contact_tel isn't null
-		// validate making sure its size is min 9 and max 9
-		// if it's not, throw exception
-		// if it's null, return true since it means it's not being updated
-		if (order.getContactTel() != null) {
-			if (String.valueOf(order.getContactTel().intValue()).length() >= 9
-					&& String.valueOf(order.getContactTel().intValue()).length() <= 9) {
-				return true;
-			} else {
-				throw new InvalidContactTelephoneException("Teléfono: mín 9 digitos, máx 9 digitos");
-			}
-		} else {
-			return true;
 		}
 	}
 

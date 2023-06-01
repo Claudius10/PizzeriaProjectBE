@@ -1,9 +1,14 @@
 package PizzaApp.api.entity.resources;
+
+import PizzaApp.api.entity.clients.Address;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,8 +23,9 @@ public class Store {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "location")
-	private String location;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "address_id")
+	private Address address;
 
 	@Column(name = "phone_number")
 	private int phoneNumber;
@@ -28,12 +34,12 @@ public class Store {
 	private String schedule;
 
 	public Store() {
-	};
+	}
 
-	public Store(Long id, String name, String location, int phoneNumber, String schedule) {
+	public Store(Long id, String name, Address address, int phoneNumber, String schedule) {
 		this.id = id;
 		this.name = name;
-		this.location = location;
+		this.address = address;
 		this.phoneNumber = phoneNumber;
 		this.schedule = schedule;
 	}
@@ -54,12 +60,12 @@ public class Store {
 		this.name = name;
 	}
 
-	public String getLocation() {
-		return location;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 
 	public int getPhoneNumber() {
@@ -76,5 +82,5 @@ public class Store {
 
 	public void setSchedule(String schedule) {
 		this.schedule = schedule;
-	}
+	};
 }

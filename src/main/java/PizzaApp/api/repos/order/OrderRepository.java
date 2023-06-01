@@ -6,11 +6,11 @@ import PizzaApp.api.entity.order.Order;
 
 public interface OrderRepository {
 
-	public Order createOrUpdate(Order order);
+	public Long createOrUpdate(Order order);
 
 	public Order findById(Long id);
 
-	public OrderDTO findDTOById(Long id);
+	public OrderDTO findDTOByIdAndTel(String id, String orderContactTel);
 
 	public OrderCreatedOnDTO findCreatedOnById(Long id);
 

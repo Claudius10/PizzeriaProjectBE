@@ -3,12 +3,13 @@ package PizzaApp.api.repos.order;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
-
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {
@@ -20,7 +21,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public Order createOrUpdate(Order order) {
+	public Long createOrUpdate(Order order) {
 
 		// new order
 		if (order.getId() == null) {
@@ -40,8 +41,8 @@ public class OrderRepositoryImpl implements OrderRepository {
 			order.setUser(null);
 		}
 
-		// return the order
-		return em.merge(order);
+		Order theOrder = em.merge(order);
+		return theOrder.getId();
 	}
 
 	@Override
@@ -49,25 +50,35 @@ public class OrderRepositoryImpl implements OrderRepository {
 		return em.find(Order.class, id);
 	}
 
+	// for fetching order for front-end request
+	// Mi Pedido component
 	@Override
-	public OrderDTO findDTOById(Long id) {
-		OrderDTO order = em.createQuery("""
-				select new OrderDTO(
-				   o.id,
-				   o.createdOn,
-				   o.updatedOn,
-				   o.customerFirstName,
-				   o.customerLastName,
-				   o.contactTel,
-				   o.address,
-				   o.email,
-				   o.orderDetails,
-				   o.cart
-				)
-				from Order o
-				where o.id=: orderId
-				""", OrderDTO.class).setParameter("orderId", id).getSingleResult();
-		return order;
+	public OrderDTO findDTOByIdAndTel(String id, String orderContactTel) {
+		try {
+			TypedQuery<OrderDTO> query = em.createQuery("""
+					select new OrderDTO(
+					   o.id,
+					   o.createdOn,
+					   o.updatedOn,
+					   o.customerFirstName,
+					   o.customerLastName,
+					   o.contactTel,
+					   o.address,
+					   o.email,
+					   o.orderDetails,
+					   o.cart
+					)
+					from Order o
+					where o.id= :orderId and o.contactTel= :orderTel
+					""", OrderDTO.class);
+
+			query.setParameter("orderId", id);
+			query.setParameter("orderTel", orderContactTel);
+
+			return query.getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
 
 	@Override

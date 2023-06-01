@@ -149,12 +149,18 @@ public class OrdersServiceImpl implements OrderService {
 
 		if (order != null) {
 
+			// set +2 hours since db is in standard UTC (+00:00)
+			// ...
+			order.setCreatedOn(order.getCreatedOn().plusHours(2));
+
 			// format createdOn
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
 			order.setFormattedCreatedOn(order.getCreatedOn().format(formatter));
 
 			// format updatedOn if it exists
 			if (order.getUpdatedOn() != null) {
+				
+				order.setUpdatedOn(order.getUpdatedOn().plusHours(2));
 				order.setFormattedUpdatedOn(order.getUpdatedOn().format(formatter));
 			}
 

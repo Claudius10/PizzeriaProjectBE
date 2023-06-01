@@ -5,7 +5,7 @@ import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.utility.order.OrderUpdateUtility;
 
 public interface OrderUpdateTimeLimits {
-	
+
 	public OrderUpdateUtility init(LocalDateTime createdOn);
 
 	public void validate(Order order);
@@ -15,5 +15,4 @@ public interface OrderUpdateTimeLimits {
 	public void isOrderDataUpdateTimeLimitValid();
 
 	public void isOrderDeleteTimeLimitValid();
-
 }

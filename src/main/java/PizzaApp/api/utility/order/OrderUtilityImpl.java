@@ -1,14 +1,23 @@
 package PizzaApp.api.utility.order;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.utility.order.interfaces.OrderUtility;
 import PizzaApp.api.validation.exceptions.EmptyCartException;
 import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
 import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
+import PizzaApp.api.validation.exceptions.StoreNotOpenException;
 
 @Component
 public class OrderUtilityImpl implements OrderUtility {
+
+	private final Logger logger = Logger.getLogger(getClass().getName());
 
 	public OrderUtilityImpl() {
 
@@ -16,10 +25,32 @@ public class OrderUtilityImpl implements OrderUtility {
 
 	@Override
 	public void validate(Order order) {
+		isRequestWithinWorkingHours();
 		IsContactNumberValid(order);
 		isCartValid(order);
 		isChangeRequestedValid(order);
 		calculatePaymentChange(order);
+	}
+
+	@Override
+	public void isRequestWithinWorkingHours() {
+
+		// getting now plus 2 hours since host JVM is UTC +00:00
+		LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC).plusHours(2);
+		Instant nowInstant = now.toInstant(ZoneOffset.UTC);
+		Date date = Date.from(nowInstant);
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int minutes = cal.get(Calendar.MINUTE);
+
+		logger.info(String.format("Current hour: %s ", hour));
+		logger.info(String.format("Current minutes: %s ", minutes));
+
+		if (hour < 12 || hour >= 23 && minutes > 40) {
+			throw new StoreNotOpenException("El horario es de las 12:00h hasta las 23:40 horas.");
+		}
 	}
 
 	@Override

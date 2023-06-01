@@ -18,6 +18,7 @@ import PizzaApp.api.validation.exceptions.InvalidChangeRequestedException;
 import PizzaApp.api.validation.exceptions.InvalidContactTelephoneException;
 import PizzaApp.api.validation.exceptions.OrderDataUpdateTimeLimitException;
 import PizzaApp.api.validation.exceptions.OrderDeleteTimeLimitException;
+import PizzaApp.api.validation.exceptions.StoreNotOpenException;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -138,6 +139,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(OrderDeleteTimeLimitException.class)
 	protected ResponseEntity<ApiErrorDTO> handleOrderDeleteTimeLimit(HttpServletRequest request,
 			OrderDeleteTimeLimitException ex) {
+
+		ApiErrorDTO errorsDTO = new ApiErrorDTO();
+
+		errorsDTO.setTimeStamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd-HH:mm:ss")));
+		errorsDTO.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		errorsDTO.setPath(request.getServletPath());
+		errorsDTO.addError(ex.getMessage());
+
+		return new ResponseEntity<ApiErrorDTO>(errorsDTO, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(StoreNotOpenException.class)
+	protected ResponseEntity<ApiErrorDTO> handleStoreNotOpen(HttpServletRequest request,
+			StoreNotOpenException ex) {
 
 		ApiErrorDTO errorsDTO = new ApiErrorDTO();
 

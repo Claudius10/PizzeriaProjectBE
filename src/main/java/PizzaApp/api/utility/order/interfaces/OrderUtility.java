@@ -4,6 +4,8 @@ import PizzaApp.api.entity.order.Order;
 
 public interface OrderUtility {
 
+	public void isRequestWithinWorkingHours();
+	
 	public void validate(Order order);
 
 	public boolean isChangeRequestedValid(Order order);

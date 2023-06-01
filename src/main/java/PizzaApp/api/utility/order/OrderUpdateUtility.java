@@ -22,11 +22,16 @@ public class OrderUpdateUtility implements OrderUpdateTimeLimits {
 	}
 
 	@Override
-	public void validate(Order order) {
+	public OrderUpdateUtility init(LocalDateTime createdOn) {
 		setNow(LocalDateTime.now());
-		setCreatedOn(order.getCreatedOn());
-		setHoursDiff(ChronoUnit.HOURS.between(order.getCreatedOn(), now));
-		setMinutesDiff(ChronoUnit.MINUTES.between(order.getCreatedOn(), now));
+		setCreatedOn(createdOn);
+		setHoursDiff(ChronoUnit.HOURS.between(createdOn, now));
+		setMinutesDiff(ChronoUnit.MINUTES.between(createdOn, now));
+		return this;
+	}
+
+	@Override
+	public void validate(Order order) {
 		isCartUpdateTimeLimitValid(order);
 		isOrderDataUpdateTimeLimitValid();
 	}
@@ -52,7 +57,7 @@ public class OrderUpdateUtility implements OrderUpdateTimeLimits {
 	}
 
 	@Override
-	public void isOrderDeleteTimeLimitValid(LocalDateTime createdOn) {
+	public void isOrderDeleteTimeLimitValid() {
 		LocalDateTime orderDeleteTimeLimit = createdOn.plusMinutes(35);
 		if (now.isAfter(orderDeleteTimeLimit)) {
 			logger.info(

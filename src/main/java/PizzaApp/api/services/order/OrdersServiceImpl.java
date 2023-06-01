@@ -69,7 +69,7 @@ public class OrdersServiceImpl implements OrderService {
 			order.setCreatedOn(originalOrder.getCreatedOn());
 
 			// validation for updating
-			orderUpdateUtility.validate(order);
+			orderUpdateUtility.init(order.getCreatedOn()).validate(order);
 
 			// CUSTOMER
 
@@ -181,7 +181,7 @@ public class OrdersServiceImpl implements OrderService {
 		// get order createdOn
 		OrderCreatedOnDTO order = findCreatedOnById(id);
 		// validate whatever delete time limit passed
-		orderUpdateUtility.isOrderDeleteTimeLimitValid(order.getCreatedOn());
+		orderUpdateUtility.init(order.getCreatedOn()).isOrderDeleteTimeLimitValid();
 		// delete order if time limit did not pass
 		orderRepository.deleteById(id);
 	}

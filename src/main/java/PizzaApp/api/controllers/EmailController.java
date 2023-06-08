@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class EmailController {
 
-	private EmailService emailService;
+	private final EmailService emailService;
 
 	public EmailController(EmailService emailService) {
 		this.emailService = emailService;
@@ -22,6 +22,6 @@ public class EmailController {
 
 	@GetMapping("/email")
 	public ResponseEntity<Email> findByAddress(@RequestBody @Valid Email email) {
-		return new ResponseEntity<Email>(emailService.findByAddress(email), HttpStatus.OK);
+		return new ResponseEntity<>(emailService.findByAddress(email), HttpStatus.OK);
 	}
 }

@@ -1,6 +1,7 @@
 package PizzaApp.api.controllers;
 
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +19,7 @@ import PizzaApp.api.services.resources.ResourceService;
 @CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app")
 public class ResourceController {
 
-	private ResourceService resourceService;
+	private final ResourceService resourceService;
 
 	public ResourceController(ResourceService resourceService) {
 		this.resourceService = resourceService;
@@ -26,17 +27,17 @@ public class ResourceController {
 
 	@GetMapping("/products/{productType}")
 	public ResponseEntity<List<Product>> findAllProductsByType(@PathVariable String productType) {
-		return new ResponseEntity<List<Product>>(resourceService.findAllProductsByType(productType),
+		return new ResponseEntity<>(resourceService.findAllProductsByType(productType),
 				HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/stores")
 	public ResponseEntity<List<Store>> findAllStores() {
-		return new ResponseEntity<List<Store>>(resourceService.findAllStores(), HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(resourceService.findAllStores(), HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/offers")
 	public ResponseEntity<List<Offer>> findAllOffers() {
-		return new ResponseEntity<List<Offer>>(resourceService.findAllOffers(), HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(resourceService.findAllOffers(), HttpStatus.ACCEPTED);
 	}
 }

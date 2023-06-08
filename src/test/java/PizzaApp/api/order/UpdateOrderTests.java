@@ -6,10 +6,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,7 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.cart.Cart;
 import PizzaApp.api.entity.clients.Address;
@@ -101,7 +102,7 @@ public class UpdateOrderTests {
 
 		// for these tests to work, the endpoints must return the Order obj
 		// not just the id
-		
+
 		savedOrderId = ordersService.createOrUpdate(order);
 	}
 
@@ -110,7 +111,7 @@ public class UpdateOrderTests {
 	@DisplayName("Update order test #1: correctly created original order")
 	public void givenOrder_whenCreateOrUpdate_thenReturnOrder() throws Exception {
 
-		// when action: get order
+		// action: get order
 		ResultActions orderResponse = mockMvc
 				.perform(get("/api/order/{id}/{orderContactTel}", savedOrderId, order.getContactTel()));
 
@@ -137,8 +138,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(2)
 	@DisplayName("Update order test #2: update customer data")
-	public void givenNewCustomerData_whenCreateOrUpdate_thenReturnOrderWithNewCustomerData()
-			throws JsonProcessingException, Exception {
+	public void givenNewCustomerData_whenCreateOrUpdate_thenReturnOrderWithNewCustomerData() throws Exception {
 
 		// given / preparation:
 		Order theOrder = new Order();
@@ -151,7 +151,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(savedOrderId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -171,8 +171,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(3)
 	@DisplayName("Update order test #3: update email")
-	public void givenNewEmail_whenCreateOrUpdate_thenReturnOrderWithNewEmail()
-			throws JsonProcessingException, Exception {
+	public void givenNewEmail_whenCreateOrUpdate_thenReturnOrderWithNewEmail() throws Exception {
 
 		// given / preparation:
 		Order theOrder = new Order();
@@ -185,7 +184,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(savedOrderId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -205,8 +204,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(4)
 	@DisplayName("Update order test #4: update address")
-	public void givenNewAddress_whenCreateOrUpdate_thenReturnOrderWithUpdatedAddress()
-			throws JsonProcessingException, Exception {
+	public void givenNewAddress_whenCreateOrUpdate_thenReturnOrderWithUpdatedAddress() throws Exception {
 
 		// given / preparation:
 		Address newAddress = new Address("NewAddress", 33, "", "", "9", "6");
@@ -218,7 +216,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(savedOrderId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -241,8 +239,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(5)
 	@DisplayName("Update order test #5: update orderDetails")
-	public void givenOrderDetails_whenCreateOrUpdate_thenReturnOrderWithNewOrderDetails()
-			throws JsonProcessingException, Exception {
+	public void givenOrderDetails_whenCreateOrUpdate_thenReturnOrderWithNewOrderDetails() throws Exception {
 
 		// given / preparation:
 		OrderDetails newOrderDetails = new OrderDetails();
@@ -258,7 +255,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(savedOrderId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -279,7 +276,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(6)
 	@DisplayName("Update order test #6: update cart")
-	public void givenCart_whenCreateOrUpdate_thenReturnOrderWithNewCart() throws JsonProcessingException, Exception {
+	public void givenCart_whenCreateOrUpdate_thenReturnOrderWithNewCart() throws Exception {
 
 		// given / preparation:
 
@@ -312,7 +309,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(savedOrderId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -332,8 +329,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(7)
 	@DisplayName("Update order test #7: update cart after time limit")
-	public void givenCartUpdateAfterTimeLimit_whenCreateOrUpdate_thenThrowException()
-			throws JsonProcessingException, Exception {
+	public void givenCartUpdateAfterTimeLimit_whenCreateOrUpdate_thenThrowException() throws Exception {
 
 		// create order which will be used to perform test
 
@@ -345,7 +341,7 @@ public class UpdateOrderTests {
 		orderUpdateCartTimeLimit.setOrderDetails(originalOrderDetails);
 		orderUpdateCartTimeLimit.setCart(originalCart);
 		orderUpdateCartTimeLimit.setUser(null);
-		// see appropiate createdOn for the test to work
+		// see appropriate createdOn for the test to work
 		orderUpdateCartTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(16));
 
 		Long orderCartTimeLimitId = ordersService.createOrUpdate(orderUpdateCartTimeLimit);
@@ -380,7 +376,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(orderCartTimeLimitId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -389,7 +385,7 @@ public class UpdateOrderTests {
 		// upon validation and thereafter the original order's cart was set back
 		// (orderUpdateCartTimeLimit's originalCart)
 		// so cart was not updated, but orderDetails was updated since it's before the
-		// 20 min time limit
+		// 20-min time limit
 		logger.info("Update order test #7: update cart after time limit");
 
 		orderResponse.andExpect(status().isAccepted())
@@ -414,8 +410,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(8)
 	@DisplayName("Update order test #8: update order data after time limit")
-	public void givenOrderDataUpdateAfterTimeLimit_whenCreateOrUpdate_thenThrowException()
-			throws JsonProcessingException, Exception {
+	public void givenOrderDataUpdateAfterTimeLimit_whenCreateOrUpdate_thenThrowException() throws Exception {
 
 		// order data = customer data (fName, lName, tel, email), address, orderDetails
 
@@ -429,7 +424,7 @@ public class UpdateOrderTests {
 		orderUpdateDataTimeLimit.setOrderDetails(originalOrderDetails);
 		orderUpdateDataTimeLimit.setCart(originalCart);
 		orderUpdateDataTimeLimit.setUser(null);
-		// see appropiate createdOn for the test to work
+		// see appropriate createdOn for the test to work
 		orderUpdateDataTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(21));
 
 		Long orderDataTimeLimitId = ordersService.createOrUpdate(orderUpdateDataTimeLimit);
@@ -450,7 +445,7 @@ public class UpdateOrderTests {
 		// set the order id
 		theOrder.setId(orderDataTimeLimitId);
 
-		// when action: update order
+		// action: update order
 		ResultActions orderResponse = mockMvc.perform(put("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(theOrder)));
 
@@ -466,8 +461,7 @@ public class UpdateOrderTests {
 	@Test
 	@org.junit.jupiter.api.Order(9)
 	@DisplayName("Update order test #9: delete order after time limit")
-	public void givenOrderDeleteAfterTimeLimit_whenCreateOrUpdate_thenThrowException()
-			throws JsonProcessingException, Exception {
+	public void givenOrderDeleteAfterTimeLimit_whenCreateOrUpdate_thenThrowException() throws Exception {
 
 		// create order which will be used to perform test
 
@@ -479,12 +473,12 @@ public class UpdateOrderTests {
 		orderDeleteTimeLimit.setUser(null);
 		orderDeleteTimeLimit.setOrderDetails(originalOrderDetails);
 		orderDeleteTimeLimit.setCart(originalCart);
-		// see appropiate createdOn for the test to work
+		// see appropriate createdOn for the test to work
 		orderDeleteTimeLimit.setCreatedOn(LocalDateTime.now().minusMinutes(36));
 
 		Long orderDeleteTimeLimitId = ordersService.createOrUpdate(orderDeleteTimeLimit);
 
-		// when action: delete order
+		// action: delete order
 		ResultActions orderResponse = mockMvc.perform(delete("/api/order/{id}", orderDeleteTimeLimitId));
 
 		// check exception is thrown

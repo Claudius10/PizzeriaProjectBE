@@ -9,7 +9,7 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class EmailServiceImpl implements EmailService {
 
-	private EmailRepository emailRepository;
+	private final EmailRepository emailRepository;
 
 	public EmailServiceImpl(EmailRepository emailRepository) {
 		this.emailRepository = emailRepository;

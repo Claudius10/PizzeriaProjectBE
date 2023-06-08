@@ -1,4 +1,5 @@
 package PizzaApp.api.entity.order;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import PizzaApp.api.validation.constraints.DoubleLengthNullable;
 import jakarta.persistence.Column;
@@ -45,7 +46,7 @@ public class OrderDetails {
 	}
 
 	public OrderDetails(Long id, String deliveryHour, String paymentType, Double changeRequested, Double paymentChange,
-			String deliveryComment, Order order) {
+						String deliveryComment, Order order) {
 		this.id = id;
 		this.deliveryHour = deliveryHour;
 		this.paymentType = paymentType;
@@ -56,7 +57,7 @@ public class OrderDetails {
 	}
 
 	public OrderDetails(String deliveryHour, String paymentType, Double changeRequested, double paymentChange,
-			String deliveryComment, Order order) {
+						String deliveryComment, Order order) {
 		this.deliveryHour = deliveryHour;
 		this.paymentType = paymentType;
 		this.changeRequested = changeRequested;

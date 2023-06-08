@@ -12,9 +12,9 @@ import PizzaApp.api.utility.order.interfaces.OrderDataInternalService;
 @Component
 public class OrderDataInternalServiceImpl implements OrderDataInternalService {
 
-	private Logger logger = Logger.getLogger(getClass().getName());
-	private AddressService addressService;
-	private EmailService emailService;
+	private final Logger logger = Logger.getLogger(getClass().getName());
+	private final AddressService addressService;
+	private final EmailService emailService;
 
 	public OrderDataInternalServiceImpl(AddressService addressService, EmailService emailService) {
 		this.addressService = addressService;

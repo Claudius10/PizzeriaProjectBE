@@ -6,14 +6,14 @@ import PizzaApp.api.entity.order.Order;
 
 public interface OrderService {
 
-	public Long createOrUpdate(Order order);
+	Long createOrUpdate(Order order);
 
-	public Order findById(Long id);
+	Order findById(Long id);
 
-	public OrderDTO findDTOByIdAndTel(String id, String orderContactTel);
+	OrderDTO findDTOByIdAndTel(String id, String orderContactTel);
 
-	public OrderCreatedOnDTO findCreatedOnById(Long id);
+	OrderCreatedOnDTO findCreatedOnById(Long id);
 
-	public void deleteById(Long id);
+	void deleteById(Long id);
 
 }

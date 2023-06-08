@@ -9,7 +9,7 @@ import PizzaApp.api.repos.telephone.TelephoneRepositoryImpl;
 @Transactional
 public class TelephoneServiceImpl implements TelephoneService {
 
-	private TelephoneRepositoryImpl telephoneRepository;
+	private final TelephoneRepositoryImpl telephoneRepository;
 
 	public TelephoneServiceImpl(TelephoneRepositoryImpl telephoneRepository) {
 		this.telephoneRepository = telephoneRepository;

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 @FieldMatch.List({
 		@FieldMatch(first = "password", second = "matchingPassword", message = "La contraseña debe coincidir"),
-		@FieldMatch(first = "username", second = "matchingUsername", message = "El email debe coincidir") })
+		@FieldMatch(first = "username", second = "matchingUsername", message = "El email debe coincidir")})
 public class UserRegistration {
 
 	@Email(message = "Email: compruebe al email introducido")

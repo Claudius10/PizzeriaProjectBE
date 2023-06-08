@@ -6,6 +6,7 @@ import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
+
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.utility.order.interfaces.OrderUtility;
@@ -48,7 +49,7 @@ public class OrderUtilityImpl implements OrderUtility {
 		logger.info(String.format("Current hour: %s ", hour));
 		logger.info(String.format("Current minutes: %s ", minutes));
 
-		if (hour < 12 || hour >= 23 && minutes > 40) {
+		if (hour < 12 || hour == 23 && minutes > 40) {
 			throw new StoreNotOpenException("El horario es de las 12:00h hasta las 23:40 horas.");
 		}
 	}
@@ -57,8 +58,7 @@ public class OrderUtilityImpl implements OrderUtility {
 	public boolean IsContactNumberValid(Order order) {
 		// validate making sure its size is min 9 and max 9
 		// if it's not, throw exception
-		if (order.getContactTel() != null && String.valueOf(order.getContactTel().intValue()).length() >= 9
-				&& String.valueOf(order.getContactTel().intValue()).length() <= 9) {
+		if (order.getContactTel() != null && String.valueOf(order.getContactTel().intValue()).length() == 9) {
 			return true;
 		} else {
 			throw new InvalidContactTelephoneException("Teléfono: mín 9 digitos, máx 9 digitos");

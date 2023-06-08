@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class AddressController {
 
-	private AddressService addressService;
+	private final AddressService addressService;
 
 	public AddressController(AddressService addressService) {
 		this.addressService = addressService;
@@ -22,6 +22,6 @@ public class AddressController {
 
 	@GetMapping("/address")
 	public ResponseEntity<Address> findAddress(@RequestBody @Valid Address address) {
-		return new ResponseEntity<Address>(addressService.findAddress(address), HttpStatus.OK);
+		return new ResponseEntity<>(addressService.findAddress(address), HttpStatus.OK);
 	}
 }

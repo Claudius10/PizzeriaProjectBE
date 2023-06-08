@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class TelephoneController {
 
-	private TelephoneService telephoneService;
+	private final TelephoneService telephoneService;
 
 	public TelephoneController(TelephoneService telephoneService) {
 		this.telephoneService = telephoneService;
@@ -22,6 +22,6 @@ public class TelephoneController {
 
 	@GetMapping("/telephone")
 	public ResponseEntity<Telephone> findByNumber(@RequestBody @Valid Telephone tel) {
-		return new ResponseEntity<Telephone>(telephoneService.findByNumber(tel), HttpStatus.OK);
+		return new ResponseEntity<>(telephoneService.findByNumber(tel), HttpStatus.OK);
 	}
 }

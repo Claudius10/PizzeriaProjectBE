@@ -2,6 +2,7 @@ package PizzaApp.api.repos.order;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
@@ -14,7 +15,7 @@ import jakarta.persistence.TypedQuery;
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {
 
-	private EntityManager em;
+	private final EntityManager em;
 
 	public OrderRepositoryImpl(EntityManager em) {
 		this.em = em;
@@ -83,7 +84,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public OrderCreatedOnDTO findCreatedOnById(Long id) {
-		OrderCreatedOnDTO order = em.createQuery("""
+		return em.createQuery("""
 				select new OrderCreatedOnDTO(
 				   o.id,
 				   o.createdOn
@@ -91,7 +92,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 				from Order o
 				where o.id=: orderId
 				""", OrderCreatedOnDTO.class).setParameter("orderId", id).getSingleResult();
-		return order;
 	}
 
 	@Override

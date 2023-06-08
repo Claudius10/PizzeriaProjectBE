@@ -7,7 +7,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 	/*
 	 * private EntityManager em;
-	 * 
+	 *
 	 * public UserRepositoryImpl(EntityManager em) { this.em = em; }
 	 */
 

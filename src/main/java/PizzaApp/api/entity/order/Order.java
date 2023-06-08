@@ -1,6 +1,7 @@
 package PizzaApp.api.entity.order;
 
 import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.cart.Cart;
 import PizzaApp.api.entity.clients.Address;
@@ -39,7 +40,7 @@ public class Order {
 	private String customerFirstName;
 
 	@Column(name = "c_last_name", nullable = true)
-	@Pattern(regexp = "^[a-zA-Z\s]{0,25}$", message = "Appelido: solo letras sin tildes (no mín, máx 25 letras)")
+	@Pattern(regexp = "^[a-zA-Z\s]{0,25}$", message = "Apellido: solo letras sin tildes (no mín, máx 25 letras)")
 	private String customerLastName;
 
 	// for contactTel there can't be field validation
@@ -49,11 +50,11 @@ public class Order {
 	@Column(name = "contact_tel", nullable = true)
 	private Integer contactTel;
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@Valid
 	private Email email;
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@Valid
 	private Address address;
 
@@ -73,8 +74,8 @@ public class Order {
 	}
 
 	public Order(Long id, LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName,
-			String customerLastName, Integer contactTel, Email email, Address address, OrderDetails orderDetails,
-			Cart cart, User user) {
+				 String customerLastName, Integer contactTel, Email email, Address address, OrderDetails orderDetails,
+				 Cart cart, User user) {
 		this.id = id;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
@@ -89,7 +90,7 @@ public class Order {
 	}
 
 	public Order(LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName, String customerLastName,
-			Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart, User user) {
+				 Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart, User user) {
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
 		this.customerFirstName = customerFirstName;
@@ -103,7 +104,7 @@ public class Order {
 	}
 
 	public Order(LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName, String customerLastName,
-			Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart) {
+				 Integer contactTel, Email email, Address address, OrderDetails orderDetails, Cart cart) {
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
 		this.customerFirstName = customerFirstName;

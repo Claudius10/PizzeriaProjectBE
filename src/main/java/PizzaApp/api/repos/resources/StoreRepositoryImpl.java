@@ -1,6 +1,7 @@
 package PizzaApp.api.repos.resources;
 
 import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import PizzaApp.api.entity.resources.Store;
@@ -10,7 +11,7 @@ import jakarta.persistence.TypedQuery;
 @Repository
 public class StoreRepositoryImpl implements StoreRepository {
 
-	private EntityManager em;
+	private final EntityManager em;
 
 	public StoreRepositoryImpl(EntityManager em) {
 		this.em = em;
@@ -19,7 +20,6 @@ public class StoreRepositoryImpl implements StoreRepository {
 	@Override
 	public List<Store> findAll() {
 		TypedQuery<Store> query = em.createQuery("from Store st JOIN FETCH st.address add ", Store.class);
-		List<Store> stores = query.getResultList();
-		return stores;
+		return query.getResultList();
 	}
 }

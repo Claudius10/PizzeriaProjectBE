@@ -1,6 +1,7 @@
 package PizzaApp.api.entity.dto.order;
 
 import java.time.LocalDateTime;
+
 import PizzaApp.api.entity.cart.Cart;
 import PizzaApp.api.entity.clients.Address;
 import PizzaApp.api.entity.clients.Email;
@@ -36,8 +37,8 @@ public class OrderDTO {
 	private Cart cart;
 
 	public OrderDTO(Long id, LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName,
-			String customerLastName, Integer contactTel, Address address, Email email, OrderDetails orderDetails,
-			Cart cart) {
+					String customerLastName, Integer contactTel, Address address, Email email, OrderDetails orderDetails,
+					Cart cart) {
 		this.id = id;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;

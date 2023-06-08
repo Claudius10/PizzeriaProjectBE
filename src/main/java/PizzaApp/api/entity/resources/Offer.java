@@ -1,4 +1,5 @@
 package PizzaApp.api.entity.resources;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,20 +15,21 @@ public class Offer {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name = "image")
 	private String image;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
-	
+
 	@Column(name = "caveat")
 	private String caveat;
-	
-	public Offer() {}
+
+	public Offer() {
+	}
 
 	public Offer(Long id, String image, String name, String description, String caveat) {
 		this.id = id;

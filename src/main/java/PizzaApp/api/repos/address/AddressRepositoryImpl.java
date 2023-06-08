@@ -9,7 +9,7 @@ import jakarta.persistence.TypedQuery;
 @Repository
 public class AddressRepositoryImpl implements AddressRepository {
 
-	private EntityManager em;
+	private final EntityManager em;
 
 	public AddressRepositoryImpl(EntityManager em) {
 		this.em = em;

@@ -2,6 +2,7 @@ package PizzaApp.api.services.order;
 
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
+
 import org.springframework.stereotype.Service;
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
@@ -20,13 +21,13 @@ import jakarta.transaction.Transactional;
 public class OrdersServiceImpl implements OrderService {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
-	private OrderRepository orderRepository;
-	private OrderDataInternalService orderDataInternalService;
-	private OrderUtility orderUtility;
-	private OrderUpdateUtility orderUpdateUtility;
+	private final OrderRepository orderRepository;
+	private final OrderDataInternalService orderDataInternalService;
+	private final OrderUtility orderUtility;
+	private final OrderUpdateUtility orderUpdateUtility;
 
 	public OrdersServiceImpl(OrderRepository orderRepository, OrderDataInternalService orderDataInternalService,
-			OrderUtility orderUtility, OrderUpdateUtility orderUpdateUtility) {
+							 OrderUtility orderUtility, OrderUpdateUtility orderUpdateUtility) {
 		this.orderRepository = orderRepository;
 		this.orderDataInternalService = orderDataInternalService;
 		this.orderUtility = orderUtility;
@@ -53,7 +54,7 @@ public class OrdersServiceImpl implements OrderService {
 			}
 
 			// remove id's from items that come from front end
-			// so Hibernate doesn't perform extra unnecessary opertations
+			// so Hibernate doesn't perform extra unnecessary operations
 			for (OrderItem item : order.getCart().getOrderItems()) {
 				item.setId(null);
 			}
@@ -108,7 +109,7 @@ public class OrdersServiceImpl implements OrderService {
 				}
 			}
 
-			// ORDERDETAILS
+			// ORDER DETAILS
 
 			// check if updating orderDetails
 			// if null (not updating) set from db
@@ -159,7 +160,7 @@ public class OrdersServiceImpl implements OrderService {
 
 			// format updatedOn if it exists
 			if (order.getUpdatedOn() != null) {
-				
+
 				order.setUpdatedOn(order.getUpdatedOn().plusHours(2));
 				order.setFormattedUpdatedOn(order.getUpdatedOn().format(formatter));
 			}

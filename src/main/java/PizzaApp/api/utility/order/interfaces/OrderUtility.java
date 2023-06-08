@@ -4,15 +4,15 @@ import PizzaApp.api.entity.order.Order;
 
 public interface OrderUtility {
 
-	public void isRequestWithinWorkingHours();
-	
-	public void validate(Order order);
+	void isRequestWithinWorkingHours();
 
-	public boolean isChangeRequestedValid(Order order);
+	void validate(Order order);
 
-	public boolean IsContactNumberValid(Order order);
+	boolean isChangeRequestedValid(Order order);
 
-	public boolean isCartValid(Order order);
+	boolean IsContactNumberValid(Order order);
 
-	public void calculatePaymentChange(Order order);
+	boolean isCartValid(Order order);
+
+	void calculatePaymentChange(Order order);
 }

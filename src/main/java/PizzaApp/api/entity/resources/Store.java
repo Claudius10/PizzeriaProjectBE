@@ -82,5 +82,5 @@ public class Store {
 
 	public void setSchedule(String schedule) {
 		this.schedule = schedule;
-	};
+	}
 }

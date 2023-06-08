@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.hibernate.annotations.NaturalId;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.clients.Address;
@@ -48,11 +49,11 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orders = new ArrayList<>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "users_addresses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
 	private Set<Address> addressList = new HashSet<>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
@@ -60,7 +61,7 @@ public class User {
 	}
 
 	public User(Long id, String username, String password, Telephone tel, List<Order> orders, Set<Address> addressList,
-			Set<Role> roles) {
+				Set<Role> roles) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
@@ -71,7 +72,7 @@ public class User {
 	}
 
 	public User(Long id, String username, String password, Telephone tel, List<Order> orders,
-			Set<Address> addressList) {
+				Set<Address> addressList) {
 		this.id = id;
 		this.username = username;
 		this.password = password;

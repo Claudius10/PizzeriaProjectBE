@@ -1,6 +1,7 @@
 package PizzaApp.api.services.resources;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import PizzaApp.api.entity.resources.Offer;
 import PizzaApp.api.entity.resources.Product;
@@ -14,12 +15,12 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class ResourceServiceImpl implements ResourceService {
 
-	private ProductRepository productRepository;
-	private StoreRepository storeRepository;
-	private OfferRepository offerRepository;
+	private final ProductRepository productRepository;
+	private final StoreRepository storeRepository;
+	private final OfferRepository offerRepository;
 
 	public ResourceServiceImpl(ProductRepository productRepository, StoreRepository storeRepository,
-			OfferRepository offerRepository) {
+							   OfferRepository offerRepository) {
 		this.productRepository = productRepository;
 		this.storeRepository = storeRepository;
 		this.offerRepository = offerRepository;

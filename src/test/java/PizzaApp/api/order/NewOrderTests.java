@@ -4,9 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -101,7 +103,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -140,7 +142,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -179,7 +181,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -219,7 +221,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -257,7 +259,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -284,7 +286,7 @@ public class NewOrderTests {
 		order.getOrderDetails().setChangeRequested(10D);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -311,7 +313,7 @@ public class NewOrderTests {
 		emptyCart.setTotalQuantity(0);
 		order.setCart(emptyCart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 
@@ -336,7 +338,7 @@ public class NewOrderTests {
 		order.setOrderDetails(orderDetails);
 		order.setCart(cart);
 
-		// when action: send post request
+		// action: send post request
 		ResultActions orderResponse = mockMvc.perform(post("/api/order").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(order)));
 

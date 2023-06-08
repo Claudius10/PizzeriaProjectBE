@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.clients.Address;
 import PizzaApp.api.entity.clients.Email;
@@ -52,7 +53,7 @@ public class OrderDataDuplicatesTests {
 		Email thirdEmail = new Email("originalEmail@email.com");
 		Email fourthEmail = new Email("NewEmail@email.com");
 
-		Email[] emailArray = { firstEmail, secondEmail, thirdEmail, fourthEmail };
+		Email[] emailArray = {firstEmail, secondEmail, thirdEmail, fourthEmail};
 		emailList = new ArrayList<>();
 		Collections.addAll(emailList, emailArray);
 
@@ -63,16 +64,16 @@ public class OrderDataDuplicatesTests {
 		Address thirdAddress = new Address("OriginalAddress", 12, "", "", "1", "3");
 		Address fourthAddress = new Address("NewAddress", 33, "", "", "9", "6");
 
-		Address[] addressArray = { firstAddress, secondAddress, thirdAddress, fourthAddress };
+		Address[] addressArray = {firstAddress, secondAddress, thirdAddress, fourthAddress};
 		addressList = new ArrayList<>();
 		Collections.addAll(addressList, addressArray);
 
 		/*
 		 * decommissioned for now // create telephone list
-		 * 
+		 *
 		 * Telephone firstTel = new Telephone(666333999); Telephone secondTel = new
 		 * Telephone(666333666); Telephone thirdTel = new Telephone(666999333);
-		 * 
+		 *
 		 * Telephone[] telArray = { firstTel, secondTel, thirdTel }; telList = new
 		 * ArrayList<>(); Collections.addAll(telList, telArray);
 		 */
@@ -81,8 +82,7 @@ public class OrderDataDuplicatesTests {
 
 	@Test
 	@DisplayName("Duplicates test #1: no duplicate addresses")
-	public void givenAddresses_whenFindAddresses_thenReturnNoDuplicateAddresses()
-			throws JsonProcessingException, Exception {
+	public void givenAddresses_whenFindAddresses_thenReturnNoDuplicateAddresses() throws Exception {
 
 		logger.info("Duplicates test #1: Checking for duplicate addresses in DB");
 		for (Address address : addressList) {
@@ -107,7 +107,7 @@ public class OrderDataDuplicatesTests {
 
 	@Test
 	@DisplayName("Duplicates test #2: no duplicate emails")
-	public void givenEmails_whenFindEmails_thenReturnNoDuplicateEmails() throws JsonProcessingException, Exception {
+	public void givenEmails_whenFindEmails_thenReturnNoDuplicateEmails() throws Exception {
 
 		logger.info("Duplicates test #2: Checking for duplicate emails in DB");
 		for (Email email : emailList) {
@@ -128,26 +128,26 @@ public class OrderDataDuplicatesTests {
 
 	/*
 	 * this test is decommissioned for now
-	 * 
+	 *
 	 * @Test
-	 * 
+	 *
 	 * @DisplayName("Test for ensuring there are no duplicate telephones") public
 	 * void givenTelephones_whenFindByNumber_thenReturnNoDuplicateTelephones()
 	 * throws JsonProcessingException, Exception {
-	 * 
-	 * // find tel entries that matche given tel
-	 * 
+	 *
+	 * // find tel entries that match given tel
+	 *
 	 * System.out.println("-------- Checking telephone entries in database --------"
 	 * ); for (Telephone telephone : telList) { ResultActions telephoneResponse =
 	 * mockMvc .perform(get("/api/telephone/test/{number}", telephone.getNumber()));
-	 * 
+	 *
 	 * telephoneResponse.andExpect(status().isOk()).andExpect(jsonPath("$.length()",
 	 * is(1)));
-	 * 
+	 *
 	 * System.out.println("No duplicate telephones found with the number: " +
 	 * telephone.getNumber()); }
 	 * System.out.println("-------- No duplicate telephones found --------");
-	 * 
+	 *
 	 * }
 	 */
 

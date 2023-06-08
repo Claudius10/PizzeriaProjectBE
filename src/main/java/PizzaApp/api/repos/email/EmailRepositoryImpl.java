@@ -10,7 +10,7 @@ import jakarta.persistence.TypedQuery;
 @Repository
 public class EmailRepositoryImpl implements EmailRepository {
 
-	private EntityManager em;
+	private final EntityManager em;
 
 	public EmailRepositoryImpl(EntityManager em) {
 		this.em = em;

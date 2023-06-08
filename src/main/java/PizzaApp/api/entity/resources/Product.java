@@ -1,4 +1,5 @@
 package PizzaApp.api.entity.resources;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class Product {
 	private String format;
 
 	public Product(Long id, String productType, String image, String name, String description, double price,
-			String format) {
+				   String format) {
 		this.id = id;
 		this.productType = productType;
 		this.image = image;
@@ -45,7 +46,7 @@ public class Product {
 	}
 
 	public Product() {
-	};
+	}
 
 	public Long getId() {
 		return id;

@@ -2,6 +2,7 @@ package PizzaApp.api.entity.cart;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.order.Order;
@@ -51,7 +52,7 @@ public class Cart {
 	}
 
 	public Cart(Long id, Integer totalQuantity, Double totalCost, Double totalCostOffers, List<OrderItem> orderItems,
-			Order order) {
+				Order order) {
 		this.id = id;
 		this.totalQuantity = totalQuantity;
 		this.totalCost = totalCost;
@@ -61,7 +62,7 @@ public class Cart {
 	}
 
 	public Cart(Integer totalQuantity, Double totalCost, Double totalCostOffers, List<OrderItem> orderItems,
-			Order order) {
+				Order order) {
 		this.totalQuantity = totalQuantity;
 		this.totalCost = totalCost;
 		this.totalCostOffers = totalCostOffers;

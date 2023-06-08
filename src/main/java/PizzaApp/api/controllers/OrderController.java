@@ -1,6 +1,7 @@
 package PizzaApp.api.controllers;
 
 import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,7 @@ import jakarta.validation.constraints.Pattern;
 @Validated
 public class OrderController {
 
-	private OrderService orderService;
+	private final OrderService orderService;
 
 	public OrderController(OrderService orderService) {
 		this.orderService = orderService;
@@ -37,7 +38,7 @@ public class OrderController {
 		order.setCreatedOn(LocalDateTime.now());
 
 		Long id = orderService.createOrUpdate(order);
-		return new ResponseEntity<Long>(id, HttpStatus.CREATED);
+		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/order")
@@ -50,17 +51,17 @@ public class OrderController {
 		// for front-end SaveOrUpdateOrder query fn
 		// in order to correctly either return responseBody or throw if error
 		// based on the statusCode
-		return new ResponseEntity<Long>(id, HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
 	}
 
 	@GetMapping("/order/{id}/{orderContactTel}")
 	public ResponseEntity<OrderDTO> findDTOByIdAndTel(
 			@PathVariable @Pattern(regexp = "^[0-9]{1,10}$", message = "Id: mín 1 digito, máx 10 digitos") String id,
-			@PathVariable @Pattern(regexp = "^[0-9]{9,9}$", message = "Teléfono: mín 9 digitos, máx 9 digitos") String orderContactTel) {
+			@PathVariable @Pattern(regexp = "^[0-9]{9}$", message = "Teléfono: mín 9 digitos, máx 9 digitos") String orderContactTel) {
 		// same as others, returning 200's code makes front-end return the responseBody
 		// !response.ok from fetch API throws the responseBody with handled exception
 		// from back-end
-		return new ResponseEntity<OrderDTO>(orderService.findDTOByIdAndTel(id, orderContactTel), HttpStatus.OK);
+		return new ResponseEntity<>(orderService.findDTOByIdAndTel(id, orderContactTel), HttpStatus.OK);
 	}
 
 	// delete mapping path variable doesn't need validation
@@ -70,6 +71,6 @@ public class OrderController {
 	@DeleteMapping("/order/{id}")
 	public ResponseEntity<Long> deleteById(@PathVariable Long id) {
 		orderService.deleteById(id);
-		return new ResponseEntity<Long>(id, HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
 	}
 }

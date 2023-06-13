@@ -11,7 +11,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
-@Entity
+import java.util.Objects;
+
+@Entity(name = "OrderDetails")
 @Table(name = "order_details")
 public class OrderDetails {
 
@@ -45,25 +47,60 @@ public class OrderDetails {
 	public OrderDetails() {
 	}
 
-	public OrderDetails(Long id, String deliveryHour, String paymentType, Double changeRequested, Double paymentChange,
-						String deliveryComment, Order order) {
-		this.id = id;
-		this.deliveryHour = deliveryHour;
-		this.paymentType = paymentType;
-		this.changeRequested = changeRequested;
-		this.paymentChange = paymentChange;
-		this.deliveryComment = deliveryComment;
-		this.order = order;
+	private OrderDetails(Builder builder) {
+		this.id = builder.id;
+		this.deliveryHour = builder.deliveryHour;
+		this.paymentType = builder.paymentType;
+		this.changeRequested = builder.changeRequested;
+		this.paymentChange = builder.paymentChange;
+		this.deliveryComment = builder.deliveryComment;
+		this.order = null;
 	}
 
-	public OrderDetails(String deliveryHour, String paymentType, Double changeRequested, double paymentChange,
-						String deliveryComment, Order order) {
-		this.deliveryHour = deliveryHour;
-		this.paymentType = paymentType;
-		this.changeRequested = changeRequested;
-		this.paymentChange = paymentChange;
-		this.deliveryComment = deliveryComment;
-		this.order = order;
+	public static class Builder {
+		private Long id;
+		private String deliveryHour;
+		private String paymentType;
+		private Double changeRequested;
+		private Double paymentChange;
+		private String deliveryComment;
+
+		public Builder() {
+		}
+
+		public Builder withId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withDeliveryHour(String deliveryHour) {
+			this.deliveryHour = deliveryHour;
+			return this;
+		}
+
+		public Builder withPaymentType(String paymentType) {
+			this.paymentType = paymentType;
+			return this;
+		}
+
+		public Builder withChangeRequested(Double changeRequested) {
+			this.changeRequested = changeRequested;
+			return this;
+		}
+
+		public Builder withPaymentChange(Double paymentChange) {
+			this.paymentChange = paymentChange;
+			return this;
+		}
+
+		public Builder withDeliveryComment(String deliveryComment) {
+			this.deliveryComment = deliveryComment;
+			return this;
+		}
+
+		public OrderDetails build() {
+			return new OrderDetails(this);
+		}
 	}
 
 	public Long getId() {
@@ -127,5 +164,13 @@ public class OrderDetails {
 		return "OrderDetails [id=" + id + ", deliveryHour=" + deliveryHour + ", paymentType=" + paymentType
 				+ ", changeRequested=" + changeRequested + ", paymentChange=" + paymentChange + ", deliveryComment="
 				+ deliveryComment + "]";
+	}
+
+	public boolean entityEquals(Object o) {
+		OrderDetails that = (OrderDetails) o;
+		return Objects.equals(deliveryHour, that.deliveryHour)
+				&& Objects.equals(paymentType, that.paymentType)
+				&& Objects.equals(changeRequested, that.changeRequested)
+				&& Objects.equals(deliveryComment, that.deliveryComment);
 	}
 }

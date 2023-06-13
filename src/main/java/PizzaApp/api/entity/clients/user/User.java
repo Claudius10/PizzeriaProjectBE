@@ -1,9 +1,6 @@
 package PizzaApp.api.entity.clients.user;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.annotations.NaturalId;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -25,7 +22,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.persistence.JoinColumn;
 
-@Entity
+@Entity(name = "User")
 @Table(name = "user")
 public class User {
 
@@ -58,41 +55,6 @@ public class User {
 	private Set<Role> roles = new HashSet<>();
 
 	public User() {
-	}
-
-	public User(Long id, String username, String password, Telephone tel, List<Order> orders, Set<Address> addressList,
-				Set<Role> roles) {
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.tel = tel;
-		this.orders = orders;
-		this.addressList = addressList;
-		this.roles = roles;
-	}
-
-	public User(Long id, String username, String password, Telephone tel, List<Order> orders,
-				Set<Address> addressList) {
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.tel = tel;
-		this.orders = orders;
-		this.addressList = addressList;
-	}
-
-	public User(String username, String password, Telephone tel, List<Order> orders, Set<Address> addressList) {
-		this.username = username;
-		this.password = password;
-		this.tel = tel;
-		this.orders = orders;
-		this.addressList = addressList;
-	}
-
-	public User(String username, String password, Telephone tel) {
-		this.username = username;
-		this.password = password;
-		this.tel = tel;
 	}
 
 	public void setTel(Telephone tel) {

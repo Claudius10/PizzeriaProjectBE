@@ -11,7 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 
-@Entity
+@Entity(name = "Telephone")
 @Table(name = "telephone")
 public class Telephone {
 
@@ -29,17 +29,6 @@ public class Telephone {
 	private User user;
 
 	public Telephone() {
-	}
-
-	public Telephone(Long id, int number, User user) {
-		this.id = id;
-		this.number = number;
-		this.user = user;
-	}
-
-	public Telephone(int number, User user) {
-		this.number = number;
-		this.user = user;
 	}
 
 	public Telephone(int number) {

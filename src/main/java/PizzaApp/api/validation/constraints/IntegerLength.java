@@ -1,4 +1,5 @@
 package PizzaApp.api.validation.constraints;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,11 +11,12 @@ import jakarta.validation.Payload;
 
 /**
  * Null values are not considered valid.
+ *
  * @author Claudiu Catalin
  */
 
 @Documented
-@Target({ ElementType.METHOD, ElementType.FIELD })
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = IntegerLengthValidator.class)
 
@@ -24,8 +26,8 @@ public @interface IntegerLength {
 	Class<?>[] groups() default {};
 
 	Class<? extends Payload>[] payload() default {};
-	
+
 	int min();
-	
+
 	int max();
 }

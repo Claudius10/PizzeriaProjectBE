@@ -3,7 +3,7 @@ package PizzaApp.api.validation.exceptions;
 public class OrderDataUpdateTimeLimitException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5L;
 

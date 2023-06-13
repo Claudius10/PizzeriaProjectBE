@@ -2,6 +2,7 @@ package PizzaApp.api.entity.cart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -17,7 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "Cart")
 @Table(name = "cart")
 public class Cart {
 
@@ -41,7 +42,7 @@ public class Cart {
 	// sync the bidirectional association
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JsonManagedReference
-	private List<OrderItem> orderItems = new ArrayList<>();
+	private List<OrderItem> orderItems;
 
 	@OneToOne
 	@MapsId
@@ -51,23 +52,58 @@ public class Cart {
 	public Cart() {
 	}
 
-	public Cart(Long id, Integer totalQuantity, Double totalCost, Double totalCostOffers, List<OrderItem> orderItems,
-				Order order) {
-		this.id = id;
-		this.totalQuantity = totalQuantity;
-		this.totalCost = totalCost;
-		this.totalCostOffers = totalCostOffers;
-		this.orderItems = orderItems;
-		this.order = order;
+	private Cart(Builder builder) {
+		this.id = builder.id;
+		this.totalQuantity = builder.totalQuantity;
+		this.totalCost = builder.totalCost;
+		this.totalCostOffers = builder.totalCostOffers;
+		this.orderItems = builder.orderItems;
+		this.order = null;
 	}
 
-	public Cart(Integer totalQuantity, Double totalCost, Double totalCostOffers, List<OrderItem> orderItems,
-				Order order) {
-		this.totalQuantity = totalQuantity;
-		this.totalCost = totalCost;
-		this.totalCostOffers = totalCostOffers;
-		this.orderItems = orderItems;
-		this.order = order;
+	public static class Builder {
+		private Long id;
+		private Integer totalQuantity;
+		private Double totalCost;
+		private Double totalCostOffers;
+		private List<OrderItem> orderItems;
+
+		public Builder() {
+		}
+
+		public Builder withId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withTotalQuantity(Integer totalQuantity) {
+			this.totalQuantity = totalQuantity;
+			return this;
+		}
+
+		public Builder withTotalCost(Double totalCost) {
+			this.totalCost = totalCost;
+			return this;
+		}
+
+		public Builder withTotalCostOffers(Double totalCostOffers) {
+			this.totalCostOffers = totalCostOffers;
+			return this;
+		}
+
+		public Builder withOrderItems(List<OrderItem> orderItems) {
+			this.orderItems = new ArrayList<>(orderItems);
+			return this;
+		}
+
+		public Builder withEmptyItemList() {
+			this.orderItems = new ArrayList<>();
+			return this;
+		}
+
+		public Cart build() {
+			return new Cart(this);
+		}
 	}
 
 	public void addItem(OrderItem item) {
@@ -132,5 +168,26 @@ public class Cart {
 	public String toString() {
 		return "Cart [id=" + id + ", totalQuantity=" + totalQuantity + ", totalCost=" + totalCost + ", totalCostOffers="
 				+ totalCostOffers + "]";
+	}
+
+	public boolean entityEquals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Cart cart = (Cart) o;
+
+		// orderItem contentEquals
+		boolean equalContentOfOrderItems = false;
+		for (OrderItem item : orderItems) {
+			for (OrderItem otherItem : cart.getOrderItems()) {
+				if (item.contentEquals(otherItem)) {
+					equalContentOfOrderItems = true;
+				}
+			}
+		}
+
+		return Objects.equals(totalQuantity, cart.totalQuantity) &&
+				Objects.equals(totalCost, cart.totalCost) &&
+				Objects.equals(totalCostOffers, cart.totalCostOffers) &&
+				equalContentOfOrderItems;
 	}
 }

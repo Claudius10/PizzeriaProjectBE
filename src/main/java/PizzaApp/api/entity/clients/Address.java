@@ -9,7 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
 
-@Entity
+import java.util.Objects;
+
+@Entity(name = "Address")
 @Table(name = "address")
 public class Address {
 
@@ -45,25 +47,68 @@ public class Address {
 	public Address() {
 	}
 
-	public Address(Long id, String street, Integer streetNr, String gate, String staircase, String floor, String door) {
-		this.id = id;
-		this.street = street;
-		this.streetNr = streetNr;
-		this.gate = gate;
-		this.staircase = staircase;
-		this.floor = floor;
-		this.door = door;
+	private Address(Builder builder) {
+		this.id = builder.id;
+		this.street = builder.street;
+		this.streetNr = builder.streetNr;
+		this.gate = builder.gate;
+		this.staircase = builder.staircase;
+		this.floor = builder.floor;
+		this.door = builder.door;
 	}
 
-	// constructor without id
-	public Address(String street, Integer streetNr, String gate, String staircase, String floor, String door) {
-		this.street = street;
-		this.streetNr = streetNr;
-		this.gate = gate;
-		this.staircase = staircase;
-		this.floor = floor;
-		this.door = door;
+	public static class Builder {
+		private Long id;
+		private String street;
+		private Integer streetNr;
+		private String gate;
+		private String staircase;
+		private String floor;
+		private String door;
+
+		public Builder() {
+		}
+
+		public Builder withId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withStreet(String street) {
+			this.street = street;
+			return this;
+		}
+
+		public Builder withStreetNr(Integer number) {
+			this.streetNr = number;
+			return this;
+		}
+
+		public Builder withGate(String gate) {
+			this.gate = gate;
+			return this;
+		}
+
+		public Builder withStaircase(String staircase) {
+			this.staircase = staircase;
+			return this;
+		}
+
+		public Builder withFloor(String floor) {
+			this.floor = floor;
+			return this;
+		}
+
+		public Builder withDoor(String door) {
+			this.door = door;
+			return this;
+		}
+
+		public Address build() {
+			return new Address(this);
+		}
 	}
+
 
 	public Long getId() {
 		return id;
@@ -125,5 +170,17 @@ public class Address {
 	public String toString() {
 		return "Address [id=" + id + ", street=" + street + ", streetNr=" + streetNr + ", gate=" + gate + ", staircase="
 				+ staircase + ", floor=" + floor + ", door=" + door + "]";
+	}
+
+	public boolean entityEquals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Address address = (Address) o;
+		return Objects.equals(street, address.street)
+				&& Objects.equals(streetNr, address.streetNr)
+				&& Objects.equals(gate, address.gate)
+				&& Objects.equals(staircase, address.staircase)
+				&& Objects.equals(floor, address.floor)
+				&& Objects.equals(door, address.door);
 	}
 }

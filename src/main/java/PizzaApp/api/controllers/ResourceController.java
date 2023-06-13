@@ -15,7 +15,7 @@ import PizzaApp.api.entity.resources.Store;
 import PizzaApp.api.services.resources.ResourceService;
 
 @RestController
-@RequestMapping("/api/data")
+@RequestMapping("/api/resource")
 @CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app")
 public class ResourceController {
 
@@ -25,18 +25,18 @@ public class ResourceController {
 		this.resourceService = resourceService;
 	}
 
-	@GetMapping("/products/{productType}")
+	@GetMapping("/product/{productType}")
 	public ResponseEntity<List<Product>> findAllProductsByType(@PathVariable String productType) {
 		return new ResponseEntity<>(resourceService.findAllProductsByType(productType),
 				HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/stores")
+	@GetMapping("/store")
 	public ResponseEntity<List<Store>> findAllStores() {
 		return new ResponseEntity<>(resourceService.findAllStores(), HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/offers")
+	@GetMapping("/offer")
 	public ResponseEntity<List<Offer>> findAllOffers() {
 		return new ResponseEntity<>(resourceService.findAllOffers(), HttpStatus.ACCEPTED);
 	}

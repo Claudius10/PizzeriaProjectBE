@@ -10,28 +10,25 @@ import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.utility.order.OrderData;
-import PizzaApp.api.utility.order.OrderUpdateUtility;
-import PizzaApp.api.utility.order.interfaces.OrderDataInternalService;
-import PizzaApp.api.utility.order.interfaces.OrderUtility;
+import PizzaApp.api.utility.order.OrderDataInternalService;
+import PizzaApp.api.validation.order.OrderValidation;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class OrdersServiceImpl implements OrderService {
+public class OrderServiceImpl implements OrderService {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 	private final OrderRepository orderRepository;
 	private final OrderDataInternalService orderDataInternalService;
-	private final OrderUtility orderUtility;
-	private final OrderUpdateUtility orderUpdateUtility;
+	private final OrderValidation validator;
 
-	public OrdersServiceImpl(OrderRepository orderRepository, OrderDataInternalService orderDataInternalService,
-							 OrderUtility orderUtility, OrderUpdateUtility orderUpdateUtility) {
+	public OrderServiceImpl(OrderRepository orderRepository, OrderDataInternalService orderDataInternalService,
+							OrderValidation validator) {
 		this.orderRepository = orderRepository;
 		this.orderDataInternalService = orderDataInternalService;
-		this.orderUtility = orderUtility;
-		this.orderUpdateUtility = orderUpdateUtility;
+		this.validator = validator;
 	}
 
 	@Override
@@ -70,7 +67,7 @@ public class OrdersServiceImpl implements OrderService {
 			order.setCreatedOn(originalOrder.getCreatedOn());
 
 			// validation for updating
-			orderUpdateUtility.init(order.getCreatedOn()).validate(order);
+			validator.setCurrentTime().validateMutation(order);
 
 			// CUSTOMER
 
@@ -123,7 +120,7 @@ public class OrdersServiceImpl implements OrderService {
 			// CART
 			if (order.getCart() == null) {
 				// cart is set to null if now is after cartUpdateTimeLimit
-				// by orderUpdateUtility.validate()
+				// set back the original
 				order.setCart(originalOrder.getCart());
 			} else {
 				order.getCart().setId(originalOrder.getId());
@@ -131,7 +128,7 @@ public class OrdersServiceImpl implements OrderService {
 		}
 
 		// validation
-		orderUtility.validate(order);
+		validator.validate(order);
 
 		// create or update order
 		logger.info("SAVING ORDER TO DB");
@@ -150,19 +147,19 @@ public class OrdersServiceImpl implements OrderService {
 
 		if (order != null) {
 
-			// set +2 hours since db is in standard UTC (+00:00)
-			// ...
+			// when setting createdOn
+			// add +2 hours since db is in standard UTC (+00:00)
+			// and front-end is in +02:00
 			order.setCreatedOn(order.getCreatedOn().plusHours(2));
 
 			// format createdOn
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-			order.setFormattedCreatedOn(order.getCreatedOn().format(formatter));
+			order.setFormattedCreatedOn(order.getCreatedOn().format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
 
 			// format updatedOn if it exists
 			if (order.getUpdatedOn() != null) {
 
 				order.setUpdatedOn(order.getUpdatedOn().plusHours(2));
-				order.setFormattedUpdatedOn(order.getUpdatedOn().format(formatter));
+				order.setFormattedUpdatedOn(order.getUpdatedOn().format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
 			}
 
 			return order;
@@ -182,7 +179,7 @@ public class OrdersServiceImpl implements OrderService {
 		// get order createdOn
 		OrderCreatedOnDTO order = findCreatedOnById(id);
 		// validate whatever delete time limit passed
-		orderUpdateUtility.init(order.getCreatedOn()).isOrderDeleteTimeLimitValid();
+		validator.setCurrentTime().isOrderDeleteTimeLimitValid(order.getCreatedOn());
 		// delete order if time limit did not pass
 		orderRepository.deleteById(id);
 	}

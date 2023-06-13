@@ -12,7 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity
+import java.util.Objects;
+
+@Entity(name = "OrderItem")
 @Table(name = "order_item")
 public class OrderItem {
 
@@ -31,10 +33,10 @@ public class OrderItem {
 	private String format;
 
 	@Column(name = "quantity")
-	private int quantity;
+	private Integer quantity;
 
 	@Column(name = "price")
-	private double price;
+	private Double price;
 
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -44,31 +46,60 @@ public class OrderItem {
 	public OrderItem() {
 	}
 
-	public OrderItem(Long id, String productType, String name, String format, int quantity, double price, Cart cart) {
-		this.id = id;
-		this.productType = productType;
-		this.name = name;
-		this.format = format;
-		this.quantity = quantity;
-		this.price = price;
-		this.cart = cart;
+	private OrderItem(Builder builder) {
+		this.id = builder.id;
+		this.productType = builder.productType;
+		this.name = builder.name;
+		this.format = builder.format;
+		this.quantity = builder.quantity;
+		this.price = builder.price;
+		this.cart = null;
 	}
 
-	public OrderItem(String productType, String name, String format, int quantity, double price, Cart cart) {
-		this.productType = productType;
-		this.name = name;
-		this.format = format;
-		this.quantity = quantity;
-		this.price = price;
-		this.cart = cart;
-	}
+	public static class Builder {
+		private Long id;
+		private String productType;
+		private String name;
+		private String format;
+		private Integer quantity;
+		private Double price;
 
-	public OrderItem(String productType, String name, String format, int quantity, double price) {
-		this.productType = productType;
-		this.name = name;
-		this.format = format;
-		this.quantity = quantity;
-		this.price = price;
+		public Builder() {
+		}
+
+		public Builder withId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withProductType(String productType) {
+			this.productType = productType;
+			return this;
+		}
+
+		public Builder withWithName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder withFormat(String format) {
+			this.format = format;
+			return this;
+		}
+
+		public Builder withQuantity(Integer quantity) {
+			this.quantity = quantity;
+			return this;
+		}
+
+		public Builder withPrice(Double price) {
+			this.price = price;
+			return this;
+		}
+
+		public OrderItem build() {
+			return new OrderItem(this);
+		}
 	}
 
 	public Long getId() {
@@ -103,19 +134,19 @@ public class OrderItem {
 		this.format = format;
 	}
 
-	public int getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
@@ -147,5 +178,14 @@ public class OrderItem {
 	public String toString() {
 		return "OrderItem [id=" + id + ", productType=" + productType + ", name=" + name + ", format=" + format
 				+ ", quantity=" + quantity + ", price=" + price + "]";
+	}
+
+	public boolean contentEquals(Object o) {
+		OrderItem orderItem = (OrderItem) o;
+		return Objects.equals(productType, orderItem.productType)
+				&& Objects.equals(name, orderItem.name)
+				&& Objects.equals(format, orderItem.format)
+				&& Objects.equals(quantity, orderItem.quantity)
+				&& Objects.equals(price, orderItem.price);
 	}
 }

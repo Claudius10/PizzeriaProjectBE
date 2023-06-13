@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/order")
 @CrossOrigin(origins = "https://pizzeria-project-claudius10.vercel.app")
 @Validated
 public class OrderController {
@@ -32,7 +32,7 @@ public class OrderController {
 		this.orderService = orderService;
 	}
 
-	@PostMapping("/order")
+	@PostMapping()
 	public ResponseEntity<Long> createOrder(@RequestBody @Valid Order order) {
 		// set created on
 		order.setCreatedOn(LocalDateTime.now());
@@ -41,7 +41,7 @@ public class OrderController {
 		return new ResponseEntity<>(id, HttpStatus.CREATED);
 	}
 
-	@PutMapping("/order")
+	@PutMapping()
 	public ResponseEntity<Long> updateOrder(@RequestBody @Valid Order order) {
 		// set updated on
 		order.setUpdatedOn(LocalDateTime.now());
@@ -54,7 +54,7 @@ public class OrderController {
 		return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/order/{id}/{orderContactTel}")
+	@GetMapping("/{id}/{orderContactTel}")
 	public ResponseEntity<OrderDTO> findDTOByIdAndTel(
 			@PathVariable @Pattern(regexp = "^[0-9]{1,10}$", message = "Id: mín 1 digito, máx 10 digitos") String id,
 			@PathVariable @Pattern(regexp = "^[0-9]{9}$", message = "Teléfono: mín 9 digitos, máx 9 digitos") String orderContactTel) {
@@ -68,7 +68,7 @@ public class OrderController {
 	// since on the front end, the deleteOrderById query fn
 	// uses the id from the fetched order w/ findOrderById
 	// not from user input
-	@DeleteMapping("/order/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Long> deleteById(@PathVariable Long id) {
 		orderService.deleteById(id);
 		return new ResponseEntity<>(id, HttpStatus.ACCEPTED);

@@ -18,8 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import PizzaApp.api.entity.clients.Address;
-import PizzaApp.api.entity.clients.Email;
+import PizzaApp.api.entity.user.common.Address;
+import PizzaApp.api.entity.user.common.Email;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc

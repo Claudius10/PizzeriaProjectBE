@@ -38,9 +38,9 @@ public class OrderItem {
 	@Column(name = "price")
 	private Double price;
 
-	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cart_id")
+	@JsonBackReference
 	private Cart cart;
 
 	public OrderItem() {

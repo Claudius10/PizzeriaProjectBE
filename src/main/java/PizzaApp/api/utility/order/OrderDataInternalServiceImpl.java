@@ -13,24 +13,22 @@ public class OrderDataInternalServiceImpl implements OrderDataInternalService {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 	private final AddressService addressService;
-	private final EmailService emailService;
 
-	public OrderDataInternalServiceImpl(AddressService addressService, EmailService emailService) {
+	public OrderDataInternalServiceImpl(AddressService addressService) {
 		this.addressService = addressService;
-		this.emailService = emailService;
 	}
 
 	@Override
 	public OrderData findOrderData(Order order) {
 		OrderData orderDataDTO = new OrderData();
 
-		if (order.getEmail() != null) {
+		/*if (order.getEmail() != null) {
 			logger.info("createOrUpdate order: EMAIL NOT NULL, SEARCHING");
 			orderDataDTO.setEmail(emailService.findByAddress(order.getEmail()));
 		} else {
 			logger.info("createOrUpdate order: NO EMAIL DATA, EMAIL IS NULL");
 			orderDataDTO.setEmail(null);
-		}
+		}*/
 
 		if (order.getAddress() != null) {
 			logger.info("createOrUpdate order: ADDRESS IS NOT NULL, SEARCHING");

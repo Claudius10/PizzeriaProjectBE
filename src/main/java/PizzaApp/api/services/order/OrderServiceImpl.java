@@ -4,14 +4,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 import org.springframework.stereotype.Service;
-import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
-import PizzaApp.api.entity.dto.order.OrderDTO;
+import PizzaApp.api.entity.order.dto.OrderCreatedOnDTO;
+import PizzaApp.api.entity.order.dto.OrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.utility.order.OrderData;
 import PizzaApp.api.utility.order.OrderDataInternalService;
-import PizzaApp.api.validation.order.OrderValidation;
+import PizzaApp.api.exceptions.validation.order.OrderValidation;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 
@@ -45,11 +45,6 @@ public class OrderServiceImpl implements OrderService {
 				order.getAddress().setId(dbOrderData.getAddress().getId());
 			}
 
-			// same for email
-			if (dbOrderData.getEmail() != null) {
-				order.getEmail().setId(dbOrderData.getEmail().getId());
-			}
-
 			// remove id's from items that come from front end
 			// so Hibernate doesn't perform extra unnecessary operations
 			for (OrderItem item : order.getCart().getOrderItems()) {
@@ -72,12 +67,8 @@ public class OrderServiceImpl implements OrderService {
 			// CUSTOMER
 
 			// if not updating customer data, set the same one from db
-			if (order.getCustomerFirstName() == null) {
-				order.setCustomerFirstName(originalOrder.getCustomerFirstName());
-			}
-
-			if (order.getCustomerLastName() == null && originalOrder.getCustomerLastName() != null) {
-				order.setCustomerLastName(originalOrder.getCustomerLastName());
+			if (order.getCustomerName() == null) {
+				order.setCustomerName(originalOrder.getCustomerName());
 			}
 
 			if (order.getContactTel() == null) {
@@ -86,10 +77,6 @@ public class OrderServiceImpl implements OrderService {
 
 			if (order.getEmail() == null) {
 				order.setEmail(originalOrder.getEmail());
-			} else {
-				if (dbOrderData.getEmail() != null) {
-					order.getEmail().setId(dbOrderData.getEmail().getId());
-				}
 			}
 
 			// DELIVERY

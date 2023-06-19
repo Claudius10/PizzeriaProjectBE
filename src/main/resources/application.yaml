@@ -1,0 +1,31 @@
+spring:
+
+  datasource:
+    password: ${DATABASE_PASSWORD}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+
+  jpa:
+    properties:
+
+      hibernate:
+        format_sql: true
+        integrator_provider: PizzaApp.api.configs.hibernate.ClassImportIntegratorIntegratorProvider
+        jdbc:
+          time_zone: UTC
+
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: UNSPECIFIED
+
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  config:
+    import: optional:file:local.env[.properties]
+
+server:
+  port: ${PORT}

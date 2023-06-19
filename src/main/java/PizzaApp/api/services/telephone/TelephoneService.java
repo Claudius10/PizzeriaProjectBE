@@ -1,6 +1,6 @@
 package PizzaApp.api.services.telephone;
 
-import PizzaApp.api.entity.clients.Telephone;
+import PizzaApp.api.entity.user.common.Telephone;
 
 public interface TelephoneService {
 

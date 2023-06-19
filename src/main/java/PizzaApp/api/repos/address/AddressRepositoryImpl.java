@@ -1,7 +1,7 @@
 package PizzaApp.api.repos.address;
 
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.clients.Address;
+import PizzaApp.api.entity.user.common.Address;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;

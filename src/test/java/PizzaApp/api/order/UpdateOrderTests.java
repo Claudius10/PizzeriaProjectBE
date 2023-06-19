@@ -23,13 +23,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.cart.Cart;
-import PizzaApp.api.entity.clients.Address;
-import PizzaApp.api.entity.clients.Email;
+import PizzaApp.api.entity.user.common.Address;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
-import PizzaApp.api.validation.exceptions.OrderDataUpdateTimeLimitException;
-import PizzaApp.api.validation.exceptions.OrderDeleteTimeLimitException;
+import PizzaApp.api.exceptions.exceptions.order.OrderDataUpdateTimeLimitException;
+import PizzaApp.api.exceptions.exceptions.order.OrderDeleteTimeLimitException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -56,9 +55,9 @@ public class UpdateOrderTests {
 			.withFloor("11")
 			.withDoor("DER")
 			.build();
-	private final Email originalEmail = new Email.Builder()
-			.withEmail("originalEmail@email.com")
-			.build();
+
+	private final String originalEmail = "originalEmail@email.com";
+
 	private final OrderDetails originalOrderDetails = new OrderDetails.Builder()
 			.withDeliveryHour("ASAP")
 			.withPaymentType("Credit Card")
@@ -86,7 +85,7 @@ public class UpdateOrderTests {
 		logger.info("Update order test #1: correctly created original order");
 
 		Order order = new Order.Builder()
-				.withCustomerFirstName("OriginalCustomer")
+				.withCustomerName("OriginalCustomer")
 				.withContactTel(333666999)
 				.withEmail(originalEmail)
 				.withAddress(originalAddress)
@@ -122,10 +121,9 @@ public class UpdateOrderTests {
 
 		// given / preparation:
 		Order order = new Order.Builder()
-				.withCustomerFirstName("NewCustomer")
-				.withCustomerLastName("NewCustomerTester")
+				.withCustomerName("NewCustomer")
 				.withContactTel(123456789)
-				.withEmail(originalEmail)
+				.withEmail("newEmail@gmail.com")
 				.withId(originalOrderId)
 				.withCreatedOn(originalOrderCreatedOn)
 				.build();
@@ -139,12 +137,11 @@ public class UpdateOrderTests {
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
-				() -> assertEquals(dbOrder.getCustomerFirstName(), order.getCustomerFirstName()),
-				() -> assertEquals(dbOrder.getCustomerLastName(), order.getCustomerLastName()),
+				() -> assertEquals(dbOrder.getCustomerName(), order.getCustomerName()),
 				() -> assertEquals(dbOrder.getContactTel(), order.getContactTel()),
+				() -> assertEquals(dbOrder.getEmail(), order.getEmail()),
 				() -> assertEquals(dbOrder.getId(), order.getId()),
-				() -> assertEquals(dbOrder.getCreatedOn(), order.getCreatedOn()),
-				() -> assertTrue(dbOrder.getEmail().entityEquals(order.getEmail()))
+				() -> assertEquals(dbOrder.getCreatedOn(), order.getCreatedOn())
 		);
 		logger.info("Update order test #2: successfully updated customer data");
 	}
@@ -156,12 +153,9 @@ public class UpdateOrderTests {
 
 		// given / preparation:
 		Order order = new Order.Builder()
-				.withCustomerFirstName("NewCustomer")
-				.withCustomerLastName("NewCustomerTester")
+				.withCustomerName("NewCustomer")
 				.withContactTel(123456789)
-				.withEmail(new Email.Builder()
-						.withEmail("NewEmail@email.com")
-						.build())
+				.withEmail("NewEmail@email.com")
 				.withId(originalOrderId)
 				.withCreatedOn(originalOrderCreatedOn)
 				.build();
@@ -175,12 +169,11 @@ public class UpdateOrderTests {
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
-				() -> assertEquals(dbOrder.getCustomerFirstName(), order.getCustomerFirstName()),
-				() -> assertEquals(dbOrder.getCustomerLastName(), order.getCustomerLastName()),
+				() -> assertEquals(dbOrder.getCustomerName(), order.getCustomerName()),
 				() -> assertEquals(dbOrder.getContactTel(), order.getContactTel()),
+				() -> assertEquals(dbOrder.getEmail(), order.getEmail()),
 				() -> assertEquals(dbOrder.getId(), order.getId()),
-				() -> assertEquals(dbOrder.getCreatedOn(), order.getCreatedOn()),
-				() -> assertTrue(dbOrder.getEmail().entityEquals(order.getEmail()))
+				() -> assertEquals(dbOrder.getCreatedOn(), order.getCreatedOn())
 		);
 		logger.info("Update order test #3: successfully updated email");
 	}
@@ -369,9 +362,9 @@ public class UpdateOrderTests {
 
 		// create order for update
 		Order order = new Order.Builder()
-				.withCustomerFirstName("ExceptionToCatch")
+				.withCustomerName("ExceptionToCatch")
 				.withContactTel(123123123)
-				.withEmail(new Email.Builder().withEmail("wontwork@email.com").build())
+				.withEmail("wontwork@email.com")
 				.withOrderDetails(new OrderDetails.Builder()
 						.withDeliveryHour("22:30")
 						.withPaymentType("Tarjeta")
@@ -409,7 +402,7 @@ public class UpdateOrderTests {
 
 	public Long createTestSubject(int minusMins) {
 		Order orderTestSubject = new Order.Builder()
-				.withCustomerFirstName("orderTestSubject")
+				.withCustomerName("orderTestSubject")
 				.withContactTel(777333777)
 				.withEmail(originalEmail)
 				.withAddress(originalAddress)

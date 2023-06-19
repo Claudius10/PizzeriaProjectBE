@@ -3,22 +3,15 @@ package PizzaApp.api.entity.order;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import PizzaApp.api.entity.user.UserData;
+import PizzaApp.api.entity.user.common.Address;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.cart.Cart;
-import PizzaApp.api.entity.clients.Address;
-import PizzaApp.api.entity.clients.Email;
-import PizzaApp.api.entity.clients.user.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 @Entity(name = "Order")
@@ -36,30 +29,29 @@ public class Order {
 	@Column(name = "updated_on")
 	private LocalDateTime updatedOn;
 
-	@Column(name = "c_first_name")
-	@Pattern(regexp = "^[a-zA-Z\s]{2,25}$", message = "Nombre: solo letras sin tildes (mín 2, máx 25 letras)")
-	private String customerFirstName;
+	@Column(name = "c_name")
+	@Pattern(regexp = "^[a-zA-Z\s]{2,50}$",
+			message = "Nombre / apellidos: solo letras sin tildes (mín 2, máx 25 letras)")
+	private String customerName;
 
-	@Column(name = "c_last_name")
-	@Pattern(regexp = "^[a-zA-Z\s]{0,25}$", message = "Apellido: solo letras sin tildes (no mín, máx 25 letras)")
-	private String customerLastName;
-
-	/*
-	for contactTel there can't be field validation
-	cause when receiving Order obj for update without
-	/contactTel, it will insta reject before being able
-	to do logic in orderServiceImpl
-	*/
+	/* for contactTel there can't be field validation cause when receiving Order obj for update without
+	contactTel, it will insta reject before being able to do logic in orderServiceImpl */
 	@Column(name = "contact_tel")
 	private Integer contactTel;
 
-	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-	@Valid
-	private Email email;
+	/* same as contactTel for validation */
+	@Column(name = "email")
+	@Email(message = "El formato del email no es aceptado")
+	private String email;
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@Valid
 	private Address address;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "userdata_id")
+	@JsonBackReference
+	private UserData userData;
 
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
@@ -70,9 +62,6 @@ public class Order {
 	@JsonManagedReference
 	private Cart cart;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private User user;
-
 	public Order() {
 	}
 
@@ -80,24 +69,22 @@ public class Order {
 		this.id = builder.id;
 		this.createdOn = builder.createdOn;
 		this.updatedOn = builder.updatedOn;
-		this.customerFirstName = builder.customerFirstName;
-		this.customerLastName = builder.customerLastName;
+		this.customerName = builder.customerName;
 		this.contactTel = builder.contactTel;
 		this.email = builder.email;
 		this.address = builder.address;
 		this.orderDetails = builder.orderDetails;
 		this.cart = builder.cart;
-		this.user = null;
+		this.userData = null;
 	}
 
 	public static class Builder {
 		private Long id;
 		private LocalDateTime createdOn;
 		private LocalDateTime updatedOn;
-		private String customerFirstName;
-		private String customerLastName;
+		private String customerName;
 		private Integer contactTel;
-		private Email email;
+		private String email;
 		private Address address;
 		private OrderDetails orderDetails;
 		private Cart cart;
@@ -120,22 +107,18 @@ public class Order {
 			return this;
 		}
 
-		public Builder withCustomerFirstName(String customerFirstName) {
-			this.customerFirstName = customerFirstName;
+		public Builder withCustomerName(String customerName) {
+			this.customerName = customerName;
 			return this;
 		}
 
-		public Builder withCustomerLastName(String customerLastName) {
-			this.customerLastName = customerLastName;
-			return this;
-		}
 
 		public Builder withContactTel(Integer contactTel) {
 			this.contactTel = contactTel;
 			return this;
 		}
 
-		public Builder withEmail(Email email) {
+		public Builder withEmail(String email) {
 			this.email = email;
 			return this;
 		}
@@ -206,20 +189,20 @@ public class Order {
 		this.updatedOn = updatedOn;
 	}
 
-	public String getCustomerFirstName() {
-		return customerFirstName;
+	public String getCustomerName() {
+		return customerName;
 	}
 
-	public void setCustomerFirstName(String customerFirstName) {
-		this.customerFirstName = customerFirstName;
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 
-	public String getCustomerLastName() {
-		return customerLastName;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setCustomerLastName(String customerLastName) {
-		this.customerLastName = customerLastName;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Integer getContactTel() {
@@ -238,14 +221,6 @@ public class Order {
 		this.address = address;
 	}
 
-	public Email getEmail() {
-		return email;
-	}
-
-	public void setEmail(Email email) {
-		this.email = email;
-	}
-
 	public OrderDetails getOrderDetails() {
 		return orderDetails;
 	}
@@ -254,12 +229,12 @@ public class Order {
 		return cart;
 	}
 
-	public User getUser() {
-		return user;
+	public UserData getUserData() {
+		return userData;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserData(UserData userData) {
+		this.userData = userData;
 	}
 
 	@Override
@@ -276,13 +251,6 @@ public class Order {
 			return false;
 
 		return id != null && id.equals(((Order) obj).getId());
-	}
-
-	@Override
-	public String toString() {
-		return "Order [id=" + id + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + ", customerFirstName="
-				+ customerFirstName + ", customerLastName=" + customerLastName + ", contactTel=" + contactTel
-				+ ", address=" + address + ", email=" + email + "]";
 	}
 
 	public boolean entityEquals(Object o) {
@@ -305,11 +273,9 @@ public class Order {
 		return Objects.equals(createdOn, order.createdOn) &&
 				Objects.equals(updatedOn, order.updatedOn) &&
 
-				Objects.equals(customerFirstName, order.customerFirstName) &&
-				Objects.equals(customerLastName, order.customerLastName) &&
-
+				Objects.equals(customerName, order.customerName) &&
 				Objects.equals(contactTel, order.contactTel) &&
-				Objects.equals(email.getEmail(), order.email.getEmail()) &&
+				Objects.equals(email, order.getEmail()) &&
 
 				Objects.equals(address.getStreet(), order.address.getStreet()) &&
 				Objects.equals(address.getStreetNr(), order.address.getStreetNr()) &&

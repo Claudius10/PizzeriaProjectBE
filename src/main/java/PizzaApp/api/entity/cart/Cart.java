@@ -40,7 +40,10 @@ public class Cart {
 	// when updating Cart, the merge operation is going to be cascaded to the
 	// OrderItem association as well, so there's no need to manually
 	// sync the bidirectional association
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "cart",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private List<OrderItem> orderItems;
 

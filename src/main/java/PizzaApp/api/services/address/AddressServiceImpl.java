@@ -2,7 +2,7 @@ package PizzaApp.api.services.address;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import PizzaApp.api.entity.clients.Address;
+import PizzaApp.api.entity.user.common.Address;
 import PizzaApp.api.repos.address.AddressRepository;
 
 @Service

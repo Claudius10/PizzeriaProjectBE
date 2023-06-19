@@ -1,6 +1,6 @@
 package PizzaApp.api.repos.email;
 
-import PizzaApp.api.entity.clients.Email;
+import PizzaApp.api.entity.user.common.Email;
 
 public interface EmailRepository {
 

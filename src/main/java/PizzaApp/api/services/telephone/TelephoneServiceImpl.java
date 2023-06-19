@@ -2,7 +2,7 @@ package PizzaApp.api.services.telephone;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import PizzaApp.api.entity.clients.Telephone;
+import PizzaApp.api.entity.user.common.Telephone;
 import PizzaApp.api.repos.telephone.TelephoneRepositoryImpl;
 
 @Service

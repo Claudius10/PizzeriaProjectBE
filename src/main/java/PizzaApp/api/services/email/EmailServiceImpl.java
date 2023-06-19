@@ -1,7 +1,7 @@
 package PizzaApp.api.services.email;
 
 import org.springframework.stereotype.Service;
-import PizzaApp.api.entity.clients.Email;
+import PizzaApp.api.entity.user.common.Email;
 import PizzaApp.api.repos.email.EmailRepository;
 import jakarta.transaction.Transactional;
 

@@ -1,7 +1,7 @@
 package PizzaApp.api.repos.telephone;
 
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.clients.Telephone;
+import PizzaApp.api.entity.user.common.Telephone;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;

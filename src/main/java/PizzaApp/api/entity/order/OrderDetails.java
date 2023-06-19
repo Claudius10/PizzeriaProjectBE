@@ -1,7 +1,7 @@
 package PizzaApp.api.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import PizzaApp.api.validation.constraints.DoubleLengthNullable;
+import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

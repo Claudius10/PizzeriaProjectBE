@@ -1,9 +1,12 @@
 package PizzaApp.api.repos.role;
 
-import PizzaApp.api.entity.clients.user.Role;
+import PizzaApp.api.entity.user.Role;
+
+import java.util.Optional;
 
 public interface RoleRepository {
 
-	Role findByName(String roleName);
+	void create(Role role);
 
+	Optional<Role> findByName(String roleName);
 }

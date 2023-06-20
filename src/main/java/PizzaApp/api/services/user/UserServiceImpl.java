@@ -15,19 +15,21 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 	private final RoleService roleService;
-	private final PasswordEncoder encoder;
+	private final PasswordEncoder bCryptEncoder;
 
-	public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder encoder) {
+	public UserServiceImpl(UserRepository userRepository,
+						   RoleService roleService,
+						   PasswordEncoder bCryptEncoder) {
 		this.userRepository = userRepository;
 		this.roleService = roleService;
-		this.encoder = encoder;
+		this.bCryptEncoder = bCryptEncoder;
 	}
 
 	@Override
 	public void create(RegisterDTO registerDTO) {
 		Role userRole = roleService.findByName("USER").orElseThrow();
 
-		String encodedPassword = encoder.encode(registerDTO.getPassword());
+		String encodedPassword = bCryptEncoder.encode(registerDTO.getPassword());
 
 		userRepository.create(new User.Builder()
 				.withUsername(registerDTO.getEmail())

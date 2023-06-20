@@ -63,6 +63,10 @@ public class User implements UserDetails {
 		}
 	}
 
+	public Long getId() {
+		return id;
+	}
+
 	@Override
 	public String getUsername() {
 		return this.username;

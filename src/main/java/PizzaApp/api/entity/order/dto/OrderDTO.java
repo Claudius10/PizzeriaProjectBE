@@ -22,31 +22,27 @@ public class OrderDTO {
 
 	private String formattedUpdatedOn;
 
-	private String customerFirstName;
-
-	private String customerLastName;
+	private String customerName;
 
 	private Integer contactTel;
 
-	private Address address;
+	private String email;
 
-	private Email email;
+	private Address address;
 
 	private OrderDetails orderDetails;
 
 	private Cart cart;
 
-	public OrderDTO(Long id, LocalDateTime createdOn, LocalDateTime updatedOn, String customerFirstName,
-					String customerLastName, Integer contactTel, Address address, Email email, OrderDetails orderDetails,
-					Cart cart) {
+
+	public OrderDTO(Long id, LocalDateTime createdOn, LocalDateTime updatedOn, String customerName, Integer contactTel, String email, Address address, OrderDetails orderDetails, Cart cart) {
 		this.id = id;
 		this.createdOn = createdOn;
 		this.updatedOn = updatedOn;
-		this.customerFirstName = customerFirstName;
-		this.customerLastName = customerLastName;
+		this.customerName = customerName;
 		this.contactTel = contactTel;
-		this.address = address;
 		this.email = email;
+		this.address = address;
 		this.orderDetails = orderDetails;
 		this.cart = cart;
 	}
@@ -91,20 +87,12 @@ public class OrderDTO {
 		this.formattedUpdatedOn = formattedUpdatedOn;
 	}
 
-	public String getCustomerFirstName() {
-		return customerFirstName;
+	public String getCustomerName() {
+		return customerName;
 	}
 
-	public void setCustomerFirstName(String customerFirstName) {
-		this.customerFirstName = customerFirstName;
-	}
-
-	public String getCustomerLastName() {
-		return customerLastName;
-	}
-
-	public void setCustomerLastName(String customerLastName) {
-		this.customerLastName = customerLastName;
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 
 	public Integer getContactTel() {
@@ -115,20 +103,20 @@ public class OrderDTO {
 		this.contactTel = contactTel;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public Address getAddress() {
 		return address;
 	}
 
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-
-	public Email getEmail() {
-		return email;
-	}
-
-	public void setEmail(Email email) {
-		this.email = email;
 	}
 
 	public OrderDetails getOrderDetails() {

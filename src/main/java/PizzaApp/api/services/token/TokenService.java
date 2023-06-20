@@ -1,9 +1,8 @@
-package PizzaApp.api.services.auth;
+package PizzaApp.api.services.token;
 
 
 import PizzaApp.api.entity.user.dto.AuthDTO;
 import PizzaApp.api.entity.user.dto.LoginDTO;
-import PizzaApp.api.entity.user.dto.RegisterDTO;
 
 public interface TokenService {
 

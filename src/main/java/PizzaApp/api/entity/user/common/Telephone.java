@@ -33,6 +33,14 @@ public class Telephone {
 		this.id = id;
 	}
 
+	public Integer getNumber() {
+		return number;
+	}
+
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
+
 	public UserData getUserData() {
 		return userData;
 	}

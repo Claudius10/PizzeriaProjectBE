@@ -3,7 +3,6 @@ package PizzaApp.api.repos.order;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.order.dto.OrderCreatedOnDTO;
 import PizzaApp.api.entity.order.dto.OrderDTO;
@@ -56,26 +55,25 @@ public class OrderRepositoryImpl implements OrderRepository {
 	// Mi Pedido component
 	@Override
 	public OrderDTO findDTOByIdAndTel(String id, String orderContactTel) {
+		TypedQuery<OrderDTO> query = em.createQuery("""
+				select new OrderDTO(
+				   o.id,
+				   o.createdOn,
+				   o.updatedOn,
+				   o.customerName,
+				   o.contactTel,
+				   o.email,
+				   o.address,
+				   o.orderDetails,
+				   o.cart
+				)
+				from Order o
+				where o.id= :orderId and o.contactTel= :orderTel
+				""", OrderDTO.class);
+
+		query.setParameter("orderId", id);
+		query.setParameter("orderTel", orderContactTel);
 		try {
-			TypedQuery<OrderDTO> query = em.createQuery("""
-					select new OrderDTO(
-					   o.id,
-					   o.createdOn,
-					   o.updatedOn,
-					   o.customerName,
-					   o.contactTel,
-					   o.address,
-					   o.email,
-					   o.orderDetails,
-					   o.cart
-					)
-					from Order o
-					where o.id= :orderId and o.contactTel= :orderTel
-					""", OrderDTO.class);
-
-			query.setParameter("orderId", id);
-			query.setParameter("orderTel", orderContactTel);
-
 			return query.getSingleResult();
 		} catch (NoResultException nre) {
 			return null;

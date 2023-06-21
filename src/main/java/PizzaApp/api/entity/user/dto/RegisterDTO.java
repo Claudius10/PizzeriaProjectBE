@@ -27,6 +27,47 @@ public class RegisterDTO {
 	public RegisterDTO() {
 	}
 
+	private RegisterDTO(Builder builder) {
+		this.email = builder.email;
+		this.matchingEmail = builder.matchingEmail;
+		this.password = builder.password;
+		this.matchingPassword = builder.matchingPassword;
+	}
+
+	public static class Builder {
+		private String email;
+		private String matchingEmail;
+		private String password;
+		private String matchingPassword;
+
+		public Builder() {
+		}
+
+		public Builder withEmail(String email) {
+			this.email = email;
+			return this;
+		}
+
+		public Builder withMatchingEmail(String matchingEmail) {
+			this.matchingEmail = matchingEmail;
+			return this;
+		}
+
+		public Builder withPassword(String password) {
+			this.password = password;
+			return this;
+		}
+
+		public Builder withMatchingPassword(String matchingPassword) {
+			this.matchingPassword = matchingPassword;
+			return this;
+		}
+
+		public RegisterDTO build() {
+			return new RegisterDTO(this);
+		}
+	}
+
 	public String getEmail() {
 		return email;
 	}

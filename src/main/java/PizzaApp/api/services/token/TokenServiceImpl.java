@@ -1,5 +1,6 @@
 package PizzaApp.api.services.token;
 
+import PizzaApp.api.entity.user.Token;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.dto.AuthDTO;
 import PizzaApp.api.entity.user.dto.LoginDTO;
@@ -8,7 +9,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @Transactional
@@ -33,17 +39,36 @@ public class TokenServiceImpl implements TokenService {
 
 		// 2. return AuthDTO
 		return new AuthDTO.Builder()
-				.withUserId(theUser.getId())
-				.withUsername(theUser.getUsername())
-				.withAccessToken(jwtUtils.createAccessToken(
-						theUser.getUsername(), theUser.getAuthorities()))
-				.withRefreshToken(jwtUtils.createRefreshToken(
-						theUser.getUsername(), theUser.getAuthorities()))
+				.withAccessToken(jwtUtils.createToken(
+						theUser.getUsername(),
+						theUser.getId(),
+						jwtUtils.parseRoles(theUser.getAuthorities()),
+						Instant.now().plus(20, ChronoUnit.SECONDS)))
+				.withRefreshToken(jwtUtils.createToken(
+						theUser.getUsername(),
+						theUser.getId(),
+						jwtUtils.parseRoles(theUser.getAuthorities()),
+						Instant.now().plus(60, ChronoUnit.SECONDS)))
 				.build();
 	}
 
 	@Override
-	public AuthDTO refresh() {
-		return null;
+	public AuthDTO refresh(Token token) {
+		// 1. Validate refresh token
+		Jwt jwt = jwtUtils.validate(token.getValue());
+
+		// 2. return AuthDTO
+		return new AuthDTO.Builder()
+				.withAccessToken(jwtUtils.createToken(
+						jwt.getClaim("sub"),
+						jwt.getClaim("userId"),
+						jwt.getClaim("roles"),
+						Instant.now().plus(20, ChronoUnit.SECONDS)))
+				.withRefreshToken(jwtUtils.createToken(
+						jwt.getClaim("sub"),
+						jwt.getClaim("userId"),
+						jwt.getClaim("roles"),
+						Instant.now().plus(20, ChronoUnit.SECONDS)))
+				.build();
 	}
 }

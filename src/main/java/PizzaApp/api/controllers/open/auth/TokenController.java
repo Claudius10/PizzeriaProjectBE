@@ -1,5 +1,6 @@
 package PizzaApp.api.controllers.open.auth;
 
+import PizzaApp.api.entity.user.Token;
 import PizzaApp.api.entity.user.dto.AuthDTO;
 import PizzaApp.api.entity.user.dto.LoginDTO;
 import PizzaApp.api.services.token.TokenService;
@@ -26,7 +27,7 @@ public class TokenController {
 	}
 
 	@PostMapping("/refresh")
-	public AuthDTO refreshToken() {
-		return null;
+	public ResponseEntity<AuthDTO> refreshToken(@RequestBody Token token) {
+		return ResponseEntity.ok().body(tokenService.refresh(token));
 	}
 }

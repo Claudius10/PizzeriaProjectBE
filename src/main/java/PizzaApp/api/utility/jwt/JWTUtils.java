@@ -20,24 +20,14 @@ public class JWTUtils {
 		this.jwtDecoder = jwtDecoder;
 	}
 
-	public String createAccessToken(String name, Collection<? extends GrantedAuthority> roles) {
+	public String createToken(String username, Long userId, String roles, Instant expiry) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer("http://192.168.1.11:8090")
-				.subject(name)
+				.subject(username)
 				.issuedAt(Instant.now())
-				.expiresAt(Instant.now().plus(20, ChronoUnit.SECONDS))
-				.claim("roles", parseRoles(roles))
-				.build();
-		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-	}
-
-	public String createRefreshToken(String name, Collection<? extends GrantedAuthority> roles) {
-		JwtClaimsSet claims = JwtClaimsSet.builder()
-				.issuer("http://192.168.1.11:8090")
-				.subject(name)
-				.issuedAt(Instant.now())
-				.expiresAt(Instant.now().plus(60, ChronoUnit.SECONDS))
-				.claim("roles", parseRoles(roles))
+				.expiresAt(expiry)
+				.claim("userId", userId)
+				.claim("roles", roles)
 				.build();
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}

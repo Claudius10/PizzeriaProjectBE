@@ -23,6 +23,6 @@ public class AccountController {
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
 		userService.create(registerDTO);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok().build();
 	}
 }

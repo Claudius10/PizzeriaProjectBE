@@ -16,9 +16,8 @@ public class RESTAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	 * {@link ExceptionTranslationFilter} delegates the handling of {@link AuthenticationException}
 	 * and its subclasses (very important) to implementations of {@link AuthenticationEntryPoint}.
 	 * This happens during the SecurityFilterChain's execution, before invoking any MVC controllers.
-	 * {@link HandlerExceptionResolver} is able to pass these exceptions to the class
-	 * annotated with @ControllerAdvice or @RestControllerAdvice and handle them
-	 * with @ExceptionHandler annotated methods, thus returning APIErrorDTOs in controllers.
+	 * {@link HandlerExceptionResolver} passes these exceptions as ModelAndView and when
+	 * handling them with @ExceptionHandler, an APIErrorDTO can be returned in controllers.
 	 */
 
 	private final HandlerExceptionResolver resolver;
@@ -31,12 +30,7 @@ public class RESTAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request,
 						 HttpServletResponse response,
 						 AuthenticationException authException) {
-
-		if (resolver.resolveException(request, response, null, authException) == null) {
-			throw authException;
-		} else {
-			// pass the exception to handle it with @ExceptionHandler
-			resolver.resolveException(request, response, null, authException);
-		}
+		// pass the exception to handle it with @ExceptionHandler
+		resolver.resolveException(request, response, null, authException);
 	}
 }

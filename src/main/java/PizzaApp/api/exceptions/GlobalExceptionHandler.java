@@ -14,13 +14,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
@@ -30,8 +30,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		return new ResponseEntity<>(
-				new ApiErrorDTO.Builder(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+		return ResponseEntity
+				.status(status)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(status.value())
 						.withPath(request.getDescription(false))
 						.withErrors(
@@ -40,19 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 										.stream()
 										.map(DefaultMessageSourceResolvable::getDefaultMessage)
 										.collect(Collectors.toList()))
-						.build(), status);
-	}
-
-	@ExceptionHandler({SQLIntegrityConstraintViolationException.class})
-	protected ResponseEntity<ApiErrorDTO> handleUniqueUsername(HttpServletRequest request, RuntimeException ex) {
-		return new ResponseEntity<>(
-				new ApiErrorDTO.Builder(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrors(List.of(
-								"Una cuenta con el email introducido ya existe. " +
-										"Si no recuerda la contraseña, pulse \"Restablecer contraseña.\""))
-						.build(), HttpStatus.BAD_REQUEST);
+						.build());
 	}
 
 	@ExceptionHandler({
@@ -62,12 +52,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			StoreNotOpenException.class,
 			InvalidChangeRequestedException.class,})
 	protected ResponseEntity<ApiErrorDTO> handleCreateOrUpdateOrderExceptions(HttpServletRequest request, RuntimeException ex) {
-		return new ResponseEntity<>(
-				new ApiErrorDTO.Builder(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
 						.withErrors(List.of(ex.getMessage()))
-						.build(), HttpStatus.BAD_REQUEST);
+						.build());
 	}
 
 	@ExceptionHandler({
@@ -75,11 +67,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			InvalidContactTelephoneException.class,
 			BlankEmailException.class})
 	protected ResponseEntity<ApiErrorDTO> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
-		return new ResponseEntity<>(
-				new ApiErrorDTO.Builder(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
 						.withErrors(List.of(ex.getMessage()))
-						.build(), HttpStatus.BAD_REQUEST);
+						.build());
+	}
+
+	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
+	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
+						.withPath(request.getServletPath())
+						.withErrors(List.of(ex.getMessage()))
+						.build());
+	}
+
+	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+	protected ResponseEntity<ApiErrorDTO> handleUniqueUsernameException(HttpServletRequest request) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+						.withStatusCode(HttpStatus.BAD_REQUEST.value())
+						.withPath(request.getServletPath())
+						.withErrors(List.of(
+								"Una cuenta con el email introducido ya existe. " +
+										"Si no recuerda la contraseña, pulse \"Restablecer contraseña.\""))
+						.build());
 	}
 }

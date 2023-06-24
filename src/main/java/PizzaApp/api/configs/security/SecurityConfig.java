@@ -9,13 +9,15 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,11 +25,14 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.*;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -35,31 +40,56 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
 	private final RSAKeyPair keys;
-
 	// return APIErrorDTOs based of AuthenticationExceptions
 	private final RESTAuthenticationEntryPoint restAuthenticationEntryPoint;
-
 	// return APIErrorDTOs based of AccessDeniedExceptions
 	private final RESTAccessDeniedHandler restAccessDeniedHandler;
+	private final CookieBearerTokenResolver cookieBearerTokenResolver;
 
 	public SecurityConfig(RSAKeyPair keys,
 						  RESTAuthenticationEntryPoint restAuthenticationEntryPoint,
-						  RESTAccessDeniedHandler restAccessDeniedHandler) {
+						  RESTAccessDeniedHandler restAccessDeniedHandler,
+						  CookieBearerTokenResolver cookieBearerTokenResolver) {
 		this.keys = keys;
 		this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
 		this.restAccessDeniedHandler = restAccessDeniedHandler;
+		this.cookieBearerTokenResolver = cookieBearerTokenResolver;
 	}
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		// no need for csrf protection since no cookies
-		http.csrf(AbstractHttpConfigurer::disable);
-
-		// for global cors configuration
+		// cors config
 		http.cors(withDefaults());
 
-		// configure endpoints security
+		// CSRF config
+		http.csrf(csrf -> csrf
+				// persist CSRF token in a cookie
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				// resolve CSRF token off the X-XSRF-TOKEN HTTP request header
+				.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+				// enable CSRF token protection for post auth requests with JWT tokens
+				.withObjectPostProcessor(new ObjectPostProcessor<CsrfFilter>() {
+					@Override
+					public <O extends CsrfFilter> O postProcess(O object) {
+						object.setRequireCsrfProtectionMatcher(CsrfFilter.DEFAULT_CSRF_MATCHER);
+						return object;
+					}
+				}));
+
+		// JWT support config
+		http.oauth2ResourceServer(oauth2ResourceServer -> {
+			oauth2ResourceServer.jwt(jwt -> {
+				jwt.decoder(jwtDecoder());
+				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
+			});
+			oauth2ResourceServer.authenticationEntryPoint(restAuthenticationEntryPoint);
+			oauth2ResourceServer.accessDeniedHandler(restAccessDeniedHandler);
+			// load JWT from cookie instead of Authorization header
+			oauth2ResourceServer.bearerTokenResolver(cookieBearerTokenResolver);
+		});
+
+		// endpoints config
 		http.authorizeHttpRequests(auth -> {
 			auth.requestMatchers("/api/auth/**").permitAll();
 			auth.requestMatchers("/api/resource/**").permitAll();
@@ -69,15 +99,6 @@ public class SecurityConfig {
 			auth.anyRequest().authenticated();
 		});
 
-		http.oauth2ResourceServer(oauth2ResourceServer -> {
-			oauth2ResourceServer.jwt(jwt -> {
-				jwt.decoder(jwtDecoder());
-				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
-			});
-			oauth2ResourceServer.authenticationEntryPoint(restAuthenticationEntryPoint);
-			oauth2ResourceServer.accessDeniedHandler(restAccessDeniedHandler);
-		});
-
 		return http.build();
 	}
 
@@ -85,11 +106,12 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.1.11:3000",
+				Arrays.asList("http://192.168.1.11:3000", "http://localhost:3000",
 						"https://pizzeria-project-claudius10.vercel.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+		configuration.setExposedHeaders(Arrays.asList("Content-Type", "X-XSFR-TOKEN"));
+		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "X-XSFR-TOKEN"));
+		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;

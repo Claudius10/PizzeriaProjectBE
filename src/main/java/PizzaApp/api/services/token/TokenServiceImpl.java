@@ -1,10 +1,9 @@
 package PizzaApp.api.services.token;
 
-import PizzaApp.api.entity.user.Token;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.dto.AuthDTO;
 import PizzaApp.api.entity.user.dto.LoginDTO;
-import PizzaApp.api.utility.jwt.JWTUtils;
+import PizzaApp.api.utility.auth.JWTUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,34 +39,32 @@ public class TokenServiceImpl implements TokenService {
 		return new AuthDTO.Builder()
 				.withAccessToken(jwtUtils.createToken(
 						theUser.getUsername(),
-						theUser.getId(),
 						jwtUtils.parseRoles(theUser.getAuthorities()),
 						Instant.now().plus(20, ChronoUnit.SECONDS)))
 				.withRefreshToken(jwtUtils.createToken(
 						theUser.getUsername(),
-						theUser.getId(),
 						jwtUtils.parseRoles(theUser.getAuthorities()),
 						Instant.now().plus(60, ChronoUnit.SECONDS)))
+				.withUsername(theUser.getUsername())
+				.withUserId(theUser.getId())
 				.build();
 	}
 
 	@Override
-	public AuthDTO refresh(Token token) {
+	public AuthDTO refresh(String token) {
 		// 1. Validate refresh token
-		Jwt jwt = jwtUtils.validate(token.getValue());
+		Jwt jwt = jwtUtils.validate(token);
 
 		// 2. return AuthDTO
 		return new AuthDTO.Builder()
 				.withAccessToken(jwtUtils.createToken(
 						jwt.getClaim("sub"),
-						jwt.getClaim("userId"),
 						jwt.getClaim("roles"),
 						Instant.now().plus(20, ChronoUnit.SECONDS)))
 				.withRefreshToken(jwtUtils.createToken(
 						jwt.getClaim("sub"),
-						jwt.getClaim("userId"),
 						jwt.getClaim("roles"),
-						Instant.now().plus(20, ChronoUnit.SECONDS)))
+						Instant.now().plus(60, ChronoUnit.SECONDS)))
 				.build();
 	}
 }

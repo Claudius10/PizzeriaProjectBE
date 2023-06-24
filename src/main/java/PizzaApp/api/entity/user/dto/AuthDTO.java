@@ -1,17 +1,19 @@
 package PizzaApp.api.entity.user.dto;
 
 public class AuthDTO {
-	private String accessToken;
-	private String refreshToken;
+	private String accessToken, refreshToken, username;
+	private Long userId;
 
 	private AuthDTO(Builder builder) {
 		this.accessToken = builder.accessToken;
 		this.refreshToken = builder.refreshToken;
+		this.username = builder.username;
+		this.userId = builder.userId;
 	}
 
 	public static class Builder {
-		private String accessToken;
-		private String refreshToken;
+		private String accessToken, refreshToken, username;
+		private Long userId;
 
 		public Builder() {
 		}
@@ -26,6 +28,16 @@ public class AuthDTO {
 			return this;
 		}
 
+		public Builder withUsername(String username) {
+			this.username = username;
+			return this;
+		}
+
+		public Builder withUserId(Long userId) {
+			this.userId = userId;
+			return this;
+		}
+
 		public AuthDTO build() {
 			return new AuthDTO(this);
 		}
@@ -35,15 +47,15 @@ public class AuthDTO {
 		return accessToken;
 	}
 
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-
 	public String getRefreshToken() {
 		return refreshToken;
 	}
 
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
+	public String getUsername() {
+		return username;
+	}
+
+	public Long getUserId() {
+		return userId;
 	}
 }

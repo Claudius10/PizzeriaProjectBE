@@ -9,5 +9,5 @@ public interface TokenService {
 
 	AuthDTO create(LoginDTO login);
 
-	AuthDTO refresh(Token token);
+	AuthDTO refresh(String token);
 }

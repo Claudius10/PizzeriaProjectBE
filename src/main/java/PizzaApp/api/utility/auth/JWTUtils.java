@@ -1,4 +1,4 @@
-package PizzaApp.api.utility.jwt;
+package PizzaApp.api.utility.auth;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
@@ -19,13 +19,12 @@ public class JWTUtils {
 		this.jwtDecoder = jwtDecoder;
 	}
 
-	public String createToken(String username, Long userId, String roles, Instant expiry) {
+	public String createToken(String username, String roles, Instant expiry) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer("http://192.168.1.11:8090")
 				.subject(username)
 				.issuedAt(Instant.now())
 				.expiresAt(expiry)
-				.claim("userId", userId)
 				.claim("roles", roles)
 				.build();
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

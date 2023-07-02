@@ -16,6 +16,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,6 +59,9 @@ public class SecurityConfig {
 		// cors config
 		http.cors(withDefaults());
 
+		http.csrf(AbstractHttpConfigurer::disable);
+
+		/*
 		// CSRF config
 		http.csrf(csrf -> csrf
 				// persist CSRF token in a cookie
@@ -72,7 +76,7 @@ public class SecurityConfig {
 						object.setRequireCsrfProtectionMatcher(CsrfFilter.DEFAULT_CSRF_MATCHER);
 						return object;
 					}
-				}));
+				}));*/
 
 		// JWT support config
 		http.oauth2ResourceServer(oauth2ResourceServer -> {
@@ -110,8 +114,8 @@ public class SecurityConfig {
 		configuration.setAllowedOrigins(
 				Arrays.asList("http://192.168.1.11:3000", "https://pizzeriaproject-production.up.railway.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
-		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
+		configuration.setExposedHeaders(Arrays.asList("Content-Type"));
+		configuration.setAllowedHeaders(Arrays.asList("Content-Type"));
 		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
@@ -141,7 +145,7 @@ public class SecurityConfig {
 	@Bean
 	public JwtDecoder jwtDecoder() {
 		NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
-		decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("http://192.168.1.11:8090"));
+		decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("https://pizzeriaprojectbe-production.up.railway.app"));
 		return decoder;
 	}
 

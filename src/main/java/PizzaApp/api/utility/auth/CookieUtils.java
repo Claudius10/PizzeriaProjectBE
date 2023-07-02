@@ -21,7 +21,7 @@ public final class CookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
-				.domain(".-production.up.railway.app")
+				.domain(".up.railway.app")
 				.build();
 	}
 

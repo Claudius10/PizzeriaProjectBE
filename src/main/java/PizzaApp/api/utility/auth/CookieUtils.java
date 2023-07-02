@@ -21,6 +21,7 @@ public final class CookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
+				.domain("https://pizzeriaproject-production.up.railway.app")
 				.build();
 	}
 

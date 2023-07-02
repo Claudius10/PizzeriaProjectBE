@@ -24,12 +24,6 @@ spring:
     hibernate:
       ddl-auto: update
 
-  config:
-    import: optional:file:local.env[.properties]
-
-server:
-  port: ${PORT}
-
 logging:
   level:
     org.springframework.security: TRACE

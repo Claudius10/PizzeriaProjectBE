@@ -41,7 +41,7 @@ public final class CookieUtils {
 						auth.getAccessToken(),
 						20,
 						true,
-						false) // true for prod
+						true) // true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
@@ -49,7 +49,7 @@ public final class CookieUtils {
 						auth.getRefreshToken(),
 						120,
 						true,
-						false)
+						true)
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
@@ -57,7 +57,7 @@ public final class CookieUtils {
 						String.valueOf(auth.getUserId()),
 						168 * 60 * 60,
 						false,
-						false)
+						true)
 						.toString());
 	}
 

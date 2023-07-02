@@ -66,7 +66,8 @@ public final class CookieUtils {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null)
 			for (Cookie cookie : cookies) {
-				cookie.setDomain("https://pizzeriaproject-production.up.railway.app");
+				cookie.setSecure(true);
+				cookie.setDomain("pizzeriaproject-production.up.railway.app");
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);

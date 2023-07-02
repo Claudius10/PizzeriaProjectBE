@@ -21,7 +21,7 @@ public class JWTUtils {
 
 	public String createToken(String username, Long userId, String roles, Instant expiry) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
-				.issuer("http://192.168.1.11:8090")
+				.issuer("https://pizzeriaprojectbe-production.up.railway.app")
 				.subject(username)
 				.issuedAt(Instant.now())
 				.expiresAt(expiry)

@@ -73,12 +73,12 @@ public class AccountController {
 
 	@GetMapping("/test")
 	public ResponseEntity<?> testEndpoint() {
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body("GET User access");
 	}
 
 	@PostMapping("/test")
 	public ResponseEntity<?> testPostEndpoint() {
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body("POST User access");
 	}
 }
 

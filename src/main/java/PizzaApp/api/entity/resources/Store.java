@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.resources;
 
-import PizzaApp.api.entity.user.common.Address;
+import PizzaApp.api.entity.common.Address;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

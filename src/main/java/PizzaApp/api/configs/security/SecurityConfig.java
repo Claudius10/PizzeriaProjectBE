@@ -9,8 +9,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,13 +24,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.*;
-import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.function.Supplier;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -66,9 +62,10 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf
 				// persist CSRF token in a cookie
 				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-				// resolve CSRF token off the X-XSRF-TOKEN HTTP request header
+				// resolve CSRF token off the x-xsrf-token HTTP request header
 				.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
-				// enable CSRF token protection for post auth requests with JWT tokens
+				// https://github.com/spring-projects/spring-security/issues/8668 for
+				// enabling CSRF token protection for post auth requests with JWT tokens
 				.withObjectPostProcessor(new ObjectPostProcessor<CsrfFilter>() {
 					@Override
 					public <O extends CsrfFilter> O postProcess(O object) {
@@ -94,7 +91,7 @@ public class SecurityConfig {
 			auth.requestMatchers("/api/auth/**").permitAll();
 			auth.requestMatchers("/api/resource/**").permitAll();
 			auth.requestMatchers("/api/order/**").permitAll();
-			auth.requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN");
+			auth.requestMatchers("/api/account/**").hasAnyRole("USER", "ADMIN");
 			auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
 			auth.anyRequest().authenticated();
 		});
@@ -102,15 +99,19 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	/*
+	Set Access-Control-Allow-Headers when allowing headers to be passed from the client to the server (e.g. If-Match).
+	Set Access-Control-Expose-Headers when allowing headers to be passed back from the server to the client (e.g. ETag).
+	*/
+
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.1.11:3000", "http://localhost:3000",
-						"https://pizzeria-project-claudius10.vercel.app"));
+				Arrays.asList("http://192.168.1.11:3000", "https://pizzeria-project-claudius10.vercel.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		configuration.setExposedHeaders(Arrays.asList("Content-Type", "X-XSFR-TOKEN"));
-		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "X-XSFR-TOKEN"));
+		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
+		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
 		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

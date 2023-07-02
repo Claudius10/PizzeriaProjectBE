@@ -1,7 +1,7 @@
 package PizzaApp.api.utility.order;
 
-import PizzaApp.api.entity.user.common.Address;
-import PizzaApp.api.entity.user.common.Email;
+import PizzaApp.api.entity.common.Address;
+import PizzaApp.api.entity.common.Email;
 
 public class OrderData {
 

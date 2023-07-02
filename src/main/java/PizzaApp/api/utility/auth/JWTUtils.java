@@ -19,13 +19,14 @@ public class JWTUtils {
 		this.jwtDecoder = jwtDecoder;
 	}
 
-	public String createToken(String username, String roles, Instant expiry) {
+	public String createToken(String username, Long userId, String roles, Instant expiry) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer("http://192.168.1.11:8090")
 				.subject(username)
 				.issuedAt(Instant.now())
 				.expiresAt(expiry)
 				.claim("roles", roles)
+				.claim("id", userId)
 				.build();
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}

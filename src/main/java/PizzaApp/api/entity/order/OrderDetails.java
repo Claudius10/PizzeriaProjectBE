@@ -2,12 +2,7 @@ package PizzaApp.api.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -39,7 +34,7 @@ public class OrderDetails {
 	@Pattern(regexp = "^[a-zA-Z0-9!¡¿?.,\s]{0,150}$", message = "Observación: máximo 150 valores. Solo letras (sin tildes), dígitos, !¡ ?¿ . , : ; se aceptan.")
 	private String deliveryComment;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
 	@JsonBackReference
 	private Order order;

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.exceptions.exceptions.*;
 import PizzaApp.api.exceptions.exceptions.order.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -78,7 +79,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
-	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request,
+																		 HttpServletResponse response, RuntimeException ex) {
+		// inform front-end of expired token
+		if (ex.getMessage().contains("Jwt expired at")) {
+			response.addHeader("token", "expired");
+		}
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
 				.body(new ApiErrorDTO.Builder(

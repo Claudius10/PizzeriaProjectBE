@@ -1,6 +1,6 @@
 package PizzaApp.api;
 
-import PizzaApp.api.services.role.RoleService;
+import PizzaApp.api.services.user.role.RoleService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

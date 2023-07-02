@@ -4,14 +4,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.entity.user.common.Address;
+import PizzaApp.api.entity.common.Address;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import PizzaApp.api.entity.cart.Cart;
+import PizzaApp.api.entity.order.cart.Cart;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 @Entity(name = "Order")
@@ -53,12 +52,16 @@ public class Order {
 	@JsonBackReference
 	private UserData userData;
 
-	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(mappedBy = "order",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
 	@JsonManagedReference
 	@Valid
 	private OrderDetails orderDetails;
 
-	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(mappedBy = "order",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
 	@JsonManagedReference
 	private Cart cart;
 

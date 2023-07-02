@@ -15,7 +15,7 @@ public class User implements UserDetails {
 	private Long id;
 
 	@Column(unique = true)
-	private String username;
+	private String email;
 
 	private String password;
 
@@ -29,38 +29,9 @@ public class User implements UserDetails {
 	}
 
 	private User(Builder builder) {
-		this.username = builder.username;
+		this.email = builder.email;
 		this.password = builder.password;
 		this.roles = builder.roles;
-	}
-
-	public static class Builder {
-
-		private String username;
-		private String password;
-		private final Set<Role> roles = new HashSet<>();
-
-		public Builder() {
-		}
-
-		public Builder withUsername(String username) {
-			this.username = username;
-			return this;
-		}
-
-		public Builder withPassword(String password) {
-			this.password = password;
-			return this;
-		}
-
-		public Builder withRoles(Role... roles) {
-			this.roles.addAll(Arrays.asList(roles));
-			return this;
-		}
-
-		public User build() {
-			return new User(this);
-		}
 	}
 
 	public Long getId() {
@@ -69,7 +40,7 @@ public class User implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return this.username;
+		return this.email;
 	}
 
 	@Override
@@ -105,13 +76,42 @@ public class User implements UserDetails {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof User) {
-			return this.username.equals(((User) obj).username);
+			return this.email.equals(((User) obj).email);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.username.hashCode();
+		return this.email.hashCode();
+	}
+
+	public static class Builder {
+
+		private String email, password;
+
+		private final Set<Role> roles = new HashSet<>();
+
+		public Builder() {
+		}
+
+		public Builder withEmail(String email) {
+			this.email = email;
+			return this;
+		}
+
+		public Builder withPassword(String password) {
+			this.password = password;
+			return this;
+		}
+
+		public Builder withRoles(Role... roles) {
+			this.roles.addAll(Arrays.asList(roles));
+			return this;
+		}
+
+		public User build() {
+			return new User(this);
+		}
 	}
 }

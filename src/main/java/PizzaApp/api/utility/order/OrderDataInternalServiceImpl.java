@@ -5,8 +5,7 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Component;
 
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.services.address.AddressService;
-import PizzaApp.api.services.email.EmailService;
+import PizzaApp.api.services.common.address.AddressService;
 
 @Component
 public class OrderDataInternalServiceImpl implements OrderDataInternalService {

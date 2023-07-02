@@ -11,9 +11,9 @@ final class CookieBearerTokenResolver implements BearerTokenResolver {
 
 	@Override
 	public String resolve(HttpServletRequest request) {
-		Cookie cookie = WebUtils.getCookie(request, "fight");
-		if (cookie != null) {
-			return cookie.getValue();
+		Cookie accessToken = WebUtils.getCookie(request, "fight");
+		if (accessToken != null) {
+			return accessToken.getValue();
 		}
 		return null;
 	}

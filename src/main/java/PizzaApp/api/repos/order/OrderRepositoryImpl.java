@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.order.dto.OrderCreatedOnDTO;
-import PizzaApp.api.entity.order.dto.OrderDTO;
+import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
+import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import jakarta.persistence.EntityManager;

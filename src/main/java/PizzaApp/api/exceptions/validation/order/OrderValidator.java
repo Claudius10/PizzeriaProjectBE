@@ -12,6 +12,8 @@ import PizzaApp.api.exceptions.exceptions.order.*;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
 
+// Could turn this into an Util class
+
 @Component
 public class OrderValidator implements OrderValidation {
 

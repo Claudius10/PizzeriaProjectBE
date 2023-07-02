@@ -1,7 +1,7 @@
 package PizzaApp.api.security;
 
-import PizzaApp.api.entity.user.dto.LoginDTO;
-import PizzaApp.api.entity.user.dto.RegisterDTO;
+import PizzaApp.api.entity.dto.misc.LoginDTO;
+import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -14,8 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import PizzaApp.api.entity.common.Address;
-import PizzaApp.api.services.common.address.AddressService;
+import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.services.user.address.AddressService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -22,6 +22,6 @@ public class AddressController {
 
 	@GetMapping("/address")
 	public ResponseEntity<Address> findAddress(@RequestBody @Valid Address address) {
-		return new ResponseEntity<>(addressService.findAddress(address), HttpStatus.OK);
+		return new ResponseEntity<>(addressService.findAddress(address).orElseThrow(), HttpStatus.OK);
 	}
 }

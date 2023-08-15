@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.cart.Cart;
-import PizzaApp.api.entity.common.Address;
+import PizzaApp.api.entity.user.Address;
 
 // Order entity without User
 // for fetching to front end without User data

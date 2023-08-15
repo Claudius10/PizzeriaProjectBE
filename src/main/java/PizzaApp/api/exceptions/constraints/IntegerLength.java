@@ -19,9 +19,8 @@ import jakarta.validation.Payload;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = IntegerLengthValidator.class)
-
 public @interface IntegerLength {
-	String message() default "Valor númerico no acceptado";
+	String message() default "Valor numérico no aceptado";
 
 	Class<?>[] groups() default {};
 

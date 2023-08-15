@@ -4,6 +4,11 @@ spring:
     password: ${DATABASE_PASSWORD}
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      quiet-period: 900
 
   jpa:
     properties:
@@ -23,6 +28,12 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+  config:
+    import: optional:file:local.env[.properties]
+
+server:
+  port: ${PORT}
 
 logging:
   level:

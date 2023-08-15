@@ -1,4 +1,4 @@
-package PizzaApp.api.entity.common;
+package PizzaApp.api.entity.user;
 
 import PizzaApp.api.exceptions.constraints.IntegerLength;
 import jakarta.persistence.Column;
@@ -7,12 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.Objects;
 
 @Entity(name = "Address")
 @Table(name = "address")
+@Valid
 public class Address {
 
 	@Id

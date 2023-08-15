@@ -1,7 +1,6 @@
-package PizzaApp.api.entity.common;
+package PizzaApp.api.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.exceptions.constraints.IntegerLength;
 import jakarta.persistence.*;
 

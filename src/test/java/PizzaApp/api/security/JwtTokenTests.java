@@ -104,7 +104,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access secure unsafe http method with no csrf token");
 
 		mockMvc.perform(post("/api/account/test")
-						.cookie(CookieUtils.cookie("fight", validAccessToken, 30, true, false)))
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
 				.andExpect(status().isUnauthorized());
 
 		logger.info("JWT Token test: successfully NOT accessed secure unsafe http method with no csrf token");
@@ -115,7 +115,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access secure unsafe http method with csrf token");
 
 		mockMvc.perform(post("/api/account/test")
-						.cookie(CookieUtils.cookie("fight", validAccessToken, 30, true, false))
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.with(csrf()))
 				.andExpect(status().isOk());
 
@@ -127,10 +127,10 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: request logout");
 
 		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/logout")
-						.cookie(CookieUtils.cookie("fight", validAccessToken, 30, true, false))
-						.cookie(CookieUtils.cookie("me", validRefreshToken, 60, true, false))
-						.cookie(CookieUtils.cookie("email", "test", 30, false, false))
-						.cookie(CookieUtils.cookie("id", "1", 30, false, false))
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
+						.cookie(CookieUtils.makeCookie("me", validRefreshToken, 60, true, false))
+						.cookie(CookieUtils.makeCookie("email", "test", 30, false, false))
+						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
 				.andExpect(status().isOk()).andReturn().getResponse();
 
@@ -153,7 +153,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access protected resource with valid token and correct role");
 
 		mockMvc.perform(get("/api/account/test")
-						.cookie(CookieUtils.cookie("fight", validAccessToken, 30, true, false)))
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
 				.andExpect(status().isOk());
 
 		logger.info("JWT Token test: successfully accessed resource");
@@ -164,7 +164,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access protected resource with valid token and incorrect role");
 
 		mockMvc.perform(get("/api/admin/test")
-						.cookie(CookieUtils.cookie("fight", validAccessToken, 30, true, false)))
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
 				.andExpect(status().isUnauthorized());
 
 		logger.info("JWT Token test: successfully NOT accessed resource with incorrect role");
@@ -175,7 +175,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access protected resource with expired token");
 
 		mockMvc.perform(get("/api/account/test")
-						.cookie(CookieUtils.cookie("fight", expiredAccessToken, 30, true, false)))
+						.cookie(CookieUtils.makeCookie("fight", expiredAccessToken, 30, true, false)))
 				.andExpect(status().isUnauthorized());
 
 		logger.info("JWT Token test: successfully NOT accessed resource with expired token");
@@ -196,7 +196,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access protected resource with token that has no issuer");
 
 		mockMvc.perform(get("/api/account/test")
-						.cookie(CookieUtils.cookie("fight", validTokenWithNoIssuer, 30, true, false)))
+						.cookie(CookieUtils.makeCookie("fight", validTokenWithNoIssuer, 30, true, false)))
 				.andExpect(status().isUnauthorized());
 
 		logger.info("JWT Token test: successfully NOT accessed resource with token that has no issuer");

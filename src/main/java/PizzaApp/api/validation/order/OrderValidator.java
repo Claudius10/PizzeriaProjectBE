@@ -1,12 +1,12 @@
-package PizzaApp.api.exceptions.validation.order;
+package PizzaApp.api.validation.order;
 
 import PizzaApp.api.entity.order.Order;
 
 import java.time.LocalDateTime;
 
-public interface OrderValidation {
+public interface OrderValidator {
 
-	OrderValidator setCurrentTime();
+	OrderValidation setCurrentTime();
 
 	void validate(Order order);
 
@@ -22,7 +22,7 @@ public interface OrderValidation {
 
 	void isRequestWithinWorkingHours();
 
-	void validateMutation(Order order);
+	void validateUpdate(Order order);
 
 	void isCartUpdateTimeLimitValid(Order order);
 

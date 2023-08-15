@@ -4,6 +4,7 @@ import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.dto.misc.AuthDTO;
 import PizzaApp.api.entity.dto.misc.LoginDTO;
 import PizzaApp.api.utility.auth.JWTUtils;
+import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,39 +35,38 @@ public class AuthServiceImpl implements AuthService {
 				(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
 
 		User user = (User) auth.getPrincipal();
-
 		return new AuthDTO.Builder()
+				.withUserId(user.getId())
+				.withName(user.getName())
+				.withEmail(user.getUsername())
 				.withAccessToken(jwtUtils.createToken(
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(20, ChronoUnit.SECONDS)))
+						Instant.now().plus(1, ChronoUnit.MINUTES)))
 				.withRefreshToken(jwtUtils.createToken(
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(120, ChronoUnit.SECONDS)))
-				.withUserId(user.getId())
+						Instant.now().plus(2, ChronoUnit.MINUTES)))
 				.build();
 	}
 
 	@Override
-	public AuthDTO refreshTokens(String token) {
-		// 1. Validate refresh token
-		Jwt jwt = jwtUtils.validate(token);
-
-		// 2. return AuthDTO
+	public AuthDTO refreshTokens(Cookie token) {
+		Jwt jwt = jwtUtils.validate(token.getValue());
 		return new AuthDTO.Builder()
+				.withUserId(jwt.getClaim("id"))
 				.withAccessToken(jwtUtils.createToken(
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
 						jwt.getClaim("roles"),
-						Instant.now().plus(20, ChronoUnit.SECONDS)))
+						Instant.now().plus(1, ChronoUnit.MINUTES)))
 				.withRefreshToken(jwtUtils.createToken(
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
 						jwt.getClaim("roles"),
-						Instant.now().plus(60, ChronoUnit.MINUTES)))
+						Instant.now().plus(2, ChronoUnit.MINUTES)))
 				.build();
 	}
 }

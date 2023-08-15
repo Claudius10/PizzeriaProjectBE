@@ -1,7 +1,9 @@
 package PizzaApp.api.controllers.open.auth;
 
+import PizzaApp.api.entity.dto.misc.AuthDTO;
 import PizzaApp.api.entity.dto.misc.LoginDTO;
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
+import PizzaApp.api.entity.dto.user.UserDataDTO;
 import PizzaApp.api.services.user.account.AnonAccService;
 import PizzaApp.api.services.user.auth.AuthService;
 import PizzaApp.api.utility.auth.CookieUtils;
@@ -18,6 +20,7 @@ import org.springframework.web.util.WebUtils;
 public class AuthController {
 
 	private final AnonAccService anonAccService;
+
 	private final AuthService authService;
 
 	public AuthController(AnonAccService anonAccService, AuthService authService) {
@@ -32,9 +35,10 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
-		CookieUtils.bakeCookies(response, authService.login(loginDTO));
-		return ResponseEntity.ok().build();
+	public ResponseEntity<UserDataDTO> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+		AuthDTO authDTO = authService.login(loginDTO);
+		CookieUtils.newCookies(response, authDTO);
+		return ResponseEntity.ok().body(new UserDataDTO(authDTO.getUserId(), authDTO.getName(), authDTO.getEmail()));
 	}
 
 	@PostMapping("/logout")
@@ -46,8 +50,7 @@ public class AuthController {
 	@PostMapping("/refresh")
 	public ResponseEntity<?> refreshTokens(HttpServletRequest request, HttpServletResponse response) {
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
-		assert refreshToken != null;
-		CookieUtils.bakeCookies(response, authService.refreshTokens(refreshToken.getValue()));
+		CookieUtils.newCookies(response, authService.refreshTokens(refreshToken));
 		return ResponseEntity.ok().build();
 	}
 }

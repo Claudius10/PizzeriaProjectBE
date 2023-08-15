@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions.validation.order;
+package PizzaApp.api.validation.order;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import PizzaApp.api.exceptions.exceptions.*;
 import PizzaApp.api.exceptions.exceptions.order.*;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
@@ -15,20 +14,20 @@ import PizzaApp.api.entity.order.Order;
 // Could turn this into an Util class
 
 @Component
-public class OrderValidator implements OrderValidation {
+public class OrderValidation implements OrderValidator {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 	private LocalDateTime now;
 	private LocalDateTime createdOn;
 
-	public OrderValidator setCurrentTime() {
+	public OrderValidation setCurrentTime() {
 		setNow(LocalDateTime.now());
 		return this;
 	}
 
 	@Override
 	public void validate(Order order) {
-		isRequestWithinWorkingHours();
+		//isRequestWithinWorkingHours(); // FIXME - on for prod
 		IsContactNumberValid(order);
 		isEmailValid(order);
 		isCartValid(order);
@@ -37,7 +36,8 @@ public class OrderValidator implements OrderValidation {
 	}
 
 	@Override
-	public void validateMutation(Order order) {
+	public void validateUpdate(Order order) {
+		validate(order);
 		setCreatedOn(order.getCreatedOn());
 		isCartUpdateTimeLimitValid(order);
 		isOrderDataUpdateTimeLimitValid();

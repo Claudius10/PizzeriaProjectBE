@@ -9,10 +9,14 @@ import java.util.*;
 @Entity(name = "User")
 @Table(name = "user")
 public class User implements UserDetails {
+	// TODO - add name to User from UserData
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column
+	private String name;
 
 	@Column(unique = true)
 	private String email;
@@ -29,6 +33,7 @@ public class User implements UserDetails {
 	}
 
 	private User(Builder builder) {
+		this.name = builder.name;
 		this.email = builder.email;
 		this.password = builder.password;
 		this.roles = builder.roles;
@@ -36,6 +41,10 @@ public class User implements UserDetails {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	@Override
@@ -88,11 +97,16 @@ public class User implements UserDetails {
 
 	public static class Builder {
 
-		private String email, password;
+		private String email, password, name;
 
 		private final Set<Role> roles = new HashSet<>();
 
 		public Builder() {
+		}
+
+		public Builder withName(String name) {
+			this.name = name;
+			return this;
 		}
 
 		public Builder withEmail(String email) {

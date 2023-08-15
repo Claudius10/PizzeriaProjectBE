@@ -36,12 +36,13 @@ public class AnonAccServiceImpl implements AnonAccService {
 		String encodedPassword = bCryptEncoder.encode(registerDTO.getPassword());
 
 		User user = anonAccRepo.create(new User.Builder()
+				.withName(registerDTO.getName())
 				.withEmail(registerDTO.getEmail())
 				.withPassword(encodedPassword)
 				.withRoles(userRole)
 				.build());
 
-		UserData userData = new UserData(registerDTO.getName(), registerDTO.getEmail());
+		UserData userData = new UserData();
 		userData.setUser(user);
 		accountService.createData(userData);
 	}

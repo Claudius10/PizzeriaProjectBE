@@ -24,13 +24,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.entity.order.cart.Cart;
-import PizzaApp.api.entity.common.Address;
+import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.exceptions.exceptions.order.EmptyCartException;
 import PizzaApp.api.exceptions.exceptions.order.InvalidChangeRequestedException;
-import PizzaApp.api.exceptions.exceptions.InvalidContactTelephoneException;
+import PizzaApp.api.exceptions.exceptions.order.InvalidContactTelephoneException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc

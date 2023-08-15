@@ -8,7 +8,6 @@ import jakarta.validation.constraints.*;
 		@FieldMatch(first = "password", second = "matchingPassword", message = "La contraseña debe coincidir")})
 public class RegisterDTO {
 
-	@NotNull(message = "El nombre y apellido(s) no puede ser vacío")
 	@Pattern(regexp = "^[a-zA-Z\s]{2,50}$",
 			message = "El nombre y apellido(s): solo letras sin tildes (mín 2, máx 25 letras)")
 	private String name;
@@ -21,11 +20,9 @@ public class RegisterDTO {
 	@NotBlank(message = "Email: el valor no puede ser vacío")
 	private String matchingEmail;
 
-	@NotNull(message = "La contraseña no puede ser vacía")
 	@Size(min = 1, max = 20, message = "La contraseña tiene que contener entre 1-20 caracteres")
 	private String password;
 
-	@NotNull(message = "La contraseña no puede ser vacía")
 	@Size(min = 1, max = 20, message = "La contraseña tiene que contener entre 1-20 caracteres")
 	private String matchingPassword;
 

@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions.validation.account;
+package PizzaApp.api.validation.account;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

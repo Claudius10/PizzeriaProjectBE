@@ -1,4 +1,4 @@
-package PizzaApp.api.exceptions.exceptions;
+package PizzaApp.api.exceptions.exceptions.order;
 
 public class BlankEmailException extends RuntimeException {
 

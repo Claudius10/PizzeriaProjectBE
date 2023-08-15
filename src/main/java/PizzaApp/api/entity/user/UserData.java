@@ -4,11 +4,8 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import PizzaApp.api.entity.common.Address;
-import PizzaApp.api.entity.common.Telephone;
 import PizzaApp.api.entity.order.Order;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 
 @Entity(name = "UserData")
 @Table(name = "user_data")
@@ -22,13 +19,11 @@ public class UserData {
 	@JsonIgnore
 	private User user;
 
-	@Column(name = "name")
-	@Pattern(regexp = "^[a-zA-Z\s]{2,50}$",
-			message = "Nombre / apellidos: solo letras sin tildes (mín 2, máx 25 letras)")
-	private String name;
-
-	@Column(name = "email")
-	private String email;
+	@OneToMany(mappedBy = "userData",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	@JsonManagedReference
+	private List<Order> orderList;
 
 	@OneToMany(mappedBy = "userData",
 			cascade = CascadeType.ALL,
@@ -36,25 +31,13 @@ public class UserData {
 	@JsonManagedReference
 	private List<Telephone> telephoneList;
 
-	@ManyToMany(fetch = FetchType.LAZY,
-			cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "users_addresses",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "address_id"))
 	private Set<Address> addressList;
 
-	@OneToMany(mappedBy = "userData",
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
-	@JsonManagedReference
-	private List<Order> orderList;
-
 	public UserData() {
-	}
-
-	public UserData(String name, String email) {
-		this.name = name;
-		this.email = email;
 		this.telephoneList = new ArrayList<>();
 		this.orderList = new ArrayList<>();
 		this.addressList = new HashSet<>();
@@ -102,14 +85,6 @@ public class UserData {
 
 	public void setUser(User user) {
 		this.user = user;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public List<Telephone> getTelephoneList() {

@@ -1,17 +1,25 @@
 package PizzaApp.api.services.order;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
+import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
+import PizzaApp.api.entity.dto.user.UserOrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
+import PizzaApp.api.entity.order.cart.Cart;
+import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.entity.user.UserData;
+import PizzaApp.api.services.user.account.AccountService;
+import PizzaApp.api.services.user.address.AddressService;
 import org.springframework.stereotype.Service;
-import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.repos.order.OrderRepository;
-import PizzaApp.api.utility.order.OrderData;
-import PizzaApp.api.utility.order.OrderDataInternalService;
-import PizzaApp.api.exceptions.validation.order.OrderValidation;
+import PizzaApp.api.validation.order.OrderValidator;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 
@@ -20,27 +28,123 @@ import jakarta.transaction.Transactional;
 public class OrderServiceImpl implements OrderService {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
-	private final OrderRepository orderRepository;
-	private final OrderDataInternalService orderDataInternalService;
-	private final OrderValidation validator;
 
-	public OrderServiceImpl(OrderRepository orderRepository, OrderDataInternalService orderDataInternalService,
-							OrderValidation validator) {
+	private final OrderRepository orderRepository;
+
+	private final AddressService addressService;
+
+	private final AccountService accountService;
+
+	private final OrderValidator validator;
+
+	public OrderServiceImpl(
+			OrderRepository orderRepository,
+			AddressService addressService,
+			AccountService accountService,
+			OrderValidator validator) {
 		this.orderRepository = orderRepository;
-		this.orderDataInternalService = orderDataInternalService;
+		this.addressService = addressService;
+		this.accountService = accountService;
 		this.validator = validator;
 	}
 
 	@Override
-	public Long createOrUpdate(Order order) {
+	public Long createAnonOrder(Order order) {
+		Optional<Address> dbAddress = addressService.findAddress(order.getAddress());
+		dbAddress.ifPresent(order::setAddress);
+		order.setUserData(null);
+
+		// prevent HB from performing unnecessary operations
+		for (OrderItem item : order.getCart().getOrderItems()) {
+			item.setId(null);
+		}
+		return orderRepository.createOrder(order);
+	}
+
+	@Override
+	public Long createUserOrder(UserOrderDTO userOrderDTO) {
+		Address dbAddress = addressService.findReference(userOrderDTO.userOrderData().addressId());
+		UserData dbUserData = accountService.findReference(userOrderDTO.userOrderData().userId());
+
+		// TODO - make an util method of this
+		// remove id's from items that come from front end
+		// so Hibernate doesn't perform extra unnecessary operations
+		for (OrderItem item : userOrderDTO.cart().getOrderItems()) {
+			item.setId(null);
+		}
+
+		Order order = new Order.Builder()
+				.withCreatedOn(LocalDateTime.now())
+				.withAddress(dbAddress)
+				.withCustomerName(userOrderDTO.userOrderData().customerName())
+				.withContactTel(userOrderDTO.userOrderData().tel())
+				.withEmail(userOrderDTO.userOrderData().email())
+				.withOrderDetails(userOrderDTO.orderDetails())
+				.withCart(userOrderDTO.cart())
+				.build();
+
+		dbUserData.addOrder(order); // also does order.setUserData(this);
+
+		// validate order
+		validator.validate(order);
+
+		return orderRepository.createOrder(order);
+	}
+
+	@Override
+	public Long updateUserOrder(UserOrderDTO userOrderDTO) {
+		Address dbAddress = addressService.findReference(userOrderDTO.userOrderData().addressId());
+		UserData dbUserData = accountService.findReference(userOrderDTO.userOrderData().userId());
+
+		for (OrderItem item : userOrderDTO.cart().getOrderItems()) {
+			item.setId(null);
+		}
+
+		Order dbOrder = new Order.Builder()
+				.withCreatedOn(orderRepository.findCreatedOnById(userOrderDTO.orderId()))
+				.withUpdatedOn(LocalDateTime.now())
+				.withId(userOrderDTO.orderId())
+				.withUser(dbUserData)
+				.withAddress(dbAddress)
+				.withCustomerName(userOrderDTO.userOrderData().customerName())
+				.withEmail(userOrderDTO.userOrderData().email())
+				.withContactTel(userOrderDTO.userOrderData().tel())
+				.build();
+		dbOrder.setOrderDetails(userOrderDTO.orderDetails());
+		dbOrder.setCart(userOrderDTO.cart());
+
+		// validate order
+		//validator.setCurrentTime().validateUpdate(dbOrder);
+
+		if (dbOrder.getCart() == null) {
+			// cart is set to null if now is after cartUpdateTimeLimit
+			// in such case, set back the original
+			Cart dbCart = new Cart();
+			dbCart.setId(userOrderDTO.cart().getId());
+			dbOrder.setCart(dbCart);
+		}
+
+		List<OrderItem> copy = new ArrayList<>(dbOrder.getCart().getOrderItems());
+		dbOrder.getCart().getOrderItems().clear();
+
+		for (OrderItem item : copy) {
+			dbOrder.getCart().addItem(item);
+		}
+
+		return orderRepository.updateUserOrder(dbOrder);
+	}
+
+	/*public Long createOrUpdate(Order order) {
 		// check for email and address in db
+		// FIXME - find a better solution for the orderDataInternalService
 		OrderData dbOrderData = orderDataInternalService.findOrderData(order);
+
+		// for create check whatever there userData is not null
+		// if it isn't, search address by ID (mby tel too)
 
 		// create
 		if (order.getId() == null) {
 
-			// if address is already in db, set it
-			// to not have duplicates
 			if (dbOrderData.getAddress() != null) {
 				order.getAddress().setId(dbOrderData.getAddress().getId());
 			}
@@ -86,8 +190,6 @@ public class OrderServiceImpl implements OrderService {
 			if (order.getAddress() == null) {
 				order.setAddress(originalOrder.getAddress());
 			} else {
-				// if it is, set its id if it's the db
-				// else insert the new one
 				if (dbOrderData.getAddress() != null) {
 					order.getAddress().setId(dbOrderData.getAddress().getId());
 				}
@@ -120,18 +222,22 @@ public class OrderServiceImpl implements OrderService {
 		// create or update order
 		logger.info("SAVING ORDER TO DB");
 		return orderRepository.createOrUpdate(order);
+	}*/
+
+	@Override
+	public OrderPaginationResultDTO findOrdersSummary(String userId, String pageSize, String pageNumber) {
+		return orderRepository.findOrdersSummary(
+				Long.parseLong(userId),
+				Integer.parseInt(pageSize),
+				Integer.parseInt(pageNumber));
 	}
 
 	@Override
-	public Order findById(Long id) {
-		return orderRepository.findById(id);
-	}
+	public OrderDTO findUserOrder(String id) {
 
-	@Override
-	public OrderDTO findDTOByIdAndTel(String id, String orderContactTel) {
+		OrderDTO order = orderRepository.findUserOrder(id);
 
-		OrderDTO order = orderRepository.findDTOByIdAndTel(id, orderContactTel);
-
+		// TODO - create an utility method to format createdOn and updatedOn
 		if (order != null) {
 
 			// when setting createdOn
@@ -152,22 +258,30 @@ public class OrderServiceImpl implements OrderService {
 			return order;
 		} else {
 			throw new NoResultException(
-					"El pedido " + id + " asociado al teléfono " + orderContactTel + " no se pudo encontrar");
+					"El pedido " + id + " no se pudo encontrar");
 		}
-	}
-
-	@Override
-	public OrderCreatedOnDTO findCreatedOnById(Long id) {
-		return orderRepository.findCreatedOnById(id);
 	}
 
 	@Override
 	public void deleteById(Long id) {
 		// get order createdOn
-		OrderCreatedOnDTO order = findCreatedOnById(id);
+		LocalDateTime createdOn = findCreatedOnById(id);
 		// validate whatever delete time limit passed
-		validator.setCurrentTime().isOrderDeleteTimeLimitValid(order.getCreatedOn());
+		// validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn); //FIXME - on for prod
 		// delete order if time limit did not pass
 		orderRepository.deleteById(id);
 	}
+
+	// internal use
+
+	@Override
+	public Order findById(Long id) {
+		return orderRepository.findById(id);
+	}
+
+	@Override
+	public LocalDateTime findCreatedOnById(Long id) {
+		return orderRepository.findCreatedOnById(id);
+	}
+
 }

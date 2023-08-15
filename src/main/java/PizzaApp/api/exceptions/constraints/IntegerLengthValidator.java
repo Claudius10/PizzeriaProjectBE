@@ -18,7 +18,10 @@ public class IntegerLengthValidator implements ConstraintValidator<IntegerLength
 		// validate whatever value is null 
 		// and
 		// validate whatever the int field value is between min and max
-		return (value != null && (String.valueOf(value.intValue()).length() >= min
-				&& String.valueOf(value.intValue()).length() <= max));
+		if (value == null) {
+			return false;
+		}
+		int valueLength = String.valueOf(value.intValue()).length();
+		return (valueLength >= min && valueLength <= max);
 	}
 }

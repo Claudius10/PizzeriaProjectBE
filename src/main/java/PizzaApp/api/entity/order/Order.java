@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.entity.common.Address;
+import PizzaApp.api.entity.user.Address;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.order.cart.Cart;
@@ -53,15 +53,13 @@ public class Order {
 	private UserData userData;
 
 	@OneToOne(mappedBy = "order",
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
+			cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@Valid
 	private OrderDetails orderDetails;
 
 	@OneToOne(mappedBy = "order",
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
+			cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Cart cart;
 
@@ -78,19 +76,25 @@ public class Order {
 		this.address = builder.address;
 		this.orderDetails = builder.orderDetails;
 		this.cart = builder.cart;
-		this.userData = null;
+		this.userData = builder.userData;
 	}
 
 	public static class Builder {
 		private Long id;
-		private LocalDateTime createdOn;
-		private LocalDateTime updatedOn;
-		private String customerName;
+
+		private LocalDateTime createdOn, updatedOn;
+
+		private String customerName, email;
+
 		private Integer contactTel;
-		private String email;
+
 		private Address address;
+
 		private OrderDetails orderDetails;
+
 		private Cart cart;
+
+		private UserData userData;
 
 		public Builder() {
 		}
@@ -138,6 +142,11 @@ public class Order {
 
 		public Builder withCart(Cart cart) {
 			this.cart = cart;
+			return this;
+		}
+
+		public Builder withUser(UserData user) {
+			this.userData = user;
 			return this;
 		}
 

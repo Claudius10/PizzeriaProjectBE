@@ -16,6 +16,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,11 +25,15 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.*;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -54,25 +59,29 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
 		// cors config
 		http.cors(withDefaults());
 
 		// CSRF config
-		http.csrf(csrf -> csrf
-				// persist CSRF token in a cookie
-				.csrfTokenRepository(csrfTokenRepository())
-				// resolve CSRF token off the x-xsrf-token HTTP request header
-				.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
-				// https://github.com/spring-projects/spring-security/issues/8668 for
-				// enabling CSRF token protection for post auth requests with JWT tokens
-				.withObjectPostProcessor(new ObjectPostProcessor<CsrfFilter>() {
-					@Override
-					public <O extends CsrfFilter> O postProcess(O object) {
-						object.setRequireCsrfProtectionMatcher(CsrfFilter.DEFAULT_CSRF_MATCHER);
-						return object;
-					}
-				}));
+		http.csrf(csrf -> {
+
+			// persist CSRF token in a cookie
+			csrf.csrfTokenRepository(csrfTokenRepository());
+
+			// resolve CSRF token off the x-xsrf-token HTTP request header
+			csrf.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler());
+
+			// https://github.com/spring-projects/spring-security/issues/8668 for
+			// enabling CSRF token protection for post auth requests with JWT tokens
+			// with a custom ant matcher (csrfProtectionMatcher bean)
+			csrf.withObjectPostProcessor(new ObjectPostProcessor<CsrfFilter>() {
+				@Override
+				public <O extends CsrfFilter> O postProcess(O object) {
+					object.setRequireCsrfProtectionMatcher(csrfProtectionMatcher());
+					return object;
+				}
+			});
+		});
 
 		// JWT support config
 		http.oauth2ResourceServer(oauth2ResourceServer -> {
@@ -96,7 +105,31 @@ public class SecurityConfig {
 			auth.anyRequest().authenticated();
 		});
 
+		http.sessionManagement(session ->
+				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 		return http.build();
+	}
+
+	@Bean
+	RequestMatcher csrfProtectionMatcher() {
+		// custom CsrfFilter protection matcher implementation
+		AntPathRequestMatcher[] requestMatchers = {
+				new AntPathRequestMatcher("/api/order/**"),
+				new AntPathRequestMatcher(("/api/resource/**"))
+		};
+
+		return request -> {
+			for (AntPathRequestMatcher rm : requestMatchers) {
+				if (rm.matches(request)) {
+					return false;
+				}
+			}
+
+			// default CsrfFilter protection matcher behavior
+			Set<String> allowedMethods = new HashSet<>(Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS"));
+			return !allowedMethods.contains(request.getMethod());
+		};
 	}
 
 	/*
@@ -123,8 +156,8 @@ public class SecurityConfig {
 		CookieCsrfTokenRepository result = new CookieCsrfTokenRepository();
 		result.setCookieCustomizer((cookie) -> {
 			cookie.httpOnly(false);
-			cookie.secure(true);
-			cookie.domain(".up.railway.app");
+			//cookie.secure(true); // for prod fe
+			//cookie.domain(".up.railway.app"); // this domain for prod fe
 		});
 		return result;
 	}
@@ -152,7 +185,8 @@ public class SecurityConfig {
 	@Bean
 	public JwtDecoder jwtDecoder() {
 		NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
-		decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("https://pizzeriaprojectbe-production.up.railway.app"));
+		decoder.setJwtValidator(JwtValidators
+				.createDefaultWithIssuer("https://pizzeriaprojectbe-production.up.railway.app"));
 		return decoder;
 	}
 

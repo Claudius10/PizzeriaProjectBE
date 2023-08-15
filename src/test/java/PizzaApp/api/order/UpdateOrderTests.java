@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.order.cart.Cart;
-import PizzaApp.api.entity.common.Address;
+import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
@@ -410,6 +410,6 @@ public class UpdateOrderTests {
 				.withCart(originalCart)
 				.withCreatedOn(LocalDateTime.now().minusMinutes(minusMins))
 				.build();
-		return ordersService.createOrUpdate(orderTestSubject);
+		return ordersService.createAnonOrder(orderTestSubject);
 	}
 }

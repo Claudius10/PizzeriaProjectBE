@@ -15,9 +15,9 @@ public interface AccountService {
 
 	void createData(UserData userData);
 
-	void addTel(Long id, Telephone telephone);
+	void addTel(Long id, Integer telephone);
 
-	void removeTel(Long id, Telephone telephone);
+	void removeTel(Long id, Integer telephone);
 
 	void addAddress(Long id, Address address);
 

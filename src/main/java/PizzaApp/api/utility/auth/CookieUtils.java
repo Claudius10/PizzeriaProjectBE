@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,6 +24,22 @@ public final class CookieUtils {
 				.sameSite("Lax")
 				//.domain(".up.railway.app") // for prod fe
 				.build();
+	}
+
+	public static ResponseCookie csrfCookie(String name, String value, boolean httpOnly, boolean secure) {
+		return ResponseCookie.from(name, value)
+				.path("/")
+				.httpOnly(httpOnly)
+				.secure(secure)
+				.sameSite("Lax")
+				//.domain(".up.railway.app") // for prod fe
+				.build();
+	}
+
+	public static void loadCsrf(HttpServletResponse response, CsrfToken csrfToken) {
+		response.addHeader(
+				HttpHeaders.SET_COOKIE,
+				csrfCookie("XSRF-TOKEN", csrfToken.getToken(), false, false).toString());
 	}
 
 	public static Cookie makeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {

@@ -58,21 +58,21 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void addTel(Long id, Telephone telephone) {
+	public void addTel(Long id, Integer telephone) {
 		// TODO: handle max tel and address per user in globalExceptionHandler
-		if (telephoneService.findUserTelListSize(id) >= 3) {
+		if (telephoneService.findUserTelListSize(id) == 3) {
 			throw new RuntimeException("Solo se permiten 3 números de teléfono almacenados");
 		}
 		UserData userData = findDataById(id);
-		userData.addTel(telephone);
+		userData.addTel(new Telephone(telephone));
 	}
 
 	@Override
-	public void removeTel(Long id, Telephone telephone) {
+	public void removeTel(Long id, Integer telephone) {
 		UserData userData = findDataById(id);
 		Telephone telToRemove = userData.getTelephoneList()
 				.stream()
-				.filter(telephone1 -> telephone1.getNumber().equals(telephone.getNumber()))
+				.filter(telephone1 -> telephone1.getNumber().equals(telephone))
 				.findFirst()
 				.orElseThrow();
 		userData.removeTel(telToRemove);
@@ -80,16 +80,19 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public void addAddress(Long id, Address address) {
-		if (addressService.findUserAddressListSize(id) >= 3) {
+		if (addressService.findUserAddressListSize(id) == 3) {
 			throw new RuntimeException("Solo se permiten 3 domicilios almacenados");
 		}
 
 		UserData userData = findDataById(id);
-		// Check whatever address is already in db
+
 		Optional<Address> dbAddress = addressService.findAddress(address);
-		dbAddress.ifPresent(userData::addAddress);
-		// else
-		userData.addAddress(address);
+
+		if (dbAddress.isPresent()) {
+			userData.addAddress(dbAddress.get());
+		} else {
+			userData.addAddress(address);
+		}
 	}
 
 	@Override

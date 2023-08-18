@@ -3,12 +3,15 @@ package PizzaApp.api.controllers.locked.user;
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
 import PizzaApp.api.entity.dto.user.UserOrderDTO;
+import PizzaApp.api.utility.auth.CookieUtils;
 import PizzaApp.api.validation.account.AccountRequestValidator;
 import PizzaApp.api.services.order.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,15 +33,21 @@ public class AccountOrders {
 	public ResponseEntity<Long> createUserOrder(
 			@PathVariable String id,
 			@RequestBody UserOrderDTO order,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(id, request);
 		Long orderId = orderService.createUserOrder(order);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return new ResponseEntity<>(orderId, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<OrderDTO> findUserOrder(
-			@PathVariable String id) {
+			@PathVariable String id,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
+		CookieUtils.loadCsrf(response, csrfToken);
 		return new ResponseEntity<>(orderService.findUserOrder(id), HttpStatus.OK);
 	}
 
@@ -47,10 +56,12 @@ public class AccountOrders {
 			@PathVariable String userId,
 			@RequestParam String pageSize,
 			@RequestParam String pageNumber,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(userId, request);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.ok().body(orderService.findOrdersSummary(userId, pageSize, pageNumber));
-
 	}
 
 	@PutMapping("/{userId}")

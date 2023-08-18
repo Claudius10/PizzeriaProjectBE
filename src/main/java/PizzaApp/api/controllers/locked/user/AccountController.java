@@ -11,8 +11,8 @@ import PizzaApp.api.utility.auth.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,23 +45,29 @@ public class AccountController {
 	@GetMapping("/{id}/data")
 	public ResponseEntity<UserDataDTO> findDataById(
 			@PathVariable String id,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(id, request);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.ok().body(accountService.findDataDTOById(Long.valueOf(id)));
 	}
 
 	@GetMapping("/{id}/tel")
 	public ResponseEntity<List<TelephoneDTO>> findTelListById(
 			@PathVariable String id,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(id, request);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.ok().body(telephoneService.findByUserId(Long.valueOf(id)).orElseThrow());
 	}
 
 	@PostMapping("/{id}/tel")
 	public ResponseEntity<?> addTel(
 			@PathVariable String id,
-			@RequestBody @Valid Telephone telephone,
+			@RequestBody @Valid Integer telephone,
 			HttpServletRequest request) {
 		accountRequestValidator.validate(id, request);
 		accountService.addTel(Long.valueOf(id), telephone);
@@ -71,7 +77,7 @@ public class AccountController {
 	@DeleteMapping("/{id}/tel")
 	public ResponseEntity<?> removeTel(
 			@PathVariable String id,
-			@RequestBody @Valid Telephone telephone,
+			@RequestBody @Valid Integer telephone,
 			HttpServletRequest request) {
 		accountRequestValidator.validate(id, request);
 		accountService.removeTel(Long.valueOf(id), telephone);
@@ -81,8 +87,11 @@ public class AccountController {
 	@GetMapping("/{id}/address")
 	public ResponseEntity<List<Address>> findAddressListById(
 			@PathVariable String id,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(id, request);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.ok().body(addressService.findByUserId(Long.valueOf(id)).orElseThrow());
 	}
 
@@ -110,9 +119,12 @@ public class AccountController {
 	public ResponseEntity<?> updateName(
 			@PathVariable String id,
 			@Valid @RequestBody NameChangeDTO nameChangeDTO,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(id, request);
 		accountService.updateName(id, nameChangeDTO);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.ok().build();
 	}
 
@@ -120,9 +132,12 @@ public class AccountController {
 	public ResponseEntity<?> updateEmail(
 			@PathVariable String id,
 			@Valid @RequestBody EmailChangeDTO emailChangeDTO,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response,
+			CsrfToken csrfToken) {
 		accountRequestValidator.validate(id, request);
 		accountService.updateEmail(id, emailChangeDTO);
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.ok().build();
 	}
 
@@ -142,9 +157,11 @@ public class AccountController {
 	public ResponseEntity<?> delete(
 			@PathVariable String id,
 			@RequestBody PasswordDTO passwordDTO,
-			HttpServletRequest request) {
+			HttpServletRequest request,
+			HttpServletResponse response) {
 		accountRequestValidator.validate(id, request);
 		accountService.delete(id, passwordDTO);
+		CookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.ok().build();
 	}
 

@@ -24,6 +24,10 @@ public class Telephone {
 	public Telephone() {
 	}
 
+	public Telephone(Integer telephone) {
+		this.number = telephone;
+	}
+
 	public Long getId() {
 		return id;
 	}

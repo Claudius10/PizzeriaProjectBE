@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
@@ -26,6 +27,11 @@ public class AuthController {
 	public AuthController(AnonAccService anonAccService, AuthService authService) {
 		this.anonAccService = anonAccService;
 		this.authService = authService;
+	}
+
+	@GetMapping("/csrf")
+	public void csrf(HttpServletResponse response, CsrfToken csrfToken) {
+		CookieUtils.loadCsrf(response, csrfToken);
 	}
 
 	@PostMapping("/register")

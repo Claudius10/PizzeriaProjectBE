@@ -57,6 +57,14 @@ public class AccountRepositoryImpl implements AccountRepository {
 	}
 
 	@Override
+	public void updateName(String id, String name) {
+		Query query = em.createQuery("update User user set user.name = :name where user.id = :id");
+		query.setParameter("name", name);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
+
+	@Override
 	public void updateEmail(Long id, String email) {
 
 		Query userQuery = em.createQuery("update User user set user.email =: email " +
@@ -65,13 +73,6 @@ public class AccountRepositoryImpl implements AccountRepository {
 		userQuery.setParameter("id", id);
 		userQuery.setParameter("email", email);
 		userQuery.executeUpdate();
-
-		Query userDataQuery = em.createQuery("update UserData user set user.email =: email " +
-				"where user.id =: id");
-
-		userDataQuery.setParameter("id", id);
-		userDataQuery.setParameter("email", email);
-		userDataQuery.executeUpdate();
 	}
 
 	@Override
@@ -79,14 +80,6 @@ public class AccountRepositoryImpl implements AccountRepository {
 		Query query = em.createQuery("update User user set user.password = :password where user.id = :id");
 		query.setParameter("id", id);
 		query.setParameter("password", password);
-		query.executeUpdate();
-	}
-
-	@Override
-	public void updateName(String id, String name) {
-		Query query = em.createQuery("update UserData user set user.name = :name where user.id = :id");
-		query.setParameter("name", name);
-		query.setParameter("id", id);
 		query.executeUpdate();
 	}
 

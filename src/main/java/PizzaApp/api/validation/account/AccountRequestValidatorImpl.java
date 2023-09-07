@@ -22,11 +22,14 @@ public class AccountRequestValidatorImpl implements AccountRequestValidator {
 	@Override
 	public void validate(String id, HttpServletRequest request) {
 		Cookie cookie = WebUtils.getCookie(request, "fight");
-		assert cookie != null;
 
-		Jwt validatedJwt = jwtDecoder.decode(cookie.getValue());
+		if (cookie != null) {
+			Jwt validatedJwt = jwtDecoder.decode(cookie.getValue());
 
-		if (!Long.valueOf(id).equals(validatedJwt.getClaim("id"))) {
+			if (!Long.valueOf(id).equals(validatedJwt.getClaim("id"))) {
+				throw new AccessDeniedException("Access denied");
+			}
+		} else {
 			throw new AccessDeniedException("Access denied");
 		}
 	}

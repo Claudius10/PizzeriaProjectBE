@@ -1,10 +1,8 @@
 package PizzaApp.api.repos.user.telephone;
 
 import PizzaApp.api.entity.dto.user.TelephoneDTO;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
-import PizzaApp.api.entity.user.Telephone;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -20,23 +18,21 @@ public class TelephoneRepositoryImpl implements TelephoneRepository {
 	}
 
 	@Override
-	public Optional<List<TelephoneDTO>> findByUserId(Long id) {
+	public Optional<List<TelephoneDTO>> findAllByUserId(String id) {
 		TypedQuery<TelephoneDTO> query = em.createQuery("""
 					select new TelephoneDTO(
 					t.id,
 					t.number)
 					from Telephone t
-					where t.userData.id= :userId
+					where t.userData.id = :userId
 				""", TelephoneDTO.class);
 		query.setParameter("userId", id);
-
-		Optional<List<TelephoneDTO>> resultList = Optional.ofNullable(query.getResultList());
-		return resultList.isEmpty() ? Optional.empty() : resultList;
+		return Optional.of(query.getResultList());
 	}
 
 	@Override
-	public Long findUserTelListSize(Long id) {
-		return (Long) em.createQuery("select count(t) from Telephone t where t.userData.id=:userId")
+	public Long findUserTelListSize(String id) {
+		return (Long) em.createQuery("select count(t) from Telephone t where t.userData.id = :userId")
 				.setParameter("userId", id).getSingleResult();
 	}
 }

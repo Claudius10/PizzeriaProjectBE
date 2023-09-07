@@ -19,7 +19,7 @@ public class AddressRepositoryImpl implements AddressRepository {
 	}
 
 	@Override
-	public Address findReference(Long id) {
+	public Address findReference(String id) {
 		return em.getReference(Address.class, id);
 	}
 
@@ -40,17 +40,16 @@ public class AddressRepositoryImpl implements AddressRepository {
 	}
 
 	@Override
-	public Optional<List<Address>> findByUserId(Long id) {
+	public Optional<List<Address>> findByUserId(String id) {
 		TypedQuery<Address> query = em.createQuery(
 				"select userData.addressList from UserData userData where userData.id=:userId",
 				Address.class);
 		query.setParameter("userId", id);
-		Optional<List<Address>> resultList = Optional.ofNullable(query.getResultList());
-		return resultList.isEmpty() ? Optional.empty() : resultList;
+		return Optional.of(query.getResultList());
 	}
 
 	@Override
-	public Long findUserAddressListSize(Long id) {
+	public Long findUserAddressListSize(String id) {
 		Query query = em.createNativeQuery("select count(*) from users_addresses where user_id=:userId", Long.class);
 		query.setParameter("userId", id);
 		return (Long) query.getSingleResult();

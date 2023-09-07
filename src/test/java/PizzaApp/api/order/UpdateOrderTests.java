@@ -94,11 +94,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(post("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// *** set goodies that will be useful later
 		originalOrderId = dbOrder.getId();
@@ -129,11 +128,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(put("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
@@ -161,11 +159,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(put("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
@@ -194,11 +191,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(put("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
@@ -227,11 +223,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(put("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
@@ -279,11 +274,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(put("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
@@ -327,11 +321,10 @@ public class UpdateOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(
-				mockMvc.perform(put("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// set created on to perform equality test
 		order.setCreatedOn(dbOrder.getCreatedOn());

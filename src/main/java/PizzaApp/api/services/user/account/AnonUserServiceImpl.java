@@ -4,7 +4,7 @@ import PizzaApp.api.entity.user.Role;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.repos.user.account.AnonAccRepo;
+import PizzaApp.api.repos.user.account.AnonUserRepository;
 import PizzaApp.api.services.user.role.RoleService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
-public class AnonAccServiceImpl implements AnonAccService {
+public class AnonUserServiceImpl implements AnonUserService {
 
-	private final AnonAccRepo anonAccRepo;
+	private final AnonUserRepository anonAccRepo;
 
-	private final AccountService accountService;
+	private final UserDataService userDataService;
 
 	private final RoleService roleService;
 
 	private final PasswordEncoder bCryptEncoder;
 
-	public AnonAccServiceImpl(AnonAccRepo anonAccRepo, AccountService accountService, RoleService roleService, PasswordEncoder bCryptEncoder) {
+	public AnonUserServiceImpl(AnonUserRepository anonAccRepo, UserDataService userDataService, RoleService roleService, PasswordEncoder bCryptEncoder) {
 		this.anonAccRepo = anonAccRepo;
-		this.accountService = accountService;
+		this.userDataService = userDataService;
 		this.roleService = roleService;
 		this.bCryptEncoder = bCryptEncoder;
 	}
@@ -44,6 +44,6 @@ public class AnonAccServiceImpl implements AnonAccService {
 
 		UserData userData = new UserData();
 		userData.setUser(user);
-		accountService.createData(userData);
+		userDataService.createData(userData);
 	}
 }

@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.user.Address;
-import PizzaApp.api.entity.common.Email;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -35,32 +34,10 @@ public class OrderDataDuplicatesTests {
 	private ObjectMapper objectMapper;
 
 	// private List<Telephone> telList;
-	private List<Email> emailList;
 	private List<Address> addressList;
 
 	@BeforeAll
 	void setup() {
-
-		// create email list
-		Email firstEmail = new Email.Builder()
-				.withEmail("firstEmail@email.com")
-				.build();
-
-		Email secondEmail = new Email.Builder()
-				.withEmail("secondEmail@email.com")
-				.build();
-
-		Email thirdEmail = new Email.Builder()
-				.withEmail("originalEmail@email.com")
-				.build();
-
-		Email fourthEmail = new Email.Builder()
-				.withEmail("NewEmail@email.com")
-				.build();
-
-		Email[] emailArray = {firstEmail, secondEmail, thirdEmail, fourthEmail};
-		emailList = new ArrayList<>();
-		Collections.addAll(emailList, emailArray);
 
 		// create address list
 		Address firstAddress = new Address.Builder()
@@ -120,20 +97,5 @@ public class OrderDataDuplicatesTests {
 			}
 		});
 		logger.info("Duplicates test #1: Success, no duplicate addresses found");
-	}
-
-
-	@Test
-	public void givenEmails_whenFindEmails_thenDontThrowDueToDuplicates() {
-		logger.info("Duplicates test #2: Checking for duplicate emails in DB");
-		assertDoesNotThrow(() -> {
-			for (Email email : emailList) {
-				// same thing as address duplicates test
-				mockMvc.perform(get("/api/email")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(email)));
-			}
-		});
-		logger.info("Duplicates test #2: Success, no duplicate emails found");
 	}
 }

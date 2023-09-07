@@ -43,12 +43,12 @@ public class AuthServiceImpl implements AuthService {
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(1, ChronoUnit.MINUTES)))
+						Instant.now().plus(1, ChronoUnit.SECONDS)))
 				.withRefreshToken(jwtUtils.createToken(
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(2, ChronoUnit.MINUTES)))
+						Instant.now().plus(5, ChronoUnit.SECONDS)))
 				.build();
 	}
 

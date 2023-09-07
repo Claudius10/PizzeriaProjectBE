@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface AddressRepository {
 
-	Address findReference(Long id);
+	Address findReference(String id);
 
 	Optional<Address> findAddress(Address address);
 
-	Optional<List<Address>> findByUserId(Long id);
+	Optional<List<Address>> findByUserId(String id);
 
-	Long findUserAddressListSize(Long id);
+	Long findUserAddressListSize(String id);
 }

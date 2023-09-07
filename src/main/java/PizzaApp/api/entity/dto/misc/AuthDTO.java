@@ -1,8 +1,11 @@
 package PizzaApp.api.entity.dto.misc;
 
 public class AuthDTO {
-	private String accessToken, refreshToken, name, email;
-	private Long userId;
+	private final String accessToken;
+	private final String refreshToken;
+	private final String name;
+	private final String email;
+	private final Long userId;
 
 	private AuthDTO(Builder builder) {
 		this.userId = builder.userId;

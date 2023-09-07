@@ -39,7 +39,12 @@ public final class CookieUtils {
 	public static void loadCsrf(HttpServletResponse response, CsrfToken csrfToken) {
 		response.addHeader(
 				HttpHeaders.SET_COOKIE,
-				csrfCookie("XSRF-TOKEN", csrfToken.getToken(), false, false).toString());
+				csrfCookie(
+						"XSRF-TOKEN",
+						csrfToken.getToken(),
+						false,
+						false) // true for prod
+						.toString());
 	}
 
 	public static Cookie makeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
@@ -56,35 +61,35 @@ public final class CookieUtils {
 	public static void newCookies(HttpServletResponse response, AuthDTO auth) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("fight", auth.getAccessToken(),
-						120,
+						61,
 						true,
 						false) // true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_fight", "exp_d",
-						120,
+						61,
 						false,
 						false) // true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("me", auth.getRefreshToken(),
-						180,
+						65,
 						true,
 						false)
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_me", "exp_d",
-						180,
+						65,
 						false,
 						false) // true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("id", String.valueOf(auth.getUserId()),
-						180,
+						65,
 						false,
 						false)
 						.toString());

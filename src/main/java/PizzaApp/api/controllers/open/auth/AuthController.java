@@ -4,7 +4,7 @@ import PizzaApp.api.entity.dto.misc.AuthDTO;
 import PizzaApp.api.entity.dto.misc.LoginDTO;
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.entity.dto.user.UserDataDTO;
-import PizzaApp.api.services.user.account.AnonAccService;
+import PizzaApp.api.services.user.account.AnonUserService;
 import PizzaApp.api.services.user.auth.AuthService;
 import PizzaApp.api.utility.auth.CookieUtils;
 import jakarta.servlet.http.Cookie;
@@ -20,11 +20,11 @@ import org.springframework.web.util.WebUtils;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-	private final AnonAccService anonAccService;
+	private final AnonUserService anonAccService;
 
 	private final AuthService authService;
 
-	public AuthController(AnonAccService anonAccService, AuthService authService) {
+	public AuthController(AnonUserService anonAccService, AuthService authService) {
 		this.anonAccService = anonAccService;
 		this.authService = authService;
 	}

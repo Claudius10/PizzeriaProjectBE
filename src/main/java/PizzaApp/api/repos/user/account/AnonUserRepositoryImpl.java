@@ -2,15 +2,14 @@ package PizzaApp.api.repos.user.account;
 
 import PizzaApp.api.entity.user.User;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AnonAccRepoImpl implements AnonAccRepo {
+public class AnonUserRepositoryImpl implements AnonUserRepository {
 
 	private final EntityManager em;
 
-	public AnonAccRepoImpl(EntityManager em) {
+	public AnonUserRepositoryImpl(EntityManager em) {
 		this.em = em;
 	}
 

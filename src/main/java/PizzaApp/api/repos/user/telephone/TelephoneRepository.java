@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface TelephoneRepository {
 
-	Optional<List<TelephoneDTO>> findByUserId(Long id);
+	Optional<List<TelephoneDTO>> findAllByUserId(String id);
 
-	Long findUserTelListSize(Long id);
+	Long findUserTelListSize(String id);
 }

@@ -7,5 +7,5 @@ public record OrderPaginationResultDTO(
 		int totalPages,
 		int pageSize,
 		int totalOrders,
-		List<OrderSummaryDTO> orders) {
+		List<OrderSummary> orders) {
 }

@@ -2,10 +2,11 @@ package PizzaApp.api.repos.order;
 
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
-import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
+import PizzaApp.api.entity.dto.order.OrderSummary;
 import PizzaApp.api.entity.order.Order;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository {
 
@@ -13,17 +14,19 @@ public interface OrderRepository {
 
 	OrderDTO findUserOrder(String id);
 
-	OrderPaginationResultDTO findOrdersSummary(Long userId, int pageSize, int pageNumber);
+	Number findUserOrderCount(String userId);
+
+	Optional<List<OrderSummary>> findOrderSummaryList(String userId, int pageSize, int pageNumber);
 
 	Long updateUserOrder(Order order);
 
-	void deleteById(Long id);
+	void deleteById(String id);
 
-	// internal use
+	// NOTE - for internal use only
 
-	Order findById(Long id);
+	Order findById(String id);
 
-	Order findReferenceById(Long id);
+	Order findReferenceById(String id);
 
-	LocalDateTime findCreatedOnById(Long id);
+	OrderCreatedOnDTO findCreatedOnById(String id);
 }

@@ -28,6 +28,12 @@ public class Order {
 	@Column(name = "updated_on")
 	private LocalDateTime updatedOn;
 
+	@Column(name = "formatted_created_on")
+	private String formattedCreatedOn;
+
+	@Column(name = "formatted_updated_on")
+	private String formattedUpdatedOn;
+
 	@Column(name = "c_name")
 	@Pattern(regexp = "^[a-zA-Z\s]{2,50}$",
 			message = "Nombre / apellidos: solo letras sin tildes (mín 2, máx 25 letras)")
@@ -70,6 +76,8 @@ public class Order {
 		this.id = builder.id;
 		this.createdOn = builder.createdOn;
 		this.updatedOn = builder.updatedOn;
+		this.formattedCreatedOn = builder.formattedCreatedOn;
+		this.formattedUpdatedOn = builder.formattedUpdatedOn;
 		this.customerName = builder.customerName;
 		this.contactTel = builder.contactTel;
 		this.email = builder.email;
@@ -84,7 +92,7 @@ public class Order {
 
 		private LocalDateTime createdOn, updatedOn;
 
-		private String customerName, email;
+		private String customerName, email, formattedCreatedOn, formattedUpdatedOn;
 
 		private Integer contactTel;
 
@@ -106,6 +114,16 @@ public class Order {
 
 		public Builder withCreatedOn(LocalDateTime createdOn) {
 			this.createdOn = createdOn;
+			return this;
+		}
+
+		public Builder withFormattedCreatedOn(String formattedCreatedOn) {
+			this.formattedCreatedOn = formattedCreatedOn;
+			return this;
+		}
+
+		public Builder withFormattedUpdatedOn(String formattedUpdatedOn) {
+			this.formattedUpdatedOn = formattedUpdatedOn;
 			return this;
 		}
 
@@ -247,6 +265,22 @@ public class Order {
 
 	public void setUserData(UserData userData) {
 		this.userData = userData;
+	}
+
+	public String getFormattedCreatedOn() {
+		return formattedCreatedOn;
+	}
+
+	public void setFormattedCreatedOn(String formattedCreatedOn) {
+		this.formattedCreatedOn = formattedCreatedOn;
+	}
+
+	public String getFormattedUpdatedOn() {
+		return formattedUpdatedOn;
+	}
+
+	public void setFormattedUpdatedOn(String formattedUpdatedOn) {
+		this.formattedUpdatedOn = formattedUpdatedOn;
 	}
 
 	@Override

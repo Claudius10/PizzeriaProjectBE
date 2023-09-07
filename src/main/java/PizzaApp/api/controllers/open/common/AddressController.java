@@ -22,6 +22,6 @@ public class AddressController {
 
 	@GetMapping("/address")
 	public ResponseEntity<Address> findAddress(@RequestBody @Valid Address address) {
-		return new ResponseEntity<>(addressService.findAddress(address).orElseThrow(), HttpStatus.OK);
+		return new ResponseEntity<>(addressService.find(address).get(), HttpStatus.OK);
 	}
 }

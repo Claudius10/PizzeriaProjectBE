@@ -99,11 +99,10 @@ public class NewOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = orderRepository.findById(Long.valueOf(
-				mockMvc.perform(post("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = orderRepository.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// set createdOn to do equality test
 		order.setCreatedOn(dbOrder.getCreatedOn());
@@ -129,11 +128,10 @@ public class NewOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = orderRepository.findById(Long.valueOf(
-				mockMvc.perform(post("/api/order")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(objectMapper.writeValueAsString(order)))
-						.andReturn().getResponse().getContentAsString()));
+		Order dbOrder = orderRepository.findById(mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andReturn().getResponse().getContentAsString());
 
 		// set createdOn to do equality test
 		order.setCreatedOn(dbOrder.getCreatedOn());

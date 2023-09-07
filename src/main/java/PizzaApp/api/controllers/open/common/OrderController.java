@@ -1,7 +1,5 @@
 package PizzaApp.api.controllers.open.common;
 
-import java.time.LocalDateTime;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,10 +20,7 @@ public class OrderController {
 	}
 
 	@PostMapping()
-	public ResponseEntity<Long> createOrder(@RequestBody @Valid Order order) {
-		// set created on
-		order.setCreatedOn(LocalDateTime.now());
-		Long id = orderService.createAnonOrder(order);
-		return new ResponseEntity<>(id, HttpStatus.CREATED);
+	public ResponseEntity<Long> createAnonOrder(@RequestBody @Valid Order order) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createAnonOrder(order));
 	}
 }

@@ -19,20 +19,23 @@ public class UserData {
 	@JsonIgnore
 	private User user;
 
-	@OneToMany(mappedBy = "userData",
+	@OneToMany(
+			mappedBy = "userData",
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	@JsonManagedReference
 	private List<Order> orderList;
 
-	@OneToMany(mappedBy = "userData",
+	@OneToMany(
+			mappedBy = "userData",
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
 	@JsonManagedReference
 	private List<Telephone> telephoneList;
 
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "users_addresses",
+	@JoinTable(
+			name = "users_addresses",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "address_id"))
 	private Set<Address> addressList;

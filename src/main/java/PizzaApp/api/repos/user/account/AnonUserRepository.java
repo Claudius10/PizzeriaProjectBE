@@ -2,7 +2,7 @@ package PizzaApp.api.repos.user.account;
 
 import PizzaApp.api.entity.user.User;
 
-public interface AnonAccRepo {
+public interface AnonUserRepository {
 
 	User create(User user);
 }

@@ -11,7 +11,7 @@ public interface AddressRepository {
 
 	Optional<Address> findAddress(Address address);
 
-	Optional<List<Address>> findByUserId(String id);
+	List<Address> findAllByUserId(String id);
 
 	Long findUserAddressListSize(String id);
 }

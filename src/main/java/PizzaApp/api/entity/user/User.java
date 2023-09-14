@@ -9,7 +9,6 @@ import java.util.*;
 @Entity(name = "User")
 @Table(name = "user")
 public class User implements UserDetails {
-	// TODO - add name to User from UserData
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

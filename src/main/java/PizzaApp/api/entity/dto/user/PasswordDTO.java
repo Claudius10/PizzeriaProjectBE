@@ -1,4 +1,6 @@
 package PizzaApp.api.entity.dto.user;
 
-public record PasswordDTO(String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record PasswordDTO(@NotBlank(message = "La contraseña no puede faltar") String password) {
 }

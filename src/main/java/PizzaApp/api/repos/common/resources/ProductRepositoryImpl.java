@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import PizzaApp.api.entity.resources.Product;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
@@ -19,8 +18,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 
 	@Override
 	public List<Product> findAllByType(String productType) {
-		TypedQuery<Product> query = em.createQuery("FROM Product WHERE productType=:productType", Product.class);
-		query.setParameter("productType", productType);
-		return query.getResultList();
+		return em.createQuery("select product from Product product where product.productType = :productType", Product.class)
+				.setParameter("productType", productType)
+				.getResultList();
 	}
 }

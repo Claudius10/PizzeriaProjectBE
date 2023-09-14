@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import PizzaApp.api.entity.resources.Store;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
 @Repository
 public class StoreRepositoryImpl implements StoreRepository {
@@ -19,7 +18,6 @@ public class StoreRepositoryImpl implements StoreRepository {
 
 	@Override
 	public List<Store> findAll() {
-		TypedQuery<Store> query = em.createQuery("from Store st JOIN FETCH st.address add ", Store.class);
-		return query.getResultList();
+		return em.createQuery("select store from Store store JOIN FETCH store.address", Store.class).getResultList();
 	}
 }

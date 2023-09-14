@@ -7,7 +7,7 @@ import PizzaApp.api.services.user.account.UserService;
 import PizzaApp.api.services.user.address.AddressService;
 import PizzaApp.api.services.user.telephone.TelephoneService;
 import PizzaApp.api.utility.auth.CookieUtils;
-import PizzaApp.api.validation.account.AccountRequestValidator;
+import PizzaApp.api.validation.account.UserRequestValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -32,14 +32,19 @@ public class UserController {
 
 	private final AddressService addressService;
 
-	private final AccountRequestValidator accountRequestValidator;
+	private final UserRequestValidator userRequestValidator;
 
-	public UserController(UserService userService, UserDataService userDataService, TelephoneService telephoneService, AddressService addressService, AccountRequestValidator accountRequestValidator) {
+	public UserController
+			(UserService userService,
+			 UserDataService userDataService,
+			 TelephoneService telephoneService,
+			 AddressService addressService,
+			 UserRequestValidator userRequestValidator) {
 		this.userService = userService;
 		this.userDataService = userDataService;
 		this.telephoneService = telephoneService;
 		this.addressService = addressService;
-		this.accountRequestValidator = accountRequestValidator;
+		this.userRequestValidator = userRequestValidator;
 	}
 
 	// NOTE - endpoints for UserService
@@ -52,11 +57,10 @@ public class UserController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(id, request);
-		CookieUtils.loadCsrf(response, csrfToken);
-
+		userRequestValidator.validate(id, request);
 		userService.updateName(id, nameChangeDTO);
 
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -68,11 +72,10 @@ public class UserController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(id, request);
-		CookieUtils.loadCsrf(response, csrfToken);
-
+		userRequestValidator.validate(id, request);
 		userService.updateEmail(id, emailChangeDTO);
 
+		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -83,26 +86,24 @@ public class UserController {
 			 HttpServletRequest request,
 			 HttpServletResponse response) {
 
-		accountRequestValidator.validate(id, request);
-		CookieUtils.eatAllCookies(request, response);
-
+		userRequestValidator.validate(id, request);
 		userService.updatePassword(id, passwordChangeDTO);
 
+		CookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete
 			(@PathVariable String id,
-			 @RequestBody PasswordDTO passwordDTO,
+			 @Valid @RequestBody PasswordDTO passwordDTO,
 			 HttpServletRequest request,
 			 HttpServletResponse response) {
 
-		accountRequestValidator.validate(id, request);
-		CookieUtils.eatAllCookies(request, response);
-
+		userRequestValidator.validate(id, request);
 		userService.delete(id, passwordDTO);
 
+		CookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -115,9 +116,8 @@ public class UserController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		CookieUtils.loadCsrf(response, csrfToken);
-
 		return ResponseEntity.status(HttpStatus.OK).body(userDataService.findDTOById(id));
 	}
 
@@ -128,9 +128,8 @@ public class UserController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		CookieUtils.loadCsrf(response, csrfToken);
-
 		return ResponseEntity.status(HttpStatus.OK).body(telephoneService.findAllByUserId(id));
 	}
 
@@ -140,9 +139,8 @@ public class UserController {
 			 @RequestBody @Valid Integer telephone,
 			 HttpServletRequest request) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		userDataService.addTel(id, telephone);
-
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
@@ -152,9 +150,8 @@ public class UserController {
 			 @RequestBody @Valid Integer telephone,
 			 HttpServletRequest request) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		userDataService.removeTel(id, telephone);
-
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -165,9 +162,8 @@ public class UserController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		CookieUtils.loadCsrf(response, csrfToken);
-
 		return ResponseEntity.status(HttpStatus.OK).body(addressService.findAllByUserId(id));
 	}
 
@@ -177,9 +173,8 @@ public class UserController {
 			 @RequestBody @Valid Address address,
 			 HttpServletRequest request) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		userDataService.addAddress(id, address);
-
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
@@ -189,9 +184,8 @@ public class UserController {
 			 @RequestBody @Valid Address address,
 			 HttpServletRequest request) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		userDataService.removeAddress(id, address);
-
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 }

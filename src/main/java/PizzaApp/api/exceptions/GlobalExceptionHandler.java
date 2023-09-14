@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.exceptions.exceptions.order.*;
+import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
+import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -87,6 +89,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.withErrors(List.of(ex.getMessage()))
 						.build());
 
+	}
+
+	@ExceptionHandler({MaxTelListSizeException.class, MaxAddressListSizeException.class})
+	protected ResponseEntity<ApiErrorDTO> handleUserDataException(HttpServletRequest request, RuntimeException ex) {
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+						.withStatusCode(HttpStatus.BAD_REQUEST.value())
+						.withPath(request.getServletPath())
+						.withErrors(List.of(ex.getMessage()))
+						.build());
 	}
 
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)

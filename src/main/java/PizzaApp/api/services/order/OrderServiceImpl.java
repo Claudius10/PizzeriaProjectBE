@@ -2,7 +2,6 @@ package PizzaApp.api.services.order;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 import PizzaApp.api.entity.dto.order.*;
@@ -46,13 +45,15 @@ public class OrderServiceImpl implements OrderService {
 	public Long createAnonOrder(Order order) {
 		Optional<Address> dbAddress = addressService.find(order.getAddress());
 		dbAddress.ifPresent(order::setAddress);
-		order.setUserData(null); // anon order
+		order.setUserData(null);
 
 		// set created on in standard UTC (+00:00)
 		order.setCreatedOn(LocalDateTime.now());
 
 		// set formatted created on in UTC +2 since FE is +02:00
 		order.setFormattedCreatedOn(order.getCreatedOn().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
+
+		validator.validate(order);
 
 		return orderRepository.createOrder(order);
 	}
@@ -92,12 +93,12 @@ public class OrderServiceImpl implements OrderService {
 		UserData dbUserData = userDataService.findReference(userOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
+				.withId(userOrderDTO.orderId())
+				.withUser(dbUserData)
 				.withCreatedOn(userOrderDTO.createdOn())
 				.withFormattedCreatedOn(userOrderDTO.formattedCreatedOn())
 				.withUpdatedOn(LocalDateTime.now())
 				.withFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
-				.withId(userOrderDTO.orderId())
-				.withUser(dbUserData)
 				.withAddress(dbAddress)
 				.withCustomerName(userOrderDTO.userOrderData().customerName())
 				.withEmail(userOrderDTO.userOrderData().email())
@@ -109,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setCart(userOrderDTO.cart());
 
 		// validate order
-		//validator.setCurrentTime().validateUpdate(dbOrder);
+		//validator.setCurrentTime().validateUpdate(order);
 
 		if (order.getCart() == null) {
 			// cart is set to null if cartUpdateTimeLimit passed
@@ -119,14 +120,14 @@ public class OrderServiceImpl implements OrderService {
 			order.setCart(cart);
 		}
 
-		return orderRepository.updateUserOrder(order);
+		return orderRepository.updateOrder(order);
 	}
 
 	@Override
 	public OrderPaginationResultDTO findOrdersSummary(String userId, String pageSize, String pageNumber) {
 		int thePageSize = Integer.parseInt(pageSize);
 		int thePageNumber = Integer.parseInt(pageNumber);
-		int orderCount = orderRepository.findUserOrderCount(userId).intValue();
+		int orderCount = orderRepository.findOrderCount(userId).intValue();
 
 		int pageCount;
 		if (orderCount % thePageSize == 0) {
@@ -135,19 +136,17 @@ public class OrderServiceImpl implements OrderService {
 			pageCount = (orderCount / thePageSize) + 1;
 		}
 
-		Optional<List<OrderSummary>> orderSummaryList = orderRepository.findOrderSummaryList(userId, thePageSize, thePageNumber);
-
-		return orderSummaryList.map(orderSummaries -> new OrderPaginationResultDTO(
+		return new OrderPaginationResultDTO(
 				thePageNumber,
 				pageCount,
 				thePageSize,
 				orderCount,
-				orderSummaries)).orElse(null);
+				orderRepository.findOrderSummaryList(userId, thePageSize, thePageNumber));
 	}
 
 	@Override
 	public OrderDTO findUserOrder(String id) {
-		return orderRepository.findUserOrder(id);
+		return orderRepository.findOrder(id);
 	}
 
 	@Override

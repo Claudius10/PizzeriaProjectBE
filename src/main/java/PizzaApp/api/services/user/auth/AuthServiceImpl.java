@@ -30,43 +30,44 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public AuthDTO login(LoginDTO login) {
-		// 1. Authenticate
 		Authentication auth = authManager.authenticate
-				(new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
+				(new UsernamePasswordAuthenticationToken(login.email(), login.password()));
 
 		User user = (User) auth.getPrincipal();
-		return new AuthDTO.Builder()
-				.withUserId(user.getId())
-				.withName(user.getName())
-				.withEmail(user.getUsername())
-				.withAccessToken(jwtUtils.createToken(
+		return new AuthDTO(
+				user.getId(),
+				user.getName(),
+				user.getUsername(),
+				jwtUtils.createToken(
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(1, ChronoUnit.SECONDS)))
-				.withRefreshToken(jwtUtils.createToken(
+						Instant.now().plus(1, ChronoUnit.SECONDS)),
+				jwtUtils.createToken(
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(5, ChronoUnit.SECONDS)))
-				.build();
+						Instant.now().plus(5, ChronoUnit.SECONDS)));
 	}
 
 	@Override
 	public AuthDTO refreshTokens(Cookie token) {
 		Jwt jwt = jwtUtils.validate(token.getValue());
-		return new AuthDTO.Builder()
-				.withUserId(jwt.getClaim("id"))
-				.withAccessToken(jwtUtils.createToken(
+		return new AuthDTO(
+				jwt.getClaim("id"),
+				"",
+				"",
+				jwtUtils.createToken(
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
 						jwt.getClaim("roles"),
-						Instant.now().plus(1, ChronoUnit.MINUTES)))
-				.withRefreshToken(jwtUtils.createToken(
+						Instant.now().plus(1, ChronoUnit.MINUTES)),
+				jwtUtils.createToken(
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
 						jwt.getClaim("roles"),
-						Instant.now().plus(2, ChronoUnit.MINUTES)))
-				.build();
+						Instant.now().plus(2, ChronoUnit.MINUTES))
+
+		);
 	}
 }

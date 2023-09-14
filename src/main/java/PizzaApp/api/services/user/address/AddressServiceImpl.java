@@ -30,7 +30,12 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public List<Address> findAllByUserId(String id) {
-		return addressRepository.findByUserId(id).orElse(null);
+		List<Address> addressList = addressRepository.findAllByUserId(id);
+		if (addressList.isEmpty()) {
+			return null;
+		} else {
+			return addressList;
+		}
 	}
 
 	@Override

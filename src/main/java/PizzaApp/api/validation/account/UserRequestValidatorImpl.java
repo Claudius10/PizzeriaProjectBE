@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 @Component
-public class AccountRequestValidatorImpl implements AccountRequestValidator {
+public class UserRequestValidatorImpl implements UserRequestValidator {
 
 	private final JwtDecoder jwtDecoder;
 
-	public AccountRequestValidatorImpl(JwtDecoder jwtDecoder) {
+	public UserRequestValidatorImpl(JwtDecoder jwtDecoder) {
 		this.jwtDecoder = jwtDecoder;
 	}
 

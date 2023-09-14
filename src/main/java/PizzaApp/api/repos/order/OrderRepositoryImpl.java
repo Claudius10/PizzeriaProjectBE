@@ -3,7 +3,6 @@ package PizzaApp.api.repos.order;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import PizzaApp.api.entity.dto.order.*;
 import org.hibernate.Session;
@@ -33,47 +32,52 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public Long updateUserOrder(Order order) {
+	public Long updateOrder(Order order) {
 		syncCartItems(order);
 		Order theOrder = em.merge(order);
 		return theOrder.getId();
 	}
 
 	@Override
-	public OrderDTO findUserOrder(String id) {
+	public OrderDTO findOrder(String id) {
 		return em.createQuery("""
 				select new OrderDTO(
-				   o.id,
-				   o.createdOn,
-				   o.updatedOn,
-				   o.formattedCreatedOn,
-				   o.formattedUpdatedOn,
-				   o.customerName,
-				   o.contactTel,
-				   o.email,
-				   o.address,
-				   o.orderDetails,
-				   o.cart
+				   order.id,
+				   order.createdOn,
+				   order.updatedOn,
+				   order.formattedCreatedOn,
+				   order.formattedUpdatedOn,
+				   order.customerName,
+				   order.contactTel,
+				   order.email,
+				   order.address,
+				   order.orderDetails,
+				   order.cart
 				)
-				from Order o
-				where o.id= :orderId
+				from Order order
+				where order.id = :orderId
 				""", OrderDTO.class).setParameter("orderId", id).getSingleResult();
 	}
 
 	@Override
-	public Number findUserOrderCount(String userId) {
-		return em.createQuery("select count(o) from Order o where o.userData.id= :userId",
+	public Number findOrderCount(String userId) {
+		return em.createQuery("select count(order) from Order order where order.userData.id = :userId",
 				Number.class).setParameter("userId", userId).getSingleResult();
 	}
 
 	@Override
-	public Optional<List<OrderSummary>> findOrderSummaryList(String userId, int pageSize, int pageNumber) {
+	public List<OrderSummary> findOrderSummaryList(String userId, int pageSize, int pageNumber) {
 		Session session = em.unwrap(Session.class);
-
-		List<OrderSummary> orderSummaryList = session.createQuery(
-						"select o.id, o.createdOn, o.updatedOn, o.formattedCreatedOn, o.formattedUpdatedOn, " +
-								"o.cart.totalQuantity, o.cart.totalCost, o.cart.totalCostOffers " +
-								"from Order o where o.userData.id= :userId order by o.id", OrderSummary.class)
+		return session.createQuery(
+						"select order.id, " +
+								"order.createdOn, " +
+								"order.updatedOn, " +
+								"order.formattedCreatedOn, " +
+								"order.formattedUpdatedOn, " +
+								"order.cart.totalQuantity, " +
+								"order.cart.totalCost, " +
+								"order.cart.totalCostOffers " +
+								"from Order order where order.userData.id = :userId order by order.id", OrderSummary.class)
 				.setParameter("userId", userId)
 				.setFirstResult((pageNumber - 1) * pageSize)
 				.setMaxResults(pageSize)
@@ -89,17 +93,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 								((double) tuple[7])
 						)
 				)).getResultList();
-
-		return Optional.of(orderSummaryList);
 	}
 
 	@Override
 	public void deleteById(String id) {
-		// find order
-		Order order = em.getReference(Order.class, id);
-
-		// delete
-		em.remove(order);
+		em.remove(em.getReference(Order.class, id));
 	}
 
 	// NOTE - for internal use only
@@ -108,9 +106,9 @@ public class OrderRepositoryImpl implements OrderRepository {
 	public OrderCreatedOnDTO findCreatedOnById(String id) {
 		return em.createQuery("""
 				select new OrderCreatedOnDTO(
-				o.createdOn,
-				o.formattedCreatedOn
-				) from Order o where o.id= :orderId
+				order.createdOn,
+				order.formattedCreatedOn
+				) from Order order where order.id= :orderId
 				""", OrderCreatedOnDTO.class).setParameter("orderId", id).getSingleResult();
 	}
 

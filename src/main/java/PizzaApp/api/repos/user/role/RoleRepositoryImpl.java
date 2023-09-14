@@ -4,9 +4,6 @@ import org.springframework.stereotype.Repository;
 
 import PizzaApp.api.entity.user.Role;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-
-import java.util.Optional;
 
 @Repository
 public class RoleRepositoryImpl implements RoleRepository {
@@ -23,17 +20,9 @@ public class RoleRepositoryImpl implements RoleRepository {
 	}
 
 	@Override
-	public Optional<Role> findByName(String roleName) {
-		TypedQuery<Role> query = em.createQuery("select r from Role r where r.name = :roleName", Role.class);
-		query.setParameter("roleName", roleName);
-		return query.getResultStream().findFirst();
-
-		// alternative
-		/*
-		try {
-			return Optional.of(query.getSingleResult());
-		} catch (NoResultException e) {
-			return Optional.empty();
-		}*/
+	public Role findByName(String roleName) {
+		return em.createQuery("select role from Role role where role.name = :roleName", Role.class)
+				.setParameter("roleName", roleName)
+				.getSingleResult();
 	}
 }

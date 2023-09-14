@@ -19,8 +19,10 @@ public class ResourceServiceImpl implements ResourceService {
 	private final StoreRepository storeRepository;
 	private final OfferRepository offerRepository;
 
-	public ResourceServiceImpl(ProductRepository productRepository, StoreRepository storeRepository,
-							   OfferRepository offerRepository) {
+	public ResourceServiceImpl
+			(ProductRepository productRepository,
+			 StoreRepository storeRepository,
+			 OfferRepository offerRepository) {
 		this.productRepository = productRepository;
 		this.storeRepository = storeRepository;
 		this.offerRepository = offerRepository;

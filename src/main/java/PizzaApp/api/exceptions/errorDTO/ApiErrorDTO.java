@@ -3,16 +3,17 @@ package PizzaApp.api.exceptions.errorDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO - replace List<String> errors with String error
+
 public record ApiErrorDTO
 
 		(String timesStamp,
 		 int statusCode,
 		 String path,
-		 boolean accessExpired,
 		 List<String> errors) {
 
 	private ApiErrorDTO(Builder builder) {
-		this(builder.timeStamp, builder.statusCode, builder.path, builder.accessExpired, builder.errors);
+		this(builder.timeStamp, builder.statusCode, builder.path, builder.errors);
 	}
 
 	public static class Builder {
@@ -22,8 +23,6 @@ public record ApiErrorDTO
 		private int statusCode;
 
 		private String path;
-
-		private boolean accessExpired;
 
 		private List<String> errors;
 
@@ -41,11 +40,6 @@ public record ApiErrorDTO
 
 		public Builder withPath(String path) {
 			this.path = path;
-			return this;
-		}
-
-		public Builder withAccessExpired(boolean result) {
-			this.accessExpired = result;
 			return this;
 		}
 

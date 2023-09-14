@@ -13,19 +13,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
 @RestController
 @RequestMapping("/api/auth")
+@Validated
 public class AuthController {
 
-	private final AnonUserService anonAccService;
+	private final AnonUserService anonUserService;
 
 	private final AuthService authService;
 
-	public AuthController(AnonUserService anonAccService, AuthService authService) {
-		this.anonAccService = anonAccService;
+	public AuthController
+			(AnonUserService anonUserService,
+			 AuthService authService) {
+		this.anonUserService = anonUserService;
 		this.authService = authService;
 	}
 
@@ -35,28 +39,41 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
-		anonAccService.create(registerDTO);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> register
+			(@RequestBody @Valid RegisterDTO registerDTO) {
+
+		anonUserService.create(registerDTO);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<UserDataDTO> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+	public ResponseEntity<UserDataDTO> login
+			(@Valid @RequestBody LoginDTO loginDTO,
+			 HttpServletResponse response) {
+
 		AuthDTO authDTO = authService.login(loginDTO);
 		CookieUtils.newCookies(response, authDTO);
-		return ResponseEntity.ok().body(new UserDataDTO(authDTO.getUserId(), authDTO.getName(), authDTO.getEmail()));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(new UserDataDTO(authDTO.userId(), authDTO.name(), authDTO.email()));
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<?> deleteTokens(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> logout
+			(HttpServletRequest request,
+			 HttpServletResponse response) {
+
 		CookieUtils.eatAllCookies(request, response);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshTokens(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> refreshTokens
+			(HttpServletRequest request,
+			 HttpServletResponse response) {
+
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
 		CookieUtils.newCookies(response, authService.refreshTokens(refreshToken));
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

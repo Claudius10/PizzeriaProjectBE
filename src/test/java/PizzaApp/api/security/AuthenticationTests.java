@@ -81,12 +81,11 @@ public class AuthenticationTests {
 		mockMvc.perform(post("/api/auth/account/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
-								new RegisterDTO.Builder()
-										.withEmail("clau@gmail.com")
-										.withMatchingEmail("clau@gmail.com")
-										.withPassword("password")
-										.withMatchingPassword("password")
-										.build())))
+								new RegisterDTO("Clau",
+										"clau@gmail.com",
+										"clau@gmail.com",
+										"password",
+										"password"))))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
 						CoreMatchers.instanceOf(DataIntegrityViolationException.class)));
 

@@ -22,7 +22,11 @@ public class AnonUserServiceImpl implements AnonUserService {
 
 	private final PasswordEncoder bCryptEncoder;
 
-	public AnonUserServiceImpl(AnonUserRepository anonAccRepo, UserDataService userDataService, RoleService roleService, PasswordEncoder bCryptEncoder) {
+	public AnonUserServiceImpl
+			(AnonUserRepository anonAccRepo,
+			 UserDataService userDataService,
+			 RoleService roleService,
+			 PasswordEncoder bCryptEncoder) {
 		this.anonAccRepo = anonAccRepo;
 		this.userDataService = userDataService;
 		this.roleService = roleService;
@@ -31,13 +35,13 @@ public class AnonUserServiceImpl implements AnonUserService {
 
 	@Override
 	public void create(RegisterDTO registerDTO) {
-		Role userRole = roleService.findByName("USER").orElseThrow();
+		Role userRole = roleService.findByName("USER");
 
-		String encodedPassword = bCryptEncoder.encode(registerDTO.getPassword());
+		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 
 		User user = anonAccRepo.create(new User.Builder()
-				.withName(registerDTO.getName())
-				.withEmail(registerDTO.getEmail())
+				.withName(registerDTO.name())
+				.withEmail(registerDTO.email())
 				.withPassword(encodedPassword)
 				.withRoles(userRole)
 				.build());

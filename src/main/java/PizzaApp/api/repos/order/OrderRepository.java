@@ -12,13 +12,13 @@ public interface OrderRepository {
 
 	Long createOrder(Order order);
 
-	OrderDTO findUserOrder(String id);
+	OrderDTO findOrder(String id);
 
-	Number findUserOrderCount(String userId);
+	Number findOrderCount(String userId);
 
-	Optional<List<OrderSummary>> findOrderSummaryList(String userId, int pageSize, int pageNumber);
+	List<OrderSummary> findOrderSummaryList(String userId, int pageSize, int pageNumber);
 
-	Long updateUserOrder(Order order);
+	Long updateOrder(Order order);
 
 	void deleteById(String id);
 

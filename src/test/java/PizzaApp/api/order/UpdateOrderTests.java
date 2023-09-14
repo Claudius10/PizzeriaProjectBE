@@ -30,6 +30,8 @@ import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.exceptions.exceptions.order.OrderDataUpdateTimeLimitException;
 import PizzaApp.api.exceptions.exceptions.order.OrderDeleteTimeLimitException;
 
+// TODO - update this test class as now only logged in user can update an order
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)

@@ -1,5 +1,6 @@
 package PizzaApp.api;
 
+import PizzaApp.api.entity.user.Role;
 import PizzaApp.api.services.user.role.RoleService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +17,8 @@ public class PizzaAppApiApplication {
 	@Bean
 	CommandLineRunner run(RoleService roleService) {
 		return args -> {
-			if (roleService.findByName("ADMIN").isPresent()) return;
+			Role admin = roleService.findByName("ADMIN");
+			if (!admin.getAuthority().isEmpty()) return;
 			roleService.create("ADMIN");
 			roleService.create("USER");
 		};

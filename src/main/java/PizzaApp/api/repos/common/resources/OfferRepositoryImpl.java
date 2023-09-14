@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import PizzaApp.api.entity.resources.Offer;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
 @Repository
 public class OfferRepositoryImpl implements OfferRepository {
@@ -19,7 +18,6 @@ public class OfferRepositoryImpl implements OfferRepository {
 
 	@Override
 	public List<Offer> findAll() {
-		TypedQuery<Offer> query = em.createQuery("from Offer", Offer.class);
-		return query.getResultList();
+		return em.createQuery("select offer from Offer offer", Offer.class).getResultList();
 	}
 }

@@ -4,6 +4,8 @@ import PizzaApp.api.entity.dto.user.UserDataDTO;
 import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.user.Telephone;
 import PizzaApp.api.entity.user.UserData;
+import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
+import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
 import PizzaApp.api.repos.user.account.UserDataRepository;
 import PizzaApp.api.services.user.address.AddressService;
 import PizzaApp.api.services.user.telephone.TelephoneService;
@@ -22,7 +24,10 @@ public class UserDataServiceImpl implements UserDataService {
 
 	private final AddressService addressService;
 
-	public UserDataServiceImpl(UserDataRepository userDataRepository, TelephoneService telephoneService, AddressService addressService) {
+	public UserDataServiceImpl
+			(UserDataRepository userDataRepository,
+			 TelephoneService telephoneService,
+			 AddressService addressService) {
 		this.userDataRepository = userDataRepository;
 		this.telephoneService = telephoneService;
 		this.addressService = addressService;
@@ -50,9 +55,8 @@ public class UserDataServiceImpl implements UserDataService {
 
 	@Override
 	public void addTel(String id, Integer telephone) {
-		// TODO: handle max tel and address per user in globalExceptionHandler
 		if (telephoneService.findUserTelListSize(id) == 3) {
-			throw new RuntimeException("Solo se permiten 3 números de teléfono almacenados");
+			throw new MaxTelListSizeException("Solo se permiten 3 números de teléfono almacenados");
 		}
 
 		UserData userData = findReference(id);
@@ -62,18 +66,18 @@ public class UserDataServiceImpl implements UserDataService {
 	@Override
 	public void removeTel(String id, Integer telephone) {
 		UserData userData = findReference(id);
-		Telephone telToRemove = userData.getTelephoneList()
-				.stream()
-				.filter(telephone1 -> telephone1.getNumber().equals(telephone))
-				.findFirst()
-				.orElseThrow();
-		userData.removeTel(telToRemove);
+		Optional<Telephone> telToRemove =
+				userData.getTelephoneList()
+						.stream()
+						.filter(telephone1 -> telephone1.getNumber().equals(telephone))
+						.findFirst();
+		telToRemove.ifPresent(userData::removeTel);
 	}
 
 	@Override
 	public void addAddress(String id, Address address) {
 		if (addressService.findUserAddressListSize(id) == 3) {
-			throw new RuntimeException("Solo se permiten 3 domicilios almacenados");
+			throw new MaxAddressListSizeException("Solo se permiten 3 domicilios almacenados");
 		}
 
 		UserData userData = findReference(id);
@@ -89,11 +93,11 @@ public class UserDataServiceImpl implements UserDataService {
 	@Override
 	public void removeAddress(String id, Address address) {
 		UserData userData = findReference(id);
-		Address addressToRemove = userData.getAddressList()
-				.stream()
-				.filter(address1 -> address1.entityEquals(address))
-				.findFirst()
-				.orElseThrow();
-		userData.removeAddress(addressToRemove);
+		Optional<Address> addressToRemove =
+				userData.getAddressList()
+						.stream()
+						.filter(address1 -> address1.entityEquals(address))
+						.findFirst();
+		addressToRemove.ifPresent(userData::removeAddress);
 	}
 }

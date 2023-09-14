@@ -24,18 +24,17 @@ public class ResourceController {
 	}
 
 	@GetMapping("/product/{productType}")
-	public ResponseEntity<List<Product>> findAllProductsByType(@PathVariable String productType) {
-		return new ResponseEntity<>(resourceService.findAllProductsByType(productType),
-				HttpStatus.ACCEPTED);
+	public ResponseEntity<List<Product>> findAllByType(@PathVariable String productType) {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(resourceService.findAllProductsByType(productType));
 	}
 
 	@GetMapping("/store")
 	public ResponseEntity<List<Store>> findAllStores() {
-		return new ResponseEntity<>(resourceService.findAllStores(), HttpStatus.ACCEPTED);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(resourceService.findAllStores());
 	}
 
 	@GetMapping("/offer")
 	public ResponseEntity<List<Offer>> findAllOffers() {
-		return new ResponseEntity<>(resourceService.findAllOffers(), HttpStatus.ACCEPTED);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(resourceService.findAllOffers());
 	}
 }

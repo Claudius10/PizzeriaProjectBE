@@ -6,15 +6,11 @@ import java.time.LocalDateTime;
 
 public interface OrderValidator {
 
-	OrderValidation setCurrentTime();
+	OrderValidatorImpl setCurrentTime();
 
 	void validate(Order order);
 
 	void isChangeRequestedValid(Order order);
-
-	void IsContactNumberValid(Order order);
-
-	void isEmailValid(Order order);
 
 	void isCartValid(Order order);
 

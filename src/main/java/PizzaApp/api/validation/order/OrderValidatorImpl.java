@@ -14,25 +14,15 @@ import PizzaApp.api.entity.order.Order;
 // Could turn this into an Util class
 
 @Component
-public class OrderValidation implements OrderValidator {
+public class OrderValidatorImpl implements OrderValidator {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 	private LocalDateTime now;
 	private LocalDateTime createdOn;
 
-	public OrderValidation setCurrentTime() {
+	public OrderValidatorImpl setCurrentTime() {
 		setNow(LocalDateTime.now());
 		return this;
-	}
-
-	@Override
-	public void validate(Order order) {
-		//isRequestWithinWorkingHours(); // FIXME - on for prod
-		IsContactNumberValid(order);
-		isEmailValid(order);
-		isCartValid(order);
-		isChangeRequestedValid(order);
-		calculatePaymentChange(order);
 	}
 
 	@Override
@@ -42,6 +32,15 @@ public class OrderValidation implements OrderValidator {
 		isCartUpdateTimeLimitValid(order);
 		isOrderDataUpdateTimeLimitValid();
 	}
+
+	@Override
+	public void validate(Order order) {
+		//isRequestWithinWorkingHours(); // FIXME - on for prod
+		isCartValid(order);
+		isChangeRequestedValid(order);
+		calculatePaymentChange(order);
+	}
+
 
 	@Override
 	public void isCartUpdateTimeLimitValid(Order order) {
@@ -91,28 +90,9 @@ public class OrderValidation implements OrderValidator {
 	}
 
 	@Override
-	public void IsContactNumberValid(Order order) {
-		boolean invalid = String.valueOf(order.getContactTel().intValue()).length() != 9;
-		// if new order and invalid -> throw
-		// if update order and invalid tel -> throw
-		// if update order and no tel -> valid
-		if (order.getId() == null && invalid || order.getContactTel() != null && invalid) {
-			throw new InvalidContactTelephoneException("Teléfono: mín 9 digitos, máx 9 digitos");
-		}
-	}
-
-	@Override
-	public void isEmailValid(Order order) {
-		boolean invalid = order.getEmail().trim().isEmpty();
-		if (order.getId() == null && invalid || order.getEmail() != null && invalid) {
-			throw new BlankEmailException("El email no puede faltar");
-		}
-	}
-
-	@Override
 	public void isCartValid(Order order) {
 		if (order.getCart() == null || order.getCart().getOrderItems().isEmpty() || order.getCart().getTotalQuantity() <= 0) {
-			throw new EmptyCartException("La cesta no puede ser vacía.");
+			throw new EmptyCartException("La cesta no puede ser vacía");
 		}
 	}
 

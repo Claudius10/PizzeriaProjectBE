@@ -1,10 +1,10 @@
-package PizzaApp.api.order;
+package PizzaApp.api.address;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -23,7 +23,7 @@ import PizzaApp.api.entity.user.Address;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
-public class OrderDataDuplicatesTests {
+public class AddressDuplicatesTest {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -33,69 +33,50 @@ public class OrderDataDuplicatesTests {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	// private List<Telephone> telList;
 	private List<Address> addressList;
 
 	@BeforeAll
 	void setup() {
-
-		// create address list
-		Address firstAddress = new Address.Builder()
-				.withStreet("FirstAddress")
-				.withStreetNr(15)
-				.withFloor("3")
-				.withDoor("2A")
-				.build();
-
-		Address secondAddress = new Address.Builder()
-				.withStreet("SecondAddress")
-				.withStreetNr(33)
-				.withStaircase("DER")
-				.withFloor("9")
-				.withDoor("E")
-				.build();
-
-		Address thirdAddress = new Address.Builder()
-				.withStreet("OriginalAddress")
-				.withStreetNr(12)
-				.withStaircase("C")
-				.withFloor("11")
-				.withDoor("DER")
-				.build();
-
-		Address fourthAddress = new Address.Builder()
-				.withStreet("NewAddress")
-				.withStreetNr(157)
-				.build();
-
-		Address[] addressArray = {firstAddress, secondAddress, thirdAddress, fourthAddress};
-		addressList = new ArrayList<>();
-		Collections.addAll(addressList, addressArray);
-
-		/*
-		 * decommissioned for now // create telephone list
-		 *
-		 * Telephone firstTel = new Telephone(666333999); Telephone secondTel = new
-		 * Telephone(666333666); Telephone thirdTel = new Telephone(666999333);
-		 *
-		 * Telephone[] telArray = { firstTel, secondTel, thirdTel }; telList = new
-		 * ArrayList<>(); Collections.addAll(telList, telArray);
-		 */
+		addressList = new ArrayList<>(Arrays.asList(
+				new Address.Builder()
+						.withStreet("FirstAddress")
+						.withStreetNr(15)
+						.withFloor("3")
+						.withDoor("2A")
+						.build(),
+				new Address.Builder()
+						.withStreet("SecondAddress")
+						.withStreetNr(33)
+						.withStaircase("DER")
+						.withFloor("9")
+						.withDoor("E")
+						.build(),
+				new Address.Builder()
+						.withStreet("OriginalAddress")
+						.withStreetNr(12)
+						.withStaircase("C")
+						.withFloor("11")
+						.withDoor("DER")
+						.build(),
+				new Address.Builder()
+						.withStreet("NewAddress")
+						.withStreetNr(157)
+						.build()));
 	}
 
 	@Test
 	public void givenAddresses_whenFindAddresses_thenDontThrowDueToDuplicates() {
-		logger.info("Duplicates test #1: Checking for duplicate addresses in DB");
+		logger.info("Duplicates test: Checking for duplicate addresses in DB");
 		assertDoesNotThrow(() -> {
 			for (Address address : addressList) {
 				// send a get to findAddress for every address obj
 				// if there's a duplicate, IncorrectResultSizeDataAccessException
-				// will be auto thrown by Spring
+				// will be auto thrown
 				mockMvc.perform(get("/api/address")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(address)));
 			}
 		});
-		logger.info("Duplicates test #1: Success, no duplicate addresses found");
+		logger.info("Duplicates test: Success, no duplicate addresses found");
 	}
 }

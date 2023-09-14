@@ -11,7 +11,9 @@ public class UserRepositoryImpl implements UserRepository {
 	private final EntityManager em;
 	private final UserDataRepository userDataRepository;
 
-	public UserRepositoryImpl(EntityManager em, UserDataRepository userDataRepository) {
+	public UserRepositoryImpl
+			(EntityManager em,
+			 UserDataRepository userDataRepository) {
 		this.em = em;
 		this.userDataRepository = userDataRepository;
 	}

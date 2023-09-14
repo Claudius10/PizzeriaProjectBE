@@ -5,10 +5,9 @@ import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
 import PizzaApp.api.entity.dto.user.UserOrderDTO;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.utility.auth.CookieUtils;
-import PizzaApp.api.validation.account.AccountRequestValidator;
+import PizzaApp.api.validation.account.UserRequestValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -22,11 +21,13 @@ public class UserOrdersController {
 
 	private final OrderService orderService;
 
-	private final AccountRequestValidator accountRequestValidator;
+	private final UserRequestValidator userRequestValidator;
 
-	public UserOrdersController(OrderService orderService, AccountRequestValidator accountRequestValidator) {
+	public UserOrdersController
+			(OrderService orderService,
+			 UserRequestValidator userRequestValidator) {
 		this.orderService = orderService;
-		this.accountRequestValidator = accountRequestValidator;
+		this.userRequestValidator = userRequestValidator;
 	}
 
 	@PostMapping("/{id}")
@@ -37,9 +38,8 @@ public class UserOrdersController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(id, request);
+		userRequestValidator.validate(id, request);
 		CookieUtils.loadCsrf(response, csrfToken);
-
 		return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createUserOrder(order));
 	}
 
@@ -50,7 +50,6 @@ public class UserOrdersController {
 			 CsrfToken csrfToken) {
 
 		CookieUtils.loadCsrf(response, csrfToken);
-
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrder(id));
 	}
 
@@ -63,20 +62,18 @@ public class UserOrdersController {
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		accountRequestValidator.validate(userId, request);
+		userRequestValidator.validate(userId, request);
 		CookieUtils.loadCsrf(response, csrfToken);
-
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrdersSummary(userId, pageSize, pageNumber));
 	}
 
 	@PutMapping("/{userId}")
 	public ResponseEntity<Long> updateUserOrder
-			(@RequestBody @Valid UserOrderDTO order,
+			(@RequestBody UserOrderDTO order,
 			 @PathVariable String userId,
 			 HttpServletRequest request) {
 
-		accountRequestValidator.validate(userId, request);
-
+		userRequestValidator.validate(userId, request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderService.updateUserOrder(order));
 	}
 

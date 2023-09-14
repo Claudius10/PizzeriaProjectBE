@@ -19,7 +19,12 @@ public class TelephoneServiceImpl implements TelephoneService {
 
 	@Override
 	public List<TelephoneDTO> findAllByUserId(String id) {
-		return telephoneRepository.findAllByUserId(id).orElse(null);
+		List<TelephoneDTO> telList = telephoneRepository.findAllByUserId(id);
+		if (telList.isEmpty()) {
+			return null;
+		} else {
+			return telList;
+		}
 	}
 
 	@Override

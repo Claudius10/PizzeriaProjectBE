@@ -60,7 +60,7 @@ public final class CookieUtils {
 	// 168 * 60 * 60 7 days
 	public static void newCookies(HttpServletResponse response, AuthDTO auth) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("fight", auth.getAccessToken(),
+				bakeCookie("fight", auth.accessToken(),
 						61,
 						true,
 						false) // true for prod
@@ -74,7 +74,7 @@ public final class CookieUtils {
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("me", auth.getRefreshToken(),
+				bakeCookie("me", auth.refreshToken(),
 						65,
 						true,
 						false)
@@ -88,7 +88,7 @@ public final class CookieUtils {
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("id", String.valueOf(auth.getUserId()),
+				bakeCookie("id", String.valueOf(auth.userId()),
 						65,
 						false,
 						false)

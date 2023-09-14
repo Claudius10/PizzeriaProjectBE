@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.exceptions.constraints.IntegerLength;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.order.cart.Cart;
@@ -35,16 +36,14 @@ public class Order {
 	private String formattedUpdatedOn;
 
 	@Column(name = "c_name")
-	@Pattern(regexp = "^[a-zA-Z\s]{2,50}$",
-			message = "Nombre / apellidos: solo letras sin tildes (mín 2, máx 25 letras)")
+	@Pattern(regexp = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$",
+			message = "Compruebe que el nombre y apellido(s) esté compuesto solo por un mínimo de 2 y un máximo de 50 letras")
 	private String customerName;
 
-	/* for contactTel there can't be field validation cause when receiving Order obj for update without
-	contactTel, it will insta reject before being able to do logic in orderServiceImpl */
 	@Column(name = "contact_tel")
+	@IntegerLength(min = 9, max = 9, message = "Compruebe que el número de teléfono tenga 9 digitos")
 	private Integer contactTel;
 
-	/* same as contactTel for validation */
 	@Column(name = "email")
 	@Email(message = "El formato del email no es aceptado")
 	private String email;

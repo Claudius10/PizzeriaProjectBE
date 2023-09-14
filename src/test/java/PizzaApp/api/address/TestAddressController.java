@@ -1,4 +1,4 @@
-package PizzaApp.api.controllers.open.common;
+package PizzaApp.api.address;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +12,16 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-public class AddressController {
+public class TestAddressController {
 
 	private final AddressService addressService;
 
-	public AddressController(AddressService addressService) {
+	public TestAddressController(AddressService addressService) {
 		this.addressService = addressService;
 	}
 
 	@GetMapping("/address")
 	public ResponseEntity<Address> findAddress(@RequestBody @Valid Address address) {
-		return new ResponseEntity<>(addressService.find(address).get(), HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK).body(addressService.find(address).get());
 	}
 }

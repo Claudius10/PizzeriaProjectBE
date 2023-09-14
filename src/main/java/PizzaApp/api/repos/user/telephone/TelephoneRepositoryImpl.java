@@ -1,12 +1,10 @@
 package PizzaApp.api.repos.user.telephone;
 
 import PizzaApp.api.entity.dto.user.TelephoneDTO;
-import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class TelephoneRepositoryImpl implements TelephoneRepository {
@@ -18,16 +16,16 @@ public class TelephoneRepositoryImpl implements TelephoneRepository {
 	}
 
 	@Override
-	public Optional<List<TelephoneDTO>> findAllByUserId(String id) {
-		TypedQuery<TelephoneDTO> query = em.createQuery("""
-					select new TelephoneDTO(
-					t.id,
-					t.number)
-					from Telephone t
-					where t.userData.id = :userId
-				""", TelephoneDTO.class);
-		query.setParameter("userId", id);
-		return Optional.of(query.getResultList());
+	public List<TelephoneDTO> findAllByUserId(String id) {
+		return em.createQuery("""
+							select new TelephoneDTO(
+							telehpone.id,
+							telehpone.number)
+							from Telephone telehpone
+							where telehpone.userData.id = :userId
+						""", TelephoneDTO.class)
+				.setParameter("userId", id)
+				.getResultList();
 	}
 
 	@Override

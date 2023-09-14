@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Pattern;
 
 public record NameChangeDTO(
 		@Pattern(
-				regexp = "^[a-zA-Z\s]{2,50}$",
-				message = "El nombre y apellido(s): solo letras sin tildes (mín 2, máx 25 letras)")
+				regexp = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$",
+				message = "Compruebe que el formato esté compuesto por un mínimo de 2 y un máximo de 50 letras)")
 		String name,
 		String password) {
 }

@@ -3,6 +3,7 @@ package PizzaApp.api.services.user.auth;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.dto.misc.AuthDTO;
 import PizzaApp.api.entity.dto.misc.LoginDTO;
+import PizzaApp.api.exceptions.exceptions.order.ExpiredTokenException;
 import PizzaApp.api.utility.auth.JWTUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -39,34 +41,39 @@ public class AuthServiceImpl implements AuthService {
 				user.getName(),
 				user.getUsername(),
 				jwtUtils.createToken(
+						Instant.now().plus(1, ChronoUnit.SECONDS),
 						user.getUsername(),
 						user.getId(),
-						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(1, ChronoUnit.SECONDS)),
+						jwtUtils.parseRoles(user.getAuthorities())),
 				jwtUtils.createToken(
+						Instant.now().plus(5, ChronoUnit.SECONDS),
 						user.getUsername(),
 						user.getId(),
-						jwtUtils.parseRoles(user.getAuthorities()),
-						Instant.now().plus(5, ChronoUnit.SECONDS)));
+						jwtUtils.parseRoles(user.getAuthorities())));
 	}
 
 	@Override
 	public AuthDTO refreshTokens(Cookie token) {
+		if (token == null) {
+			throw new ExpiredTokenException("Expired refresh token");
+		}
+
 		Jwt jwt = jwtUtils.validate(token.getValue());
+
 		return new AuthDTO(
 				jwt.getClaim("id"),
 				"",
 				"",
 				jwtUtils.createToken(
+						Instant.now().plus(1, ChronoUnit.MINUTES),
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
-						jwt.getClaim("roles"),
-						Instant.now().plus(1, ChronoUnit.MINUTES)),
+						jwt.getClaim("roles")),
 				jwtUtils.createToken(
+						Instant.now().plus(2, ChronoUnit.MINUTES),
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
-						jwt.getClaim("roles"),
-						Instant.now().plus(2, ChronoUnit.MINUTES))
+						jwt.getClaim("roles"))
 
 		);
 	}

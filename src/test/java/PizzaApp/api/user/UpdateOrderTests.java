@@ -1,4 +1,4 @@
-package PizzaApp.api.order;
+package PizzaApp.api.user;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;

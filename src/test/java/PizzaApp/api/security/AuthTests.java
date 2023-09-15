@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuthenticationTests {
+public class AuthTests {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -40,7 +41,8 @@ public class AuthenticationTests {
 		mockMvc.perform(post("/api/auth/login")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
-								new LoginDTO("void@email.com", "randomPassword"))))
+								new LoginDTO("void@email.com", "randomPassword")))
+						.with(csrf()))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
 						CoreMatchers.instanceOf(BadCredentialsException.class)));
 
@@ -54,7 +56,8 @@ public class AuthenticationTests {
 		mockMvc.perform(post("/api/auth/login")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
-								new LoginDTO("clau@gmail.com", "wrong-password"))))
+								new LoginDTO("clau@gmail.com", "wrong-password")))
+						.with(csrf()))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
 						CoreMatchers.instanceOf(BadCredentialsException.class)));
 
@@ -63,12 +66,13 @@ public class AuthenticationTests {
 
 	@Test
 	public void givenCorrectCredentials_whenLogin_thenThrowException() throws Exception {
-		logger.info("Authentication test #3: login with correct credentialing");
+		logger.info("Authentication test #3: login with correct credentials");
 
 		mockMvc.perform(post("/api/auth/login")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
-								new LoginDTO("clau@gmail.com", "password"))))
+								new LoginDTO("clau@gmail.com", "password")))
+						.with(csrf()))
 				.andExpect(status().isOk());
 
 		logger.info("Authentication test #3: successfully logged in with correct credentials");
@@ -78,14 +82,15 @@ public class AuthenticationTests {
 	public void givenExistingUserName_whenRegister_thenThrowException() throws Exception {
 		logger.info("Authentication test #4: try to register with existing username");
 
-		mockMvc.perform(post("/api/auth/account/register")
+		mockMvc.perform(post("/api/auth/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
 										"clau@gmail.com",
 										"clau@gmail.com",
 										"password",
-										"password"))))
+										"password")))
+						.with(csrf()))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
 						CoreMatchers.instanceOf(DataIntegrityViolationException.class)));
 

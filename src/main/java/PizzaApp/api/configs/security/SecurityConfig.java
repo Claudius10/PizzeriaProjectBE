@@ -101,6 +101,7 @@ public class SecurityConfig {
 			auth.requestMatchers("/api/resource/**").permitAll();
 			auth.requestMatchers("/api/order/**").permitAll();
 			auth.requestMatchers("/api/user/**").hasAnyRole("USER");
+			auth.requestMatchers("/api/tests/**").hasRole("USER");
 			auth.anyRequest().authenticated();
 		});
 

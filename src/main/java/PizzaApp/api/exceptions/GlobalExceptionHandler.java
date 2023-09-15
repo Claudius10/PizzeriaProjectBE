@@ -63,10 +63,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.build());
 	}
 
-	@ExceptionHandler({
-			ConstraintViolationException.class,
-			InvalidContactTelephoneException.class,
-			BlankEmailException.class})
+	@ExceptionHandler({ConstraintViolationException.class})
 	protected ResponseEntity<ApiErrorDTO> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
@@ -76,19 +73,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.withPath(request.getServletPath())
 						.withErrors(List.of(ex.getMessage()))
 						.build());
-	}
-
-	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
-	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity
-				.status(HttpStatus.UNAUTHORIZED)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
-						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-						.withPath(request.getServletPath())
-						.withErrors(List.of(ex.getMessage()))
-						.build());
-
 	}
 
 	@ExceptionHandler({MaxTelListSizeException.class, MaxAddressListSizeException.class})
@@ -115,5 +99,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 								"Una cuenta con el email introducido ya existe. " +
 										"Si no recuerda la contraseña, pulse \"Restablecer contraseña.\""))
 						.build());
+	}
+
+	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
+	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
+						.withPath(request.getServletPath())
+						.withErrors(List.of(ex.getMessage()))
+						.build());
+
+	}
+
+	@ExceptionHandler({ExpiredTokenException.class})
+	protected ResponseEntity<ApiErrorDTO> handleTokenExceptions(HttpServletRequest request, RuntimeException ex) {
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED)
+				.body(new ApiErrorDTO.Builder(
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
+						.withPath(request.getServletPath())
+						.withErrors(List.of(ex.getMessage()))
+						.build());
+
 	}
 }

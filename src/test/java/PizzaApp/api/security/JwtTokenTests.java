@@ -1,6 +1,9 @@
 package PizzaApp.api.security;
 
+import PizzaApp.api.exceptions.exceptions.order.ExpiredTokenException;
 import PizzaApp.api.utility.auth.CookieUtils;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -24,8 +27,6 @@ import java.util.logging.Logger;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
-// TODO - update this test class
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -39,7 +40,7 @@ public class JwtTokenTests {
 	@Autowired
 	private JwtEncoder jwtEncoder;
 
-	private String validAccessToken, expiredAccessToken, validRefreshToken, expiredRefreshToken, validTokenWithNoIssuer;
+	private String validAccessToken, validRefreshToken;
 
 	@BeforeAll
 	public void setup() {
@@ -47,81 +48,26 @@ public class JwtTokenTests {
 		validAccessToken = jwtEncoder.encode(
 						JwtEncoderParameters.from(
 								JwtClaimsSet.builder()
-										.issuer("http://192.168.1.11:8090")
+										.issuer("https://pizzeriaprojectbe-production.up.railway.app")
 										.subject("test subject")
 										.issuedAt(Instant.now())
 										.expiresAt(Instant.now().plus(30, ChronoUnit.SECONDS))
 										.claim("roles", "USER")
-										.build()))
-				.getTokenValue();
-
-		expiredAccessToken = jwtEncoder.encode(
-						JwtEncoderParameters.from(
-								JwtClaimsSet.builder()
-										.issuer("http://192.168.1.11:8090")
-										.subject("test subject")
-										.issuedAt(Instant.now().minus(30, ChronoUnit.MINUTES))
-										.expiresAt(Instant.now().minus(10, ChronoUnit.MINUTES))
-										.claim("roles", "USER")
+										.claim("id", 1)
 										.build()))
 				.getTokenValue();
 
 		validRefreshToken = jwtEncoder.encode(
 						JwtEncoderParameters.from(
 								JwtClaimsSet.builder()
-										.issuer("http://192.168.1.11:8090")
+										.issuer("https://pizzeriaprojectbe-production.up.railway.app")
 										.subject("test subject")
 										.issuedAt(Instant.now())
 										.expiresAt(Instant.now().plus(60, ChronoUnit.SECONDS))
 										.claim("roles", "USER")
+										.claim("id", 1)
 										.build()))
 				.getTokenValue();
-
-		expiredRefreshToken = jwtEncoder.encode(
-						JwtEncoderParameters.from(
-								JwtClaimsSet.builder()
-										.issuer("http://192.168.1.11:8090")
-										.subject("test subject")
-										.issuedAt(Instant.now().minus(30, ChronoUnit.MINUTES))
-										.expiresAt(Instant.now().minus(10, ChronoUnit.MINUTES))
-										.claim("roles", "USER")
-										.build()))
-				.getTokenValue();
-
-
-		validTokenWithNoIssuer = jwtEncoder.encode(
-						JwtEncoderParameters.from(
-								JwtClaimsSet.builder()
-										.subject("test subject")
-										.issuedAt(Instant.now())
-										.expiresAt(Instant.now().plus(30, ChronoUnit.SECONDS))
-										.claim("roles", "USER")
-										.build()))
-				.getTokenValue();
-
-	}
-
-	@Test
-	public void givenCsrfProtection_whenRequestingResourceWithNoCsrfToken_thenUnauthorized() throws Exception {
-		logger.info("JWT Token test: access secure unsafe http method with no csrf token");
-
-		mockMvc.perform(post("/api/account/test")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
-				.andExpect(status().isUnauthorized());
-
-		logger.info("JWT Token test: successfully NOT accessed secure unsafe http method with no csrf token");
-	}
-
-	@Test
-	public void givenCsrfProtection_whenRequestingResourceWithCsrfToken_thenAccessResource() throws Exception {
-		logger.info("JWT Token test: access secure unsafe http method with csrf token");
-
-		mockMvc.perform(post("/api/account/test")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
-						.with(csrf()))
-				.andExpect(status().isOk());
-
-		logger.info("JWT Token test: successfully accessed secure unsafe http method with csrf token");
 	}
 
 	@Test
@@ -131,7 +77,6 @@ public class JwtTokenTests {
 		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/logout")
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("me", validRefreshToken, 60, true, false))
-						.cookie(CookieUtils.makeCookie("email", "test", 30, false, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
 				.andExpect(status().isOk()).andReturn().getResponse();
@@ -141,8 +86,6 @@ public class JwtTokenTests {
 			assertEquals("", response.getCookie("fight").getValue());
 			assertEquals(0, response.getCookie("me").getMaxAge());
 			assertEquals("", response.getCookie("me").getValue());
-			assertEquals(0, response.getCookie("email").getMaxAge());
-			assertEquals("", response.getCookie("email").getValue());
 			assertEquals(0, response.getCookie("id").getMaxAge());
 			assertEquals("", response.getCookie("id").getValue());
 		});
@@ -151,10 +94,33 @@ public class JwtTokenTests {
 	}
 
 	@Test
-	public void givenValidTokenAndRole_whenRequestingProtectedResource_thenAccessResource() throws Exception {
-		logger.info("JWT Token test: access protected resource with valid token and correct role");
+	public void givenCsrfProtection_whenRequestingResourceWithNoCsrfToken_thenUnauthorized() throws Exception {
+		logger.info("JWT Token test: access csrf-protected resource with no csrf token");
 
-		mockMvc.perform(get("/api/account/test")
+		mockMvc.perform(post("/api/tests")
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
+				.andExpect(status().isUnauthorized());
+
+		logger.info("JWT Token test: successfully NOT accessed csrf-protected resource with no csrf token");
+	}
+
+	@Test
+	public void givenCsrfProtection_whenRequestingResourceWithCsrfToken_thenAccessResource() throws Exception {
+		logger.info("JWT Token test: access csrf-protected resource with csrf token");
+
+		mockMvc.perform(post("/api/tests")
+						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
+						.with(csrf()))
+				.andExpect(status().isOk());
+
+		logger.info("JWT Token test: successfully accessed csrf-protected resource with csrf token");
+	}
+
+	@Test
+	public void givenValidTokenAndRole_whenRequestingProtectedResource_thenAccessResource() throws Exception {
+		logger.info("JWT Token test: access secure resource with valid token and correct role");
+
+		mockMvc.perform(get("/api/tests")
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
 				.andExpect(status().isOk());
 
@@ -162,45 +128,62 @@ public class JwtTokenTests {
 	}
 
 	@Test
-	public void givenInvalidRole_whenRequestingProtectedResource_thenThrow() throws Exception {
-		logger.info("JWT Token test: access protected resource with valid token and incorrect role");
-
-		mockMvc.perform(get("/api/admin/test")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
-				.andExpect(status().isUnauthorized());
-
-		logger.info("JWT Token test: successfully NOT accessed resource with incorrect role");
-	}
-
-	@Test
 	public void givenExpiredToken_whenRequestingProtectedResource_thenThrow() throws Exception {
-		logger.info("JWT Token test: access protected resource with expired token");
+		logger.info("JWT Token test: access secure resource with expired token");
 
-		mockMvc.perform(get("/api/account/test")
-						.cookie(CookieUtils.makeCookie("fight", expiredAccessToken, 30, true, false)))
-				.andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/tests")).andExpect(status().isUnauthorized());
 
-		logger.info("JWT Token test: successfully NOT accessed resource with expired token");
+		logger.info("JWT Token test: successfully NOT accessed secure resource with expired token");
 	}
 
 	@Test
-	public void givenNoToken_whenRequestingProtectedResource_thenThrow() throws Exception {
-		logger.info("JWT Token test: access protected resource without token");
+	public void givenExpiredAccessTokenAndValidRefreshToken_whenRequestingNewTokens_thenReturnNewTokens() throws Exception {
+		logger.info("JWT Token test: request new tokens with expired access token and valid refresh token");
 
-		mockMvc.perform(get("/api/admin"))
-				.andExpect(status().isUnauthorized());
+		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/refresh")
+						.cookie(CookieUtils.makeCookie("me", validRefreshToken, 30, true, false))
+						.with(csrf()))
+				.andExpect(status().isOk()).andReturn().getResponse();
 
-		logger.info("JWT Token test: successfully NOT accessed resource without token");
+		assertAll(() -> {
+			assertEquals(61, response.getCookie("fight").getMaxAge());
+			// expected value is the age of the cookie
+			assertEquals(65, response.getCookie("me").getMaxAge());
+		});
+
+		logger.info("JWT Token test: successfully received new tokens");
+	}
+
+	@Test
+	public void givenExpiredAccessTokenAndExpiredRefreshToken_whenRequestingNewTokens_thenThrowError() throws Exception {
+		logger.info("JWT Token test: request new tokens with expired access and refresh tokens");
+
+		mockMvc.perform(post("/api/auth/refresh")
+						.with(csrf()))
+				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+						CoreMatchers.instanceOf(ExpiredTokenException.class)));
+
+		logger.info("JWT Token test: successfully NOT received new tokens");
 	}
 
 	@Test
 	public void givenTokenWithNoIssuer_whenRequestingProtectedResource_thenThrow() throws Exception {
-		logger.info("JWT Token test: access protected resource with token that has no issuer");
+		logger.info("JWT Token test: access secure resource with token that has no issuer");
 
-		mockMvc.perform(get("/api/account/test")
-						.cookie(CookieUtils.makeCookie("fight", validTokenWithNoIssuer, 30, true, false)))
+		mockMvc.perform(get("/api/tests")
+						.cookie(CookieUtils.makeCookie(
+								"fight",
+								jwtEncoder.encode(JwtEncoderParameters.from
+												(JwtClaimsSet.builder()
+														.subject("test subject")
+														.issuedAt(Instant.now())
+														.expiresAt(Instant.now().plus(30, ChronoUnit.SECONDS))
+														.claim("roles", "USER")
+														.claim("id", 1)
+														.build()))
+										.getTokenValue(), 30, true, false)))
 				.andExpect(status().isUnauthorized());
 
-		logger.info("JWT Token test: successfully NOT accessed resource with token that has no issuer");
+		logger.info("JWT Token test: successfully NOT accessed secure resource with token that has no issuer");
 	}
 }

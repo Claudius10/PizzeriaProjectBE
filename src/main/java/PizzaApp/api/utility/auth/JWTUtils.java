@@ -19,14 +19,14 @@ public class JWTUtils {
 		this.jwtDecoder = jwtDecoder;
 	}
 
-	public String createToken(String username, Long userId, String roles, Instant expiry) {
+	public String createToken(Instant expiry, String username, Long userId, String roles) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer("https://pizzeriaprojectbe-production.up.railway.app") // this domain for prod fe
-				.subject(username)
 				.issuedAt(Instant.now())
 				.expiresAt(expiry)
-				.claim("roles", roles)
+				.subject(username)
 				.claim("id", userId)
+				.claim("roles", roles)
 				.build();
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}

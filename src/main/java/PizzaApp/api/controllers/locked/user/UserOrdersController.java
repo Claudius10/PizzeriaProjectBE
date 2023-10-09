@@ -2,7 +2,8 @@ package PizzaApp.api.controllers.locked.user;
 
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
-import PizzaApp.api.entity.dto.user.UserOrderDTO;
+import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
+import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.utility.auth.CookieUtils;
 import PizzaApp.api.validation.account.UserRequestValidator;
@@ -30,27 +31,27 @@ public class UserOrdersController {
 		this.userRequestValidator = userRequestValidator;
 	}
 
-	@PostMapping("/{id}")
+	@PostMapping("/{userId}")
 	public ResponseEntity<Long> createUserOrder
-			(@PathVariable String id,
-			 @RequestBody UserOrderDTO order,
+			(@PathVariable String userId,
+			 @RequestBody NewUserOrderDTO order,
 			 HttpServletRequest request,
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
-		userRequestValidator.validate(id, request);
+		userRequestValidator.validate(userId, request);
 		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createUserOrder(order));
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/{orderId}")
 	public ResponseEntity<OrderDTO> findUserOrder
-			(@PathVariable String id,
+			(@PathVariable String orderId,
 			 HttpServletResponse response,
 			 CsrfToken csrfToken) {
 
 		CookieUtils.loadCsrf(response, csrfToken);
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrder(id));
+		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrder(orderId));
 	}
 
 	@GetMapping("/all/{userId}")
@@ -69,7 +70,7 @@ public class UserOrdersController {
 
 	@PutMapping("/{userId}")
 	public ResponseEntity<Long> updateUserOrder
-			(@RequestBody UserOrderDTO order,
+			(@RequestBody UpdateUserOrderDTO order,
 			 @PathVariable String userId,
 			 HttpServletRequest request) {
 
@@ -77,9 +78,10 @@ public class UserOrdersController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderService.updateUserOrder(order));
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteById(@PathVariable String id) {
-		orderService.deleteById(id);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(id);
+	// TODO - verify user id also matches id in jwt claim before deleting
+	@DeleteMapping("/{orderId}")
+	public ResponseEntity<String> deleteById(@PathVariable String orderId) {
+		orderService.deleteById(orderId);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderId);
 	}
 }

@@ -1,27 +1,69 @@
 package PizzaApp.api.services.user.account;
 
+import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.entity.dto.user.EmailChangeDTO;
 import PizzaApp.api.entity.dto.user.NameChangeDTO;
 import PizzaApp.api.entity.dto.user.PasswordChangeDTO;
 import PizzaApp.api.entity.dto.user.PasswordDTO;
+import PizzaApp.api.entity.user.Role;
+import PizzaApp.api.entity.user.User;
+import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.exceptions.exceptions.user.InvalidPasswordException;
 import PizzaApp.api.repos.user.account.UserRepository;
+import PizzaApp.api.services.user.role.RoleService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
+
+	private final RoleService roleService;
+
+	private final UserDataService userDataService;
+
 	private final PasswordEncoder bCryptEncoder;
 
 	public UserServiceImpl
 			(UserRepository userRepository,
-			 PasswordEncoder bCryptEncoder) {
+			 RoleService roleService, UserDataService userDataService, PasswordEncoder bCryptEncoder) {
 		this.userRepository = userRepository;
+		this.roleService = roleService;
+		this.userDataService = userDataService;
 		this.bCryptEncoder = bCryptEncoder;
+	}
+
+	@Override
+	public void create(RegisterDTO registerDTO) {
+		Optional<Role> userRole = roleService.findByName("USER");
+
+		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
+
+		User user = userRepository.create(new User.Builder()
+				.withName(registerDTO.name())
+				.withEmail(registerDTO.email())
+				.withPassword(encodedPassword)
+				.withRoles(userRole.get())
+				.build());
+
+		UserData userData = new UserData();
+		userData.setUser(user);
+		userDataService.createData(userData);
+	}
+
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+
+	@Override
+	public User findReference(String id) {
+		return userRepository.findReference(id);
 	}
 
 	@Override

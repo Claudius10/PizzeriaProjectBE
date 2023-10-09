@@ -49,8 +49,8 @@ public class NewOrderTests {
 	private ObjectMapper objectMapper;
 
 	@Test
-	public void givenOrder_whenCreateOrUpdate_thenReturnOrder() throws Exception {
-		logger.info("New order test #1: create order");
+	public void givenOrder_whenCreate_thenReturnOrder() throws Exception {
+		logger.info("New order test: create order");
 
 		// given / preparation:
 		Order order = new Order.Builder()
@@ -93,12 +93,12 @@ public class NewOrderTests {
 		// then expect/assert: returned data matches set data
 		assertTrue(dbOrder.entityEquals(order));
 
-		logger.info("New order test #1: successfully created order");
+		logger.info("New order test: successfully created order");
 	}
 
 	@Test
-	public void givenOrderWithExistingAddress_whenCreateOrUpdate_thenUseExistingAddress() throws Exception {
-		logger.info("New order test #2: create order with existing address");
+	public void givenOrderWithExistingAddress_whenCreate_thenUseExistingAddress() throws Exception {
+		logger.info("New order test: create order with existing address");
 
 		// given / preparation:
 		Order order = new Order.Builder()
@@ -141,12 +141,12 @@ public class NewOrderTests {
 		// then expect/assert: returned data matches set data
 		assertTrue(dbOrder.entityEquals(order));
 
-		logger.info("New order test #2: successfully created order with existing address");
+		logger.info("New order test: successfully created order with existing address");
 	}
 
 	@Test
-	public void givenOrderWithInvalidContactNumber_whenCreateOrUpdate_thenThrowException() throws Exception {
-		logger.info("New order test #3: create order with invalid contact number");
+	public void givenOrderWithInvalidContactNumber_whenCreate_thenThrowException() throws Exception {
+		logger.info("New order test: create order with invalid contact number");
 
 		// given / preparation:
 		Order order = new Order.Builder()
@@ -184,89 +184,12 @@ public class NewOrderTests {
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
 						CoreMatchers.instanceOf(MethodArgumentNotValidException.class)));
 
-		logger.info("New order test #3: successfully NOT created order with invalid contact number");
+		logger.info("New order test: successfully NOT created order with invalid contact number");
 	}
 
 	@Test
-	public void givenOrderWithInvalidChangeRequest_whenCreateOrUpdate_thenThrowException() throws Exception {
-		logger.info("New order test #4: create order with invalid change request");
-
-		// given / preparation:
-		Order order = new Order.Builder()
-				.withCustomerName("WillThrowInvalidChangeRequest")
-				.withContactTel(123456789)
-				.withEmail("anEmail@email.com")
-				.withAddress(new Address.Builder()
-						.withStreet("FirstAddress")
-						.withStreetNr(15)
-						.withFloor("3")
-						.withDoor("2A")
-						.build())
-				.withOrderDetails(new OrderDetails.Builder()
-						.withDeliveryHour("ASAP")
-						.withPaymentType("Credit Card")
-						.build())
-				.withCart(new Cart.Builder()
-						.withOrderItems(List.of(new OrderItem.Builder()
-								.withProductType("pizza")
-								.withWithName("Carbonara")
-								.withFormat("Mediana")
-								.withQuantity(1)
-								.withPrice(14.75)
-								.build()))
-						.withTotalQuantity(1)
-						.withTotalCost(14.75)
-						.withTotalCostOffers(0D)
-						.build())
-				.build();
-		order.getOrderDetails().setPaymentType("Cash");
-		order.getOrderDetails().setChangeRequested(10D);
-
-		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(order)))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(InvalidChangeRequestedException.class)));
-
-		logger.info("New order test #4: successfully NOT created order with invalid change request ");
-	}
-
-	@Test
-	public void givenOrderWithEmptyCart_whenCreateOrUpdate_thenThrowException() throws Exception {
-		logger.info("New order test #5: create order with empty cart");
-
-		// given / preparation:
-		Order order = new Order.Builder()
-				.withCustomerName("WillThrowEmptyCart")
-				.withContactTel(333333333)
-				.withEmail("anEmail@email.com")
-				.withAddress(new Address.Builder()
-						.withStreet("FirstAddress")
-						.withStreetNr(15)
-						.withFloor("3")
-						.withDoor("2A")
-						.build())
-				.withOrderDetails(new OrderDetails.Builder()
-						.withDeliveryHour("ASAP")
-						.withPaymentType("Credit Card")
-						.build())
-				.withCart(new Cart.Builder().withTotalQuantity(0).withEmptyItemList().build())
-				.build();
-
-		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(order)))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(EmptyCartException.class)));
-
-		logger.info("New order test #5: successfully NOT created order with empty cart");
-	}
-
-	@Test
-	public void givenOrderInvalidName_whenCreateOrUpdate_thenThrowException() throws Exception {
-		logger.info("New order test #6: create order with invalid name");
+	public void givenOrderInvalidName_whenCreate_thenThrowException() throws Exception {
+		logger.info("New order test: create order with invalid name");
 
 		// given / preparation:
 		Order order = new Order.Builder()
@@ -305,12 +228,12 @@ public class NewOrderTests {
 						CoreMatchers.instanceOf(MethodArgumentNotValidException.class)));
 
 		logger.info(
-				"New order test #6: successfully NOT created order with invalid name");
+				"New order test: successfully NOT created order with invalid name");
 	}
 
 	@Test
-	public void givenOrderInvalidEmail_whenCreateOrUpdate_thenThrowException() throws Exception {
-		logger.info("New order test #7: create order with invalid email");
+	public void givenOrderInvalidEmail_whenCreate_thenThrowException() throws Exception {
+		logger.info("New order test: create order with invalid email");
 
 		// given / preparation:
 		Order order = new Order.Builder()
@@ -349,12 +272,12 @@ public class NewOrderTests {
 						CoreMatchers.instanceOf(MethodArgumentNotValidException.class)));
 
 		logger.info(
-				"New order test #7: successfully NOT created order with invalid email");
+				"New order test: successfully NOT created order with invalid email");
 	}
 
 	@Test
-	public void givenOrderInvalidEmailTwo_whenCreateOrUpdate_thenThrowException() throws Exception {
-		logger.info("New order test #8: create order with invalid email second case");
+	public void givenOrderInvalidEmailTwo_whenCreate_thenThrowException() throws Exception {
+		logger.info("New order test: create order with invalid email second case");
 
 		// given / preparation:
 		Order order = new Order.Builder()
@@ -393,6 +316,82 @@ public class NewOrderTests {
 						CoreMatchers.instanceOf(MethodArgumentNotValidException.class)));
 
 		logger.info(
-				"New order test #7: successfully NOT created order with invalid email second case");
+				"New order test: successfully NOT created order with invalid email second case");
+	}
+
+	@Test
+	public void givenOrderWithInvalidChangeRequest_whenCreate_thenThrowException() throws Exception {
+		logger.info("New order test: create order with invalid change request");
+
+		// given / preparation:
+		Order order = new Order.Builder()
+				.withCustomerName("WillThrowInvalidChangeRequest")
+				.withContactTel(123456789)
+				.withEmail("anEmail@email.com")
+				.withAddress(new Address.Builder()
+						.withStreet("FirstAddress")
+						.withStreetNr(15)
+						.withFloor("3")
+						.withDoor("2A")
+						.build())
+				.withCart(new Cart.Builder()
+						.withOrderItems(List.of(new OrderItem.Builder()
+								.withProductType("pizza")
+								.withWithName("Carbonara")
+								.withFormat("Mediana")
+								.withQuantity(1)
+								.withPrice(14.75)
+								.build()))
+						.withTotalQuantity(1)
+						.withTotalCost(14.75)
+						.withTotalCostOffers(0D)
+						.build())
+				.withOrderDetails(new OrderDetails.Builder()
+						.withDeliveryHour("ASAP")
+						.withPaymentType("Cash")
+						.withChangeRequested(10D)
+						.build())
+				.build();
+
+		// action: send post request and expect ex is thrown
+		mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+						CoreMatchers.instanceOf(InvalidChangeRequestedException.class)));
+
+		logger.info("New order test: successfully NOT created order with invalid change request ");
+	}
+
+	@Test
+	public void givenOrderWithEmptyCart_whenCreate_thenThrowException() throws Exception {
+		logger.info("New order test: create order with empty cart");
+
+		// given / preparation:
+		Order order = new Order.Builder()
+				.withCustomerName("WillThrowEmptyCart")
+				.withContactTel(333333333)
+				.withEmail("anEmail@email.com")
+				.withAddress(new Address.Builder()
+						.withStreet("FirstAddress")
+						.withStreetNr(15)
+						.withFloor("3")
+						.withDoor("2A")
+						.build())
+				.withOrderDetails(new OrderDetails.Builder()
+						.withDeliveryHour("ASAP")
+						.withPaymentType("Credit Card")
+						.build())
+				.withCart(new Cart.Builder().withTotalQuantity(0).withEmptyItemList().build())
+				.build();
+
+		// action: send post request and expect ex is thrown
+		mockMvc.perform(post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(order)))
+				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
+						CoreMatchers.instanceOf(EmptyCartException.class)));
+
+		logger.info("New order test: successfully NOT created order with empty cart");
 	}
 }

@@ -5,9 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import PizzaApp.api.entity.dto.order.*;
-import PizzaApp.api.entity.dto.user.UserOrderDTO;
+import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
+import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.cart.Cart;
 import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.services.user.account.UserDataService;
@@ -59,27 +59,22 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long createUserOrder(UserOrderDTO userOrderDTO) {
-		Address dbAddress = addressService.findReference(String.valueOf(userOrderDTO.userOrderData().addressId()));
-		UserData dbUserData = userDataService.findReference(userOrderDTO.userOrderData().userId());
+	public Long createUserOrder(NewUserOrderDTO newUserOrderDTO) {
+		Address dbAddress = addressService.findReference(String.valueOf(newUserOrderDTO.userOrderData().addressId()));
+		UserData dbUserData = userDataService.findReference(newUserOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
+				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
+				.withCustomerName(newUserOrderDTO.userOrderData().customerName())
+				.withContactTel(newUserOrderDTO.userOrderData().tel())
+				.withEmail(newUserOrderDTO.userOrderData().email())
+				.withOrderDetails(newUserOrderDTO.orderDetails())
+				.withCart(newUserOrderDTO.cart())
 				.withAddress(dbAddress)
-				.withCustomerName(userOrderDTO.userOrderData().customerName())
-				.withContactTel(userOrderDTO.userOrderData().tel())
-				.withEmail(userOrderDTO.userOrderData().email())
-				.withOrderDetails(userOrderDTO.orderDetails())
-				.withCart(userOrderDTO.cart())
 				.build();
 
 		dbUserData.addOrder(order); // also does order.setUserData(this);
-
-		// set created on in standard UTC (+00:00)
-		order.setCreatedOn(LocalDateTime.now());
-
-		// set formatted created on in UTC +2 since FE is +02:00
-		order.setFormattedCreatedOn(order.getCreatedOn().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
 
 		// validate order
 		validator.validate(order);
@@ -88,36 +83,34 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long updateUserOrder(UserOrderDTO userOrderDTO) {
-		Address dbAddress = addressService.findReference(String.valueOf(userOrderDTO.userOrderData().addressId()));
-		UserData dbUserData = userDataService.findReference(userOrderDTO.userOrderData().userId());
+	public Long updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO) {
+		Address dbAddress = addressService.findReference(String.valueOf(updateUserOrderDTO.userOrderData().addressId()));
+		UserData dbUserData = userDataService.findReference(updateUserOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
-				.withId(userOrderDTO.orderId())
-				.withUser(dbUserData)
-				.withCreatedOn(userOrderDTO.createdOn())
-				.withFormattedCreatedOn(userOrderDTO.formattedCreatedOn())
 				.withUpdatedOn(LocalDateTime.now())
 				.withFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
+				.withId(updateUserOrderDTO.orderId())
+				.withCreatedOn(updateUserOrderDTO.createdOn())
+				.withFormattedCreatedOn(updateUserOrderDTO.formattedCreatedOn())
+				.withCustomerName(updateUserOrderDTO.userOrderData().customerName())
+				.withEmail(updateUserOrderDTO.userOrderData().email())
+				.withContactTel(updateUserOrderDTO.userOrderData().tel())
 				.withAddress(dbAddress)
-				.withCustomerName(userOrderDTO.userOrderData().customerName())
-				.withEmail(userOrderDTO.userOrderData().email())
-				.withContactTel(userOrderDTO.userOrderData().tel())
+				.withUser(dbUserData)
 				.build();
 
 		// sync bi associations
-		order.setOrderDetails(userOrderDTO.orderDetails());
-		order.setCart(userOrderDTO.cart());
+		order.setOrderDetails(updateUserOrderDTO.orderDetails());
+		order.setCart(updateUserOrderDTO.cart());
 
 		// validate order
-		//validator.setCurrentTime().validateUpdate(order);
+		validator.setCurrentTime().validateUpdate(order);
 
 		if (order.getCart() == null) {
 			// cart is set to null if cartUpdateTimeLimit passed
 			// in such case, set back the original cart
-			Cart cart = new Cart();
-			cart.setId(userOrderDTO.cart().getId());
-			order.setCart(cart);
+			order.setCart(orderRepository.findOrderCart(String.valueOf(order.getId())));
 		}
 
 		return orderRepository.updateOrder(order);
@@ -154,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
 		// get order createdOn
 		OrderCreatedOnDTO createdOn = findCreatedOnById(id);
 		// validate whatever delete time limit passed
-		// validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn.createdOn()); //FIXME - on for prod
+		validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn.createdOn()); //FIXME - on for prod
 		// delete order if time limit did not pass
 		orderRepository.deleteById(id);
 	}
@@ -169,5 +162,29 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderCreatedOnDTO findCreatedOnById(String id) {
 		return orderRepository.findCreatedOnById(id);
+	}
+
+	@Override
+	public Long createUserOrderTest(NewUserOrderDTO newUserOrderDTO, LocalDateTime createdOn) {
+		Address dbAddress = addressService.findReference(String.valueOf(newUserOrderDTO.userOrderData().addressId()));
+		UserData dbUserData = userDataService.findReference(newUserOrderDTO.userOrderData().userId());
+
+		Order order = new Order.Builder()
+				.withCreatedOn(createdOn)
+				.withFormattedCreatedOn(createdOn.plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
+				.withCustomerName(newUserOrderDTO.userOrderData().customerName())
+				.withContactTel(newUserOrderDTO.userOrderData().tel())
+				.withEmail(newUserOrderDTO.userOrderData().email())
+				.withOrderDetails(newUserOrderDTO.orderDetails())
+				.withCart(newUserOrderDTO.cart())
+				.withAddress(dbAddress)
+				.build();
+
+		dbUserData.addOrder(order); // also does order.setUserData(this);
+
+		// validate order
+		validator.validate(order);
+
+		return orderRepository.createOrder(order);
 	}
 }

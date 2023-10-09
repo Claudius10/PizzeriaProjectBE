@@ -5,6 +5,8 @@ import PizzaApp.api.repos.user.role.RoleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class RoleServiceImpl implements RoleService {
@@ -21,7 +23,7 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Role findByName(String roleName) {
+	public Optional<Role> findByName(String roleName) {
 		return roleRepository.findByName(roleName);
 	}
 }

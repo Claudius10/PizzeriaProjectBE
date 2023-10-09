@@ -21,9 +21,9 @@ public record RegisterDTO(
 		@NotBlank(message = "Email: el valor no puede ser vacío")
 		String matchingEmail,
 
-		@Size(min = 1, max = 20, message = "La contraseña tiene que contener entre 1-20 caracteres")
+		@Size(min = 8, max = 20, message = "La contraseña tiene que contener entre 8-20 caracteres")
 		String password,
 
-		@Size(min = 1, max = 20, message = "La contraseña tiene que contener entre 1-20 caracteres")
+		@Size(min = 8, max = 20, message = "La contraseña tiene que contener entre 8-20 caracteres")
 		String matchingPassword) {
 }

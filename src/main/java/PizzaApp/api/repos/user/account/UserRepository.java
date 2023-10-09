@@ -2,7 +2,13 @@ package PizzaApp.api.repos.user.account;
 
 import PizzaApp.api.entity.user.User;
 
+import java.util.Optional;
+
 public interface UserRepository {
+
+	User create(User user);
+
+	Optional<User> findByEmail(String email);
 
 	User findReference(String id);
 

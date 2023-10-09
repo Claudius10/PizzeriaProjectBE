@@ -5,6 +5,8 @@ import PizzaApp.api.entity.user.User;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
@@ -16,6 +18,19 @@ public class UserRepositoryImpl implements UserRepository {
 			 UserDataRepository userDataRepository) {
 		this.em = em;
 		this.userDataRepository = userDataRepository;
+	}
+
+	@Override
+	public User create(User user) {
+		em.persist(user);
+		return user;
+	}
+
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return em.createQuery("select user from User user where user.email = :email", User.class)
+				.setParameter("email", email)
+				.getResultStream().findFirst();
 	}
 
 	@Override

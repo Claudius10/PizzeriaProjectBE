@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import PizzaApp.api.entity.dto.order.*;
+import PizzaApp.api.entity.order.cart.Cart;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.order.Order;
@@ -33,7 +34,10 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public Long updateOrder(Order order) {
-		syncCartItems(order);
+		if (order.getCart().getOrderItems() != null) {
+			syncCartItems(order);
+		}
+
 		Order theOrder = em.merge(order);
 		return theOrder.getId();
 	}
@@ -120,6 +124,13 @@ public class OrderRepositoryImpl implements OrderRepository {
 	@Override
 	public Order findReferenceById(String id) {
 		return em.getReference(Order.class, id);
+	}
+
+	@Override
+	public Cart findOrderCart(String id) {
+		return em.createQuery("select order.cart from Order order where order.id = :orderId", Cart.class).
+				setParameter("orderId", id)
+				.getSingleResult();
 	}
 
 	// NOTE - util method

@@ -8,5 +8,5 @@ public interface RoleRepository {
 
 	void create(Role role);
 
-	Role findByName(String roleName);
+	Optional<Role> findByName(String roleName);
 }

@@ -8,5 +8,5 @@ public interface RoleService {
 
 	void create(String roleName);
 
-	Role findByName(String roleName);
+	Optional<Role> findByName(String roleName);
 }

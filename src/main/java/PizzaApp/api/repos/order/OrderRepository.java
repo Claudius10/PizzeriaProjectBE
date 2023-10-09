@@ -4,6 +4,7 @@ import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTO;
 import PizzaApp.api.entity.dto.order.OrderSummary;
 import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.entity.order.cart.Cart;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,4 +30,6 @@ public interface OrderRepository {
 	Order findReferenceById(String id);
 
 	OrderCreatedOnDTO findCreatedOnById(String id);
+
+	Cart findOrderCart(String id);
 }

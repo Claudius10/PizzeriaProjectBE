@@ -5,7 +5,7 @@ import PizzaApp.api.entity.order.cart.Cart;
 
 import java.time.LocalDateTime;
 
-public record UserOrderDTO(
+public record UpdateUserOrderDTO(
 		Long orderId,
 		LocalDateTime createdOn,
 		String formattedCreatedOn,

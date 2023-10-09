@@ -4,7 +4,7 @@ import PizzaApp.api.entity.dto.misc.AuthDTO;
 import PizzaApp.api.entity.dto.misc.LoginDTO;
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.entity.dto.user.UserDataDTO;
-import PizzaApp.api.services.user.account.AnonUserService;
+import PizzaApp.api.services.user.account.UserService;
 import PizzaApp.api.services.user.auth.AuthService;
 import PizzaApp.api.utility.auth.CookieUtils;
 import jakarta.servlet.http.Cookie;
@@ -22,14 +22,14 @@ import org.springframework.web.util.WebUtils;
 @Validated
 public class AuthController {
 
-	private final AnonUserService anonUserService;
+	private final UserService userService;
 
 	private final AuthService authService;
 
 	public AuthController
-			(AnonUserService anonUserService,
+			(UserService userService,
 			 AuthService authService) {
-		this.anonUserService = anonUserService;
+		this.userService = userService;
 		this.authService = authService;
 	}
 
@@ -42,7 +42,7 @@ public class AuthController {
 	public ResponseEntity<?> register
 			(@RequestBody @Valid RegisterDTO registerDTO) {
 
-		anonUserService.create(registerDTO);
+		userService.create(registerDTO);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

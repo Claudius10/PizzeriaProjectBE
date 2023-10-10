@@ -16,13 +16,12 @@ import jakarta.validation.Payload;
  * @author Claudiu Catalin
  */
 
-@Documented
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DoubleLengthValidator.class)
-
+@Documented
 public @interface DoubleLengthNullable {
-	String message() default "Valor númerico no acceptado";
+	String message() default "Valor numérico no aceptado";
 
 	Class<?>[] groups() default {};
 

@@ -10,6 +10,8 @@ import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.exceptions.exceptions.order.*;
 import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
 import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
+import PizzaApp.api.utility.auth.CookieUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,8 +32,10 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(
-			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+																  HttpHeaders headers,
+																  HttpStatusCode status,
+																  WebRequest request) {
 		return ResponseEntity
 				.status(status)
 				.body(new ApiErrorDTO.Builder(
@@ -52,7 +57,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			OrderDeleteTimeLimitException.class,
 			StoreNotOpenException.class,
 			InvalidChangeRequestedException.class,})
-	protected ResponseEntity<ApiErrorDTO> handleCreateOrUpdateOrderExceptions(HttpServletRequest request, RuntimeException ex) {
+	protected ResponseEntity<ApiErrorDTO> handleCreateOrUpdateOrderExceptions(HttpServletRequest request,
+																			  RuntimeException ex) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
 				.body(new ApiErrorDTO.Builder(

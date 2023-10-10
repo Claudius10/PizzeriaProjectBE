@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,14 +52,10 @@ public class UserController {
 	public ResponseEntity<?> updateName
 			(@PathVariable String id,
 			 @Valid @RequestBody NameChangeDTO nameChangeDTO,
-			 HttpServletRequest request,
-			 HttpServletResponse response,
-			 CsrfToken csrfToken) {
+			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
 		userService.updateName(id, nameChangeDTO);
-
-		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -68,14 +63,10 @@ public class UserController {
 	public ResponseEntity<?> updateEmail
 			(@PathVariable String id,
 			 @Valid @RequestBody EmailChangeDTO emailChangeDTO,
-			 HttpServletRequest request,
-			 HttpServletResponse response,
-			 CsrfToken csrfToken) {
+			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
 		userService.updateEmail(id, emailChangeDTO);
-
-		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -112,24 +103,18 @@ public class UserController {
 	@GetMapping("/{id}/data")
 	public ResponseEntity<UserDataDTO> findUserDataDTOById
 			(@PathVariable String id,
-			 HttpServletRequest request,
-			 HttpServletResponse response,
-			 CsrfToken csrfToken) {
+			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
-		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.OK).body(userDataService.findDTOById(id));
 	}
 
 	@GetMapping("/{id}/tel")
 	public ResponseEntity<List<TelephoneDTO>> findUserTelListById
 			(@PathVariable String id,
-			 HttpServletRequest request,
-			 HttpServletResponse response,
-			 CsrfToken csrfToken) {
+			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
-		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.OK).body(telephoneService.findAllByUserId(id));
 	}
 
@@ -158,12 +143,9 @@ public class UserController {
 	@GetMapping("/{id}/address")
 	public ResponseEntity<List<Address>> findUserAddressListById
 			(@PathVariable String id,
-			 HttpServletRequest request,
-			 HttpServletResponse response,
-			 CsrfToken csrfToken) {
+			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
-		CookieUtils.loadCsrf(response, csrfToken);
 		return ResponseEntity.status(HttpStatus.OK).body(addressService.findAllByUserId(id));
 	}
 

@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.user;
 
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.exceptions.constraints.ValidAddress;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,13 +8,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 
 import java.util.Objects;
 
 @Entity(name = "Address")
 @Table(name = "address")
 @Valid
+@ValidAddress
 public class Address {
 
 	@Id
@@ -23,27 +23,21 @@ public class Address {
 	private Long id;
 
 	@Column(name = "street")
-	@Pattern(regexp = "^[a-zA-Z0-9.,:;()\s]{2,25}$", message = "Calle: solo letras sin tildes y números (mín 2, máx 25 letras)")
 	private String street;
 
 	@Column(name = "street_nr")
-	@IntegerLength(min = 1, max = 4, message = "Número de calle: mín 1 digitos, máx 4 digitos")
 	private Integer streetNr;
 
 	@Column(name = "gate")
-	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Portal: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String gate;
 
 	@Column(name = "staircase")
-	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Escalera: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String staircase;
 
 	@Column(name = "floor")
-	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Piso: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String floor;
 
 	@Column(name = "door")
-	@Pattern(regexp = "^[a-zA-Z0-9.,:;\s]{0,25}$", message = "Puerta: solo letras sin tildes y números (mín 0, máx 25 letras)")
 	private String door;
 
 	public Address() {

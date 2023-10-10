@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import PizzaApp.api.repos.user.telephone.TelephoneRepositoryImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,12 +20,7 @@ public class TelephoneServiceImpl implements TelephoneService {
 
 	@Override
 	public List<TelephoneDTO> findAllByUserId(String id) {
-		List<TelephoneDTO> telList = telephoneRepository.findAllByUserId(id);
-		if (telList.isEmpty()) {
-			return null;
-		} else {
-			return telList;
-		}
+		return telephoneRepository.findAllByUserId(id);
 	}
 
 	@Override

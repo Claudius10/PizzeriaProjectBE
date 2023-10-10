@@ -25,17 +25,16 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Optional<Address> find(Address address) {
-		return addressRepository.findAddress(address);
+		if (address.getId() != null) {
+			return Optional.ofNullable(findReference(String.valueOf(address.getId())));
+		} else {
+			return addressRepository.findAddress(address);
+		}
 	}
 
 	@Override
 	public List<Address> findAllByUserId(String id) {
-		List<Address> addressList = addressRepository.findAllByUserId(id);
-		if (addressList.isEmpty()) {
-			return null;
-		} else {
-			return addressList;
-		}
+		return addressRepository.findAllByUserId(id);
 	}
 
 	@Override

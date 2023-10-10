@@ -29,8 +29,8 @@ public class OrderValidatorImpl implements OrderValidator {
 	public void validateUpdate(Order order) {
 		validate(order);
 		setCreatedOn(order.getCreatedOn());
-		// isCartUpdateTimeLimitValid(order); // FIXME -  off for dev (unless testing)
-		// isOrderDataUpdateTimeLimitValid(); // FIXME - off for dev (unless testing)
+		isCartUpdateTimeLimitValid(order); // FIXME -  off for dev (unless testing)
+		isOrderDataUpdateTimeLimitValid(); // FIXME - off for dev (unless testing)
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public void isCartUpdateTimeLimitValid(Order order) {
-		LocalDateTime cartUpdateTimeLimit = createdOn.plusMinutes(15);
+		LocalDateTime cartUpdateTimeLimit = createdOn.plusMinutes(10);
 		if (now.isAfter(cartUpdateTimeLimit)) {
 			order.setCart(null);
 		}
@@ -52,23 +52,23 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public void isOrderDataUpdateTimeLimitValid() {
-		LocalDateTime orderDataUpdateTimeLimit = createdOn.plusMinutes(20);
+		LocalDateTime orderDataUpdateTimeLimit = createdOn.plusMinutes(15);
 		if (now.isAfter(orderDataUpdateTimeLimit)) {
 			logger.info(String.format(
 					"Order data update is not allowed (createdOn: %s | now: %s) ", createdOn, now));
 			throw new OrderDataUpdateTimeLimitException(
-					"El tiempo límite para actualizar los datos del pedido (20 minutos) ha finalizado");
+					"El tiempo límite para actualizar el pedido (15 minutos) ha finalizado");
 		}
 	}
 
 	@Override
 	public void isOrderDeleteTimeLimitValid(LocalDateTime createdOn) {
-		LocalDateTime orderDeleteTimeLimit = createdOn.plusMinutes(35);
+		LocalDateTime orderDeleteTimeLimit = createdOn.plusMinutes(20);
 		if (now.isAfter(orderDeleteTimeLimit)) {
 			logger.info(
 					String.format("Order delete is not allowed (createdOn: %s | now: %s) ", createdOn, now));
 			throw new OrderDeleteTimeLimitException(
-					"El tiempo límite para anular el pedido (35 minutos) ha finalizado");
+					"El tiempo límite para anular el pedido (20 minutos) ha finalizado");
 		}
 	}
 

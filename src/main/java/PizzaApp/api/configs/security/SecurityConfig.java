@@ -114,13 +114,13 @@ public class SecurityConfig {
 	@Bean
 	RequestMatcher csrfProtectionMatcher() {
 		// custom CsrfFilter protection matcher implementation
-		AntPathRequestMatcher[] requestMatchers = {
+		AntPathRequestMatcher[] noCsrfTokenRoutes = {
 				new AntPathRequestMatcher("/api/order/**"),
 				new AntPathRequestMatcher(("/api/resource/**"))
 		};
 
 		return request -> {
-			for (AntPathRequestMatcher rm : requestMatchers) {
+			for (AntPathRequestMatcher rm : noCsrfTokenRoutes) {
 				if (rm.matches(request)) {
 					return false;
 				}

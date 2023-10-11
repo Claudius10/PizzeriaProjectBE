@@ -78,10 +78,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 								"order.updatedOn, " +
 								"order.formattedCreatedOn, " +
 								"order.formattedUpdatedOn, " +
+								"order.orderDetails.paymentType, " +
 								"order.cart.totalQuantity, " +
 								"order.cart.totalCost, " +
 								"order.cart.totalCostOffers " +
-								"from Order order where order.userData.id = :userId order by order.id", OrderSummary.class)
+								"from Order order where order.userData.id = :userId order by order.id desc", OrderSummary.class)
 				.setParameter("userId", userId)
 				.setFirstResult((pageNumber - 1) * pageSize)
 				.setMaxResults(pageSize)
@@ -91,10 +92,13 @@ public class OrderRepositoryImpl implements OrderRepository {
 						(LocalDateTime) tuple[2],
 						(String) tuple[3],
 						(String) tuple[4],
+						new OrderDetailsDTO(
+								((String) tuple[5])
+						),
 						new CartDTO(
-								((int) tuple[5]),
-								((double) tuple[6]),
-								((double) tuple[7])
+								((int) tuple[6]),
+								((double) tuple[7]),
+								((double) tuple[8])
 						)
 				)).getResultList();
 	}
@@ -104,7 +108,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 		em.remove(em.getReference(Order.class, id));
 	}
 
-	// NOTE - for internal use only
+	// info - for internal use only
 
 	@Override
 	public OrderCreatedOnDTO findCreatedOnById(String id) {
@@ -133,7 +137,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 				.getSingleResult();
 	}
 
-	// NOTE - util method
+	// info - util method
 
 	public void syncCartItems(Order order) {
 		List<OrderItem> copy = new ArrayList<>(order.getCart().getOrderItems());

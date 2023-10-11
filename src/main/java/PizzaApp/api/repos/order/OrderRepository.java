@@ -23,7 +23,7 @@ public interface OrderRepository {
 
 	void deleteById(String id);
 
-	// NOTE - for internal use only
+	// info - for internal use only
 
 	Order findById(String id);
 

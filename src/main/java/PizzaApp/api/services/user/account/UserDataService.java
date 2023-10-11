@@ -10,11 +10,11 @@ public interface UserDataService {
 
 	void addTel(String id, Integer telephone);
 
-	void removeTel(String id, Integer telephone);
+	void removeTel(String id, Long telId);
 
 	void addAddress(String id, Address address);
 
-	void removeAddress(String id, Address address);
+	void removeAddress(String id, Long addressId);
 
 	UserData findReference(String id);
 

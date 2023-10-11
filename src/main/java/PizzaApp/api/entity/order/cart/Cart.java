@@ -34,7 +34,7 @@ public class Cart {
 	@Column(name = "total_cost_offers")
 	private Double totalCostOffers;
 
-	// NOTE to remember about the Cart/OrderItem association:
+	// INFO to remember about the Cart/OrderItem association:
 	// given that Order & Cart association has CascadeType.ALL
 	// and Cart & OrderItem bidirectional association also has CascadeType.ALL
 	// when updating Cart, the merge operation is going to be cascaded to the

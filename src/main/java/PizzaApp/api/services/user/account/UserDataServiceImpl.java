@@ -64,12 +64,12 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public void removeTel(String id, Integer telephone) {
+	public void removeTel(String id, Long telId) {
 		UserData userData = findReference(id);
 		Optional<Telephone> telToRemove =
 				userData.getTelephoneList()
 						.stream()
-						.filter(telephone1 -> telephone1.getNumber().equals(telephone))
+						.filter(telephone1 -> telephone1.getId().equals(telId))
 						.findFirst();
 		telToRemove.ifPresent(userData::removeTel);
 	}
@@ -91,12 +91,12 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public void removeAddress(String id, Address address) {
+	public void removeAddress(String id, Long addressId) {
 		UserData userData = findReference(id);
 		Optional<Address> addressToRemove =
 				userData.getAddressList()
 						.stream()
-						.filter(address1 -> address1.entityEquals(address))
+						.filter(address1 -> address1.getId().equals(addressId))
 						.findFirst();
 		addressToRemove.ifPresent(userData::removeAddress);
 	}

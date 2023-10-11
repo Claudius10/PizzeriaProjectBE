@@ -152,7 +152,7 @@ public class OrderServiceImpl implements OrderService {
 		orderRepository.deleteById(id);
 	}
 
-	// NOTE - for internal use only
+	// info - for internal use only
 
 	@Override
 	public Order findById(String id) {

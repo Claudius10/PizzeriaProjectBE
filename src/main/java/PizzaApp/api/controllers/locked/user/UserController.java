@@ -46,7 +46,7 @@ public class UserController {
 		this.userRequestValidator = userRequestValidator;
 	}
 
-	// NOTE - endpoints for UserService
+	// info - endpoints for UserService
 
 	@PutMapping("/{id}/name")
 	public ResponseEntity<?> updateName
@@ -98,7 +98,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
-	// NOTE - endpoints for UserDataService
+	// info - endpoints for UserDataService
 
 	@GetMapping("/{id}/data")
 	public ResponseEntity<UserDataDTO> findUserDataDTOById
@@ -129,14 +129,14 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("/{id}/tel")
+	@DeleteMapping("/{id}/tel/{telId}")
 	public ResponseEntity<?> removeTel
 			(@PathVariable String id,
-			 @RequestBody @Valid Integer telephone,
+			 @PathVariable Long telId,
 			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
-		userDataService.removeTel(id, telephone);
+		userDataService.removeTel(id, telId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
@@ -160,14 +160,14 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@DeleteMapping("/{id}/address")
+	@DeleteMapping("/{id}/address/{addressId}")
 	public ResponseEntity<?> removeAddress
 			(@PathVariable String id,
-			 @RequestBody @Valid Address address,
+			 @PathVariable Long addressId,
 			 HttpServletRequest request) {
 
 		userRequestValidator.validate(id, request);
-		userDataService.removeAddress(id, address);
+		userDataService.removeAddress(id, addressId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 }

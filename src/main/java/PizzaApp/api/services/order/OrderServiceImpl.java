@@ -60,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long createUserOrder(NewUserOrderDTO newUserOrderDTO) {
-		Address dbAddress = addressService.findReference(String.valueOf(newUserOrderDTO.userOrderData().addressId()));
+		Address dbAddress = addressService.findReference(newUserOrderDTO.userOrderData().addressId());
 		UserData dbUserData = userDataService.findReference(newUserOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO) {
-		Address dbAddress = addressService.findReference(String.valueOf(updateUserOrderDTO.userOrderData().addressId()));
+		Address dbAddress = addressService.findReference(updateUserOrderDTO.userOrderData().addressId());
 		UserData dbUserData = userDataService.findReference(updateUserOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
@@ -110,63 +110,61 @@ public class OrderServiceImpl implements OrderService {
 		if (order.getCart() == null) {
 			// cart is set to null if cartUpdateTimeLimit passed
 			// in such case, set back the original cart
-			order.setCart(orderRepository.findOrderCart(String.valueOf(order.getId())));
+			order.setCart(orderRepository.findOrderCart(order.getId()));
 		}
 
 		return orderRepository.updateOrder(order);
 	}
 
 	@Override
-	public OrderPaginationResultDTO findOrdersSummary(String userId, String pageSize, String pageNumber) {
-		int thePageSize = Integer.parseInt(pageSize);
-		int thePageNumber = Integer.parseInt(pageNumber);
-		int orderCount = orderRepository.findOrderCount(userId).intValue();
+	public OrderPaginationResultDTO findUserOrdersSummary(Long userId, Integer pageSize, Integer pageNumber) {
+		int totalOrders = orderRepository.findOrderCount(userId);
 
-		int pageCount;
-		if (orderCount % thePageSize == 0) {
-			pageCount = orderCount / thePageSize;
+		int totalPages;
+		if (totalOrders % pageSize == 0) {
+			totalPages = totalOrders / pageSize;
 		} else {
-			pageCount = (orderCount / thePageSize) + 1;
+			totalPages = (totalOrders / pageSize) + 1;
 		}
 
 		return new OrderPaginationResultDTO(
-				thePageNumber,
-				pageCount,
-				thePageSize,
-				orderCount,
-				orderRepository.findOrderSummaryList(userId, thePageSize, thePageNumber));
+				pageNumber,
+				totalPages,
+				pageSize,
+				totalOrders,
+				orderRepository.findOrderSummaryList(userId, pageSize, pageNumber));
 	}
 
 	@Override
-	public OrderDTO findUserOrder(String id) {
-		return orderRepository.findOrder(id);
+	public OrderDTO findUserOrder(Long userId) {
+		return orderRepository.findOrder(userId);
 	}
 
 	@Override
-	public void deleteById(String id) {
+	public void deleteUserOrderById(Long orderId) {
 		// get order createdOn
-		OrderCreatedOnDTO createdOn = findCreatedOnById(id);
+		OrderCreatedOnDTO createdOn = findCreatedOnById(orderId);
 		// validate whatever delete time limit passed
 		validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn.createdOn()); //FIXME - on for prod
 		// delete order if time limit did not pass
-		orderRepository.deleteById(id);
+		orderRepository.deleteById(orderId);
 	}
 
 	// info - for internal use only
 
 	@Override
-	public Order findById(String id) {
-		return orderRepository.findById(id);
+	public Order findById(Long orderId) {
+		return orderRepository.findById(orderId);
 	}
 
 	@Override
-	public OrderCreatedOnDTO findCreatedOnById(String id) {
-		return orderRepository.findCreatedOnById(id);
+	public OrderCreatedOnDTO findCreatedOnById(Long orderId) {
+		return orderRepository.findCreatedOnById(orderId);
 	}
 
 	@Override
 	public Long createUserOrderTest(NewUserOrderDTO newUserOrderDTO, LocalDateTime createdOn) {
-		Address dbAddress = addressService.findReference(String.valueOf(newUserOrderDTO.userOrderData().addressId()));
+		Address dbAddress = addressService.findReference(newUserOrderDTO.userOrderData().addressId());
 		UserData dbUserData = userDataService.findReference(newUserOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()

@@ -97,9 +97,9 @@ public class SecurityConfig {
 
 		// endpoints config
 		http.authorizeHttpRequests(auth -> {
-			auth.requestMatchers("/api/auth/**").permitAll();
 			auth.requestMatchers("/api/resource/**").permitAll();
-			auth.requestMatchers("/api/order/**").permitAll();
+			auth.requestMatchers("/api/anon/**").permitAll();
+			auth.requestMatchers("/api/auth/**").permitAll();
 			auth.requestMatchers("/api/user/**").hasAnyRole("USER");
 			auth.requestMatchers("/api/tests/**").hasRole("USER");
 			auth.anyRequest().authenticated();
@@ -115,8 +115,8 @@ public class SecurityConfig {
 	RequestMatcher csrfProtectionMatcher() {
 		// custom CsrfFilter protection matcher implementation
 		AntPathRequestMatcher[] noCsrfTokenRoutes = {
-				new AntPathRequestMatcher("/api/order/**"),
-				new AntPathRequestMatcher(("/api/resource/**"))
+				new AntPathRequestMatcher("/api/resource/**"),
+				new AntPathRequestMatcher("/api/anon/**")
 		};
 
 		return request -> {

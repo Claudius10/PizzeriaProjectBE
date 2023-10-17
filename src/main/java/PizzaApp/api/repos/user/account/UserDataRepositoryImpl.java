@@ -1,6 +1,5 @@
 package PizzaApp.api.repos.user.account;
 
-import PizzaApp.api.entity.dto.user.UserDataDTO;
 import PizzaApp.api.entity.user.UserData;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -20,27 +19,12 @@ public class UserDataRepositoryImpl implements UserDataRepository {
 	}
 
 	@Override
-	public UserData findReference(String id) {
-		return em.getReference(UserData.class, id);
+	public UserData findReference(Long userId) {
+		return em.getReference(UserData.class, userId);
 	}
 
 	@Override
-	public UserData findById(String id) {
-		return em.find(UserData.class, id);
-	}
-
-	@Override
-	public UserDataDTO findDTOById(String id) {
-		return em.createQuery("""
-						select new UserDataDTO(
-						ud.id,
-						ud.name,
-						ud.email
-						)
-						from User ud
-						where ud.id = :userDataId
-						""", UserDataDTO.class)
-				.setParameter("userDataId", id)
-				.getSingleResult();
+	public UserData findById(Long userId) {
+		return em.find(UserData.class, userId);
 	}
 }

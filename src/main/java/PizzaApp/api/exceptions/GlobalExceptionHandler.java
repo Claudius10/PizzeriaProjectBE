@@ -1,25 +1,19 @@
 package PizzaApp.api.exceptions;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.exceptions.exceptions.order.*;
 import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
 import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
-import PizzaApp.api.utility.auth.CookieUtils;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,22 +26,18 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-																  HttpHeaders headers,
-																  HttpStatusCode status,
-																  WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid
+			(MethodArgumentNotValidException ex,
+			 HttpHeaders headers,
+			 HttpStatusCode status,
+			 WebRequest request) {
 		return ResponseEntity
 				.status(status)
 				.body(new ApiErrorDTO.Builder(
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(status.value())
 						.withPath(request.getDescription(false))
-						.withErrors(
-								ex.getBindingResult()
-										.getFieldErrors()
-										.stream()
-										.map(DefaultMessageSourceResolvable::getDefaultMessage)
-										.collect(Collectors.toList()))
+						.withErrorMsg(ex.getMessage())
 						.build());
 	}
 
@@ -57,15 +47,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			OrderDeleteTimeLimitException.class,
 			StoreNotOpenException.class,
 			InvalidChangeRequestedException.class,})
-	protected ResponseEntity<ApiErrorDTO> handleCreateOrUpdateOrderExceptions(HttpServletRequest request,
-																			  RuntimeException ex) {
+	protected ResponseEntity<ApiErrorDTO> handleCreateOrUpdateOrderExceptions(HttpServletRequest request, RuntimeException ex) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
 				.body(new ApiErrorDTO.Builder(
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
-						.withErrors(List.of(ex.getMessage()))
+						.withErrorMsg(ex.getMessage())
 						.build());
 	}
 
@@ -77,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
-						.withErrors(List.of(ex.getMessage()))
+						.withErrorMsg(ex.getMessage())
 						.build());
 	}
 
@@ -89,21 +78,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
-						.withErrors(List.of(ex.getMessage()))
+						.withErrorMsg(ex.getMessage())
 						.build());
 	}
 
-	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-	protected ResponseEntity<ApiErrorDTO> handleUniqueUsernameException(HttpServletRequest request) {
+	@ExceptionHandler(NonUniqueEmailException.class)
+	protected ResponseEntity<ApiErrorDTO> handleNonUniqueUsernameException(HttpServletRequest request, RuntimeException ex) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
 				.body(new ApiErrorDTO.Builder(
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
-						.withErrors(List.of(
-								"Una cuenta con el email introducido ya existe. " +
-										"Si no recuerda la contraseña, pulse \"Restablecer contraseña.\""))
+						.withErrorMsg(ex.getMessage())
 						.build());
 	}
 
@@ -115,7 +102,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 						.withPath(request.getServletPath())
-						.withErrors(List.of(ex.getMessage()))
+						.withErrorMsg(ex.getMessage())
 						.build());
 
 	}
@@ -128,7 +115,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 						.withPath(request.getServletPath())
-						.withErrors(List.of(ex.getMessage()))
+						.withErrorMsg(ex.getMessage())
 						.build());
 
 	}

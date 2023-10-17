@@ -4,7 +4,7 @@ import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.cart.Cart;
 
 public record NewUserOrderDTO(
-		UserOrderData userOrderData,
+		UserOrderDataDTO userOrderData,
 		OrderDetails orderDetails,
 		Cart cart) {
 }

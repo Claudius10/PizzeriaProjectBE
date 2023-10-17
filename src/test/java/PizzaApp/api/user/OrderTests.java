@@ -1,7 +1,6 @@
 package PizzaApp.api.user;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,7 +14,7 @@ import java.util.logging.Logger;
 
 import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
 import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
-import PizzaApp.api.entity.dto.user.UserOrderData;
+import PizzaApp.api.entity.dto.user.UserOrderDataDTO;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.utility.auth.CookieUtils;
 import org.hamcrest.CoreMatchers;
@@ -134,8 +133,8 @@ public class OrderTests {
 		logger.info("Update order test: create original user order");
 
 		NewUserOrderDTO order = new NewUserOrderDTO(
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						1L,
 						111222333,
 						"clau@gmail.com",
@@ -144,13 +143,13 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(mockMvc.perform(post("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(post("/api/user/orders/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// *** set goodies that will be useful later
 		orderId = dbOrder.getId();
@@ -163,7 +162,7 @@ public class OrderTests {
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",
-				() -> assertEquals(dbOrder.getUserData().getId(), Long.valueOf(order.userOrderData().userId())),
+				() -> assertEquals(dbOrder.getUserData().getId(), order.userOrderData().userId()),
 				() -> assertEquals(dbOrder.getAddress().getId(), order.userOrderData().addressId()),
 				() -> assertEquals(dbOrder.getContactTel(), order.userOrderData().tel()),
 				() -> assertEquals(dbOrder.getEmail(), order.userOrderData().email()),
@@ -182,8 +181,8 @@ public class OrderTests {
 				orderId,
 				createdOn,
 				formattedCreatedOn,
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						1L,
 						666333999,
 						"newEmail@gmail.com",
@@ -192,13 +191,13 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",
@@ -219,8 +218,8 @@ public class OrderTests {
 				orderId,
 				createdOn,
 				formattedCreatedOn,
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						2L,
 						666333999,
 						"newEmail@gmail.com",
@@ -229,13 +228,13 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",
@@ -254,8 +253,8 @@ public class OrderTests {
 				orderId,
 				createdOn,
 				formattedCreatedOn,
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						2L,
 						666333999,
 						"newEmail@gmail.com",
@@ -270,13 +269,13 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",
@@ -295,8 +294,8 @@ public class OrderTests {
 				orderId,
 				createdOn,
 				formattedCreatedOn,
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						2L,
 						666333999,
 						"newEmail@gmail.com",
@@ -329,13 +328,13 @@ public class OrderTests {
 						.build());
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
@@ -355,8 +354,8 @@ public class OrderTests {
 				orderIdMinus11Mins,
 				LocalDateTime.now().minusMinutes(11),
 				LocalDateTime.now().minusMinutes(11).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")),
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						1L,
 						111222333,
 						"clau@gmail.com",
@@ -382,13 +381,13 @@ public class OrderTests {
 						.build());
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// successful test returns testSubjectCart instead of the one set here
 		// because cart update was over the time limit, so original cart was set back
@@ -409,8 +408,8 @@ public class OrderTests {
 				orderIdMinus16Mins,
 				LocalDateTime.now().minusMinutes(16),
 				LocalDateTime.now().minusMinutes(16).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")),
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						1L,
 						111222333,
 						"clau@gmail.com",
@@ -453,7 +452,7 @@ public class OrderTests {
 		logger.info("Update order test: delete order after time limit");
 
 		// action: update order
-		mockMvc.perform(delete("/api/user/orders/{orderId}/{userId}", orderIdMinus21Mins, 1)
+		mockMvc.perform(delete("/api/user/orders/{userId}/{orderId}", 1, orderIdMinus21Mins)
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
@@ -483,7 +482,7 @@ public class OrderTests {
 		logger.info("Update order test: delete order with valid user id");
 
 		// action: update order
-		mockMvc.perform(delete("/api/user/orders/{orderId}/{userId}", orderToDelete, 1)
+		mockMvc.perform(delete("/api/user/orders/{userId}/{orderId}", 1, orderToDelete)
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
@@ -494,8 +493,8 @@ public class OrderTests {
 
 	public Long createTestSubject(int minusMins) {
 		NewUserOrderDTO order = new NewUserOrderDTO(
-				new UserOrderData(
-						"1",
+				new UserOrderDataDTO(
+						1L,
 						1L,
 						111222333,
 						"clau@gmail.com",

@@ -1,6 +1,5 @@
 package PizzaApp.api.services.user.account;
 
-import PizzaApp.api.entity.dto.user.UserDataDTO;
 import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.user.Telephone;
 import PizzaApp.api.entity.user.UserData;
@@ -39,33 +38,28 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public UserData findReference(String id) {
-		return userDataRepository.findReference(id);
+	public UserData findReference(Long userId) {
+		return userDataRepository.findReference(userId);
 	}
 
 	@Override
-	public UserData findById(String id) {
-		return userDataRepository.findById(id);
+	public UserData findById(Long userId) {
+		return userDataRepository.findById(userId);
 	}
 
 	@Override
-	public UserDataDTO findDTOById(String id) {
-		return userDataRepository.findDTOById(id);
-	}
-
-	@Override
-	public void addTel(String id, Integer telephone) {
-		if (telephoneService.findUserTelListSize(id) == 3) {
+	public void addTel(Long userId, Integer telephone) {
+		if (telephoneService.findUserTelListSize(userId) == 3) {
 			throw new MaxTelListSizeException("Solo se permiten 3 números de teléfono almacenados");
 		}
 
-		UserData userData = findReference(id);
+		UserData userData = findReference(userId);
 		userData.addTel(new Telephone(telephone));
 	}
 
 	@Override
-	public void removeTel(String id, Long telId) {
-		UserData userData = findReference(id);
+	public void removeTel(Long userId, Long telId) {
+		UserData userData = findReference(userId);
 		Optional<Telephone> telToRemove =
 				userData.getTelephoneList()
 						.stream()
@@ -75,12 +69,12 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public void addAddress(String id, Address address) {
-		if (addressService.findUserAddressListSize(id) == 3) {
+	public void addAddress(Long userId, Address address) {
+		if (addressService.findUserAddressListSize(userId) == 3) {
 			throw new MaxAddressListSizeException("Solo se permiten 3 domicilios almacenados");
 		}
 
-		UserData userData = findReference(id);
+		UserData userData = findReference(userId);
 		Optional<Address> dbAddress = addressService.find(address);
 
 		if (dbAddress.isPresent()) {
@@ -91,8 +85,8 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public void removeAddress(String id, Long addressId) {
-		UserData userData = findReference(id);
+	public void removeAddress(Long userId, Long addressId) {
+		UserData userData = findReference(userId);
 		Optional<Address> addressToRemove =
 				userData.getAddressList()
 						.stream()

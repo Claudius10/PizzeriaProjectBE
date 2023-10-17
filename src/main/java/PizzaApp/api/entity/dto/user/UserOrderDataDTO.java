@@ -1,7 +1,7 @@
 package PizzaApp.api.entity.dto.user;
 
-public record UserOrderData(
-		String userId,
+public record UserOrderDataDTO(
+		Long userId,
 		Long addressId,
 		Integer tel,
 		String email,

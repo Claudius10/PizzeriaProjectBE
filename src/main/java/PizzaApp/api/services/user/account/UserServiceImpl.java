@@ -1,17 +1,17 @@
 package PizzaApp.api.services.user.account;
 
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
-import PizzaApp.api.entity.dto.user.EmailChangeDTO;
-import PizzaApp.api.entity.dto.user.NameChangeDTO;
-import PizzaApp.api.entity.dto.user.PasswordChangeDTO;
-import PizzaApp.api.entity.dto.user.PasswordDTO;
+import PizzaApp.api.entity.dto.user.*;
 import PizzaApp.api.entity.user.Role;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.exceptions.exceptions.user.InvalidPasswordException;
+import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
+import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.repos.user.account.UserRepository;
 import PizzaApp.api.services.user.role.RoleService;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,8 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 
+	private final OrderRepository orderRepository;
+
 	private final RoleService roleService;
 
 	private final UserDataService userDataService;
@@ -31,8 +33,12 @@ public class UserServiceImpl implements UserService {
 
 	public UserServiceImpl
 			(UserRepository userRepository,
-			 RoleService roleService, UserDataService userDataService, PasswordEncoder bCryptEncoder) {
+			 OrderRepository orderRepository,
+			 RoleService roleService,
+			 UserDataService userDataService,
+			 PasswordEncoder bCryptEncoder) {
 		this.userRepository = userRepository;
+		this.orderRepository = orderRepository;
 		this.roleService = roleService;
 		this.userDataService = userDataService;
 		this.bCryptEncoder = bCryptEncoder;
@@ -40,20 +46,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void create(RegisterDTO registerDTO) {
-		Optional<Role> userRole = roleService.findByName("USER");
-
+		Role userRole = roleService.findByName("USER").get();
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 
-		User user = userRepository.create(new User.Builder()
+		UserData userData = new UserData();
+		userData.setUser(new User.Builder()
 				.withName(registerDTO.name())
 				.withEmail(registerDTO.email())
 				.withPassword(encodedPassword)
-				.withRoles(userRole.get())
+				.withRoles(userRole)
 				.build());
 
-		UserData userData = new UserData();
-		userData.setUser(user);
-		userDataService.createData(userData);
+		try {
+			userDataService.createData(userData);
+		} catch (DataIntegrityViolationException ex) {
+			throw new NonUniqueEmailException("Una cuenta ya existe con el correo electrónico introducido. Si no recuerda la " +
+					"contraseña, contacte con nosotros");
+		}
 	}
 
 	@Override
@@ -62,42 +71,53 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User findReference(String id) {
-		return userRepository.findReference(id);
+	public UserDTO findDTOById(Long userId) {
+		return userRepository.findDTOById(userId);
 	}
 
 	@Override
-	public void updateName(String id, NameChangeDTO nameChangeDTO) {
-		verifyPassword(id, nameChangeDTO.password());
-		userRepository.updateName(id, nameChangeDTO.name());
+	public User findReference(Long userId) {
+		return userRepository.findReference(userId);
 	}
 
 	@Override
-	public void updateEmail(String id, EmailChangeDTO emailChangeDTO) {
-		verifyPassword(id, emailChangeDTO.password());
-		userRepository.updateEmail(id, emailChangeDTO.email());
+	public void updateName(Long userId, NameChangeDTO nameChangeDTO) {
+		verifyPassword(userId, nameChangeDTO.password());
+		userRepository.updateName(userId, nameChangeDTO.name());
 	}
 
 	@Override
-	public void updatePassword(String id, PasswordChangeDTO passwordChangeDTO) {
-		verifyPassword(id, passwordChangeDTO.currentPassword());
-		userRepository.updatePassword(id, passwordChangeDTO.newPassword());
+	public void updateEmail(Long userId, EmailChangeDTO emailChangeDTO) {
+		verifyPassword(userId, emailChangeDTO.password());
+		userRepository.updateEmail(userId, emailChangeDTO.email());
 	}
 
 	@Override
-	public void delete(String id, PasswordDTO passwordDTO) {
-		verifyPassword(id, passwordDTO.password());
-		userRepository.delete(id);
+	public void updatePassword(Long userId, PasswordChangeDTO passwordChangeDTO) {
+		verifyPassword(userId, passwordChangeDTO.currentPassword());
+		String encodedPassword = bCryptEncoder.encode(passwordChangeDTO.newPassword());
+		userRepository.updatePassword(userId, encodedPassword);
 	}
 
 	@Override
-	public String loadPassword(String id) {
-		return userRepository.loadPassword(id);
+	public void delete(Long userId, PasswordDTO passwordDTO) {
+		verifyPassword(userId, passwordDTO.password());
+		// remove user data from orders
+		orderRepository.removeUserData(userId); // TODO - make a test for this functionality
+		// delete account
+		userRepository.delete(userId);
 	}
 
-	private void verifyPassword(String id, String password) {
-		if (!bCryptEncoder.matches(password, loadPassword(id))) {
-			throw new InvalidPasswordException("La contraseña introducida no coincide con la contraseña almacenada");
+	@Override
+	public String loadPassword(Long userId) {
+		return userRepository.loadPassword(userId);
+	}
+
+	// util method
+
+	private void verifyPassword(Long userId, String password) {
+		if (!bCryptEncoder.matches(password, loadPassword(userId))) {
+			throw new InvalidPasswordException("La contraseña proporcionada no coincide con la contraseña almacenada");
 		}
 	}
 }

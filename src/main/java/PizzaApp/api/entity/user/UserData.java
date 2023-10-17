@@ -14,15 +14,14 @@ public class UserData {
 	@Id
 	private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@MapsId
 	@JsonIgnore
 	private User user;
 
 	@OneToMany(
 			mappedBy = "userData",
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JsonManagedReference
 	private List<Order> orderList;
 
@@ -33,7 +32,7 @@ public class UserData {
 	@JsonManagedReference
 	private List<Telephone> telephoneList;
 
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinTable(
 			name = "users_addresses",
 			joinColumns = @JoinColumn(name = "user_id"),

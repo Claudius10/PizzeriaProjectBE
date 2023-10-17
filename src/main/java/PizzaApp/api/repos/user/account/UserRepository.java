@@ -1,5 +1,6 @@
 package PizzaApp.api.repos.user.account;
 
+import PizzaApp.api.entity.dto.user.UserDTO;
 import PizzaApp.api.entity.user.User;
 
 import java.util.Optional;
@@ -10,15 +11,17 @@ public interface UserRepository {
 
 	Optional<User> findByEmail(String email);
 
-	User findReference(String id);
+	UserDTO findDTOById(Long userId);
 
-	void updateName(String id, String name);
+	User findReference(Long userId);
 
-	void updateEmail(String id, String email);
+	void updateName(Long userId, String name);
 
-	void updatePassword(String id, String password);
+	void updateEmail(Long userId, String email);
 
-	String loadPassword(String id);
+	void updatePassword(Long userId, String password);
 
-	void delete(String id);
+	String loadPassword(Long userId);
+
+	void delete(Long userId);
 }

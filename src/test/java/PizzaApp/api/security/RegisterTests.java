@@ -1,6 +1,7 @@
 package PizzaApp.api.security;
 
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
+import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -36,7 +37,7 @@ public class RegisterTests {
 	public void givenExistingEmail_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register with existing email");
 
-		mockMvc.perform(post("/api/auth/register")
+		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -46,7 +47,7 @@ public class RegisterTests {
 										"password")))
 						.with(csrf()))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(DataIntegrityViolationException.class)));
+						CoreMatchers.instanceOf(NonUniqueEmailException.class)));
 
 		logger.info("Register test: successfully NOT registered already exiting email");
 	}
@@ -55,7 +56,7 @@ public class RegisterTests {
 	public void givenInvalidName_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register with invalid username");
 
-		mockMvc.perform(post("/api/auth/register")
+		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau$·%$$·T43",
@@ -74,7 +75,7 @@ public class RegisterTests {
 	public void givenInvalidEmail_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register with invalid email");
 
-		mockMvc.perform(post("/api/auth/register")
+		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -93,7 +94,7 @@ public class RegisterTests {
 	public void givenInvalidPassword_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register with invalid password");
 
-		mockMvc.perform(post("/api/auth/register")
+		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -112,7 +113,7 @@ public class RegisterTests {
 	public void givenNonMatchingEmails_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register without matching emails");
 
-		mockMvc.perform(post("/api/auth/register")
+		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -131,7 +132,7 @@ public class RegisterTests {
 	public void givenNonMatchingPasswords_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register without matching passwords");
 
-		mockMvc.perform(post("/api/auth/register")
+		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",

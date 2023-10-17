@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import PizzaApp.api.repos.user.telephone.TelephoneRepositoryImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,12 +18,12 @@ public class TelephoneServiceImpl implements TelephoneService {
 	}
 
 	@Override
-	public List<TelephoneDTO> findAllByUserId(String id) {
-		return telephoneRepository.findAllByUserId(id);
+	public List<TelephoneDTO> findAllByUserId(Long userId) {
+		return telephoneRepository.findAllByUserId(userId);
 	}
 
 	@Override
-	public Long findUserTelListSize(String id) {
-		return telephoneRepository.findUserTelListSize(id);
+	public Long findUserTelListSize(Long userId) {
+		return telephoneRepository.findUserTelListSize(userId);
 	}
 }

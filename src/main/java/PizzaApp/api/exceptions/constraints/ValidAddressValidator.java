@@ -31,7 +31,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 			return false;
 		}
 
-		if (!address.getGate().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
+		if (address.getGate() != null && !address.getGate().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate("La puerta solo puede contener un máximo de 25 letras y/o digitos, y " +
 							"los " +
@@ -42,7 +42,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 			return false;
 		}
 
-		if (!address.getStaircase().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
+		if (address.getStaircase() != null && !address.getStaircase().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate("La escalera solo puede contener un máximo de 25 letras y/o digitos, y los " +
 							"símbolos ." +
@@ -52,7 +52,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 			return false;
 		}
 
-		if (!address.getFloor().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
+		if (address.getFloor() != null && !address.getFloor().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate("El piso solo puede contener un máximo de 25 letras y/o digitos, y los " +
 							"símbolos ." +
@@ -62,7 +62,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 			return false;
 		}
 
-		if (!address.getDoor().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
+		if (address.getDoor() != null && !address.getDoor().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate("La puerta solo puede contener un máximo de 25 letras y/o digitos, y " +
 							"los " +

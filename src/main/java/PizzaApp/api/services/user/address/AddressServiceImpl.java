@@ -19,26 +19,26 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Address findReference(String id) {
-		return addressRepository.findReference(id);
+	public Address findReference(Long addressId) {
+		return addressRepository.findReference(addressId);
 	}
 
 	@Override
 	public Optional<Address> find(Address address) {
 		if (address.getId() != null) {
-			return Optional.ofNullable(findReference(String.valueOf(address.getId())));
+			return Optional.ofNullable(findReference(address.getId()));
 		} else {
 			return addressRepository.findAddress(address);
 		}
 	}
 
 	@Override
-	public List<Address> findAllByUserId(String id) {
-		return addressRepository.findAllByUserId(id);
+	public List<Address> findAllByUserId(Long userId) {
+		return addressRepository.findAllByUserId(userId);
 	}
 
 	@Override
-	public Long findUserAddressListSize(String id) {
-		return addressRepository.findUserAddressListSize(id);
+	public Integer findUserAddressListSize(Long userId) {
+		return addressRepository.findUserAddressListSize(userId);
 	}
 }

@@ -30,7 +30,7 @@ public class UserOrdersController {
 
 	@PostMapping("/{userId}")
 	public ResponseEntity<Long> createUserOrder
-			(@PathVariable String userId,
+			(@PathVariable Long userId,
 			 @RequestBody NewUserOrderDTO order,
 			 HttpServletRequest request) {
 
@@ -39,39 +39,39 @@ public class UserOrdersController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderDTO> findUserOrder(@PathVariable String orderId) {
+	public ResponseEntity<OrderDTO> findUserOrder(@PathVariable Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrder(orderId));
 	}
 
 	@GetMapping("/all/{userId}")
-	public ResponseEntity<OrderPaginationResultDTO> findOrdersSummary
-			(@PathVariable String userId,
-			 @RequestParam String pageSize,
-			 @RequestParam String pageNumber,
+	public ResponseEntity<OrderPaginationResultDTO> findUserOrders
+			(@PathVariable Long userId,
+			 @RequestParam Integer pageSize,
+			 @RequestParam Integer pageNumber,
 			 HttpServletRequest request) {
 
 		userRequestValidator.validate(userId, request);
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrdersSummary(userId, pageSize, pageNumber));
+		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrdersSummary(userId, pageSize, pageNumber));
 	}
 
 	@PutMapping("/{userId}")
 	public ResponseEntity<Long> updateUserOrder
 			(@RequestBody UpdateUserOrderDTO order,
-			 @PathVariable String userId,
+			 @PathVariable Long userId,
 			 HttpServletRequest request) {
 
 		userRequestValidator.validate(userId, request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderService.updateUserOrder(order));
 	}
 
-	@DeleteMapping("/{orderId}/{userId}")
-	public ResponseEntity<String> deleteById(
-			@PathVariable String orderId,
-			@PathVariable String userId,
+	@DeleteMapping("/{userId}/{orderId}")
+	public ResponseEntity<Long> deleteUserOrderById(
+			@PathVariable Long orderId,
+			@PathVariable Long userId,
 			HttpServletRequest request) {
 
 		userRequestValidator.validate(userId, request);
-		orderService.deleteById(orderId);
+		orderService.deleteUserOrderById(orderId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderId);
 	}
 }

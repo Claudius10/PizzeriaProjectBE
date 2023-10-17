@@ -1,19 +1,14 @@
 package PizzaApp.api.exceptions.errorDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-
-// TODO - replace List<String> errors with String error
-
 public record ApiErrorDTO
 
 		(String timesStamp,
 		 int statusCode,
 		 String path,
-		 List<String> errors) {
+		 String errorMsg) {
 
 	private ApiErrorDTO(Builder builder) {
-		this(builder.timeStamp, builder.statusCode, builder.path, builder.errors);
+		this(builder.timeStamp, builder.statusCode, builder.path, builder.errorMsg);
 	}
 
 	public static class Builder {
@@ -24,7 +19,7 @@ public record ApiErrorDTO
 
 		private String path;
 
-		private List<String> errors;
+		private String errorMsg;
 
 		public Builder(String timeStamp) {
 			if (timeStamp == null) {
@@ -43,8 +38,8 @@ public record ApiErrorDTO
 			return this;
 		}
 
-		public Builder withErrors(List<String> errors) {
-			this.errors = new ArrayList<>(errors);
+		public Builder withErrorMsg(String errorMsg) {
+			this.errorMsg = errorMsg;
 			return this;
 		}
 

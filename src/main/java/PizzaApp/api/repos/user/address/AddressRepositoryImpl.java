@@ -17,8 +17,8 @@ public class AddressRepositoryImpl implements AddressRepository {
 	}
 
 	@Override
-	public Address findReference(String id) {
-		return em.getReference(Address.class, id);
+	public Address findReference(Long addressId) {
+		return em.getReference(Address.class, addressId);
 	}
 
 	@Override
@@ -41,18 +41,18 @@ public class AddressRepositoryImpl implements AddressRepository {
 	}
 
 	@Override
-	public List<Address> findAllByUserId(String id) {
+	public List<Address> findAllByUserId(Long userId) {
 		return em.createQuery(
 						"select userData.addressList from UserData userData where userData.id = :userId",
 						Address.class)
-				.setParameter("userId", id)
+				.setParameter("userId", userId)
 				.getResultList();
 	}
 
 	@Override
-	public Long findUserAddressListSize(String id) {
-		return (Long) em.createNativeQuery("select count(*) from users_addresses where user_id=:userId", Long.class)
-				.setParameter("userId", id)
+	public Integer findUserAddressListSize(Long userId) {
+		return (Integer) em.createNativeQuery("select count(*) from users_addresses where user_id = :userId", Integer.class)
+				.setParameter("userId", userId)
 				.getSingleResult();
 	}
 }

@@ -82,10 +82,10 @@ public class NewOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = orderRepository.findById(mockMvc.perform(post("/api/order")
+		Order dbOrder = orderRepository.findById(Long.valueOf(mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// set createdOn to do equality test
 		order.setCreatedOn(dbOrder.getCreatedOn());
@@ -130,10 +130,10 @@ public class NewOrderTests {
 				.build();
 
 		// action: persist and retrieve order
-		Order dbOrder = orderRepository.findById(mockMvc.perform(post("/api/order")
+		Order dbOrder = orderRepository.findById(Long.valueOf(mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
-				.andReturn().getResponse().getContentAsString());
+				.andReturn().getResponse().getContentAsString()));
 
 		// set createdOn to do equality test
 		order.setCreatedOn(dbOrder.getCreatedOn());
@@ -178,7 +178,7 @@ public class NewOrderTests {
 				.build();
 
 		// action: send post request and expect exception is thrown
-		mockMvc.perform(post("/api/order")
+		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
@@ -221,7 +221,7 @@ public class NewOrderTests {
 				.build();
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
+		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
@@ -265,7 +265,7 @@ public class NewOrderTests {
 				.build();
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
+		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
@@ -309,7 +309,7 @@ public class NewOrderTests {
 				.build();
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
+		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
@@ -354,7 +354,7 @@ public class NewOrderTests {
 				.build();
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
+		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
@@ -386,7 +386,7 @@ public class NewOrderTests {
 				.build();
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/order")
+		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
 				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),

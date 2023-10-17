@@ -1,6 +1,5 @@
 package PizzaApp.api.services.user.account;
 
-import PizzaApp.api.entity.dto.user.UserDataDTO;
 import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.user.UserData;
 
@@ -8,18 +7,15 @@ public interface UserDataService {
 
 	void createData(UserData userData);
 
-	void addTel(String id, Integer telephone);
+	void addTel(Long userId, Integer telephone);
 
-	void removeTel(String id, Long telId);
+	void removeTel(Long userId, Long telId);
 
-	void addAddress(String id, Address address);
+	void addAddress(Long userId, Address address);
 
-	void removeAddress(String id, Long addressId);
+	void removeAddress(Long userId, Long addressId);
 
-	UserData findReference(String id);
+	UserData findReference(Long userId);
 
-	UserData findById(String id);
-
-	UserDataDTO findDTOById(String id);
-
+	UserData findById(Long userId);
 }

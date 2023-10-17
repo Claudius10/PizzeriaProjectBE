@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TelephoneRepository {
 
-	List<TelephoneDTO> findAllByUserId(String id);
+	List<TelephoneDTO> findAllByUserId(Long userId);
 
-	Long findUserTelListSize(String id);
+	Long findUserTelListSize(Long userId);
 }

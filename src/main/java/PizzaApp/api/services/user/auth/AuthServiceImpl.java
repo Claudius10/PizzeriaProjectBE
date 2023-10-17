@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -32,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public AuthDTO login(LoginDTO login) {
+		// TODO - let user know if they try to login with non-existent credentials
 		Authentication auth = authManager.authenticate
 				(new UsernamePasswordAuthenticationToken(login.email(), login.password()));
 

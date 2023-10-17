@@ -2,9 +2,7 @@ package PizzaApp.api.controllers.open.auth;
 
 import PizzaApp.api.entity.dto.misc.AuthDTO;
 import PizzaApp.api.entity.dto.misc.LoginDTO;
-import PizzaApp.api.entity.dto.misc.RegisterDTO;
-import PizzaApp.api.entity.dto.user.UserDataDTO;
-import PizzaApp.api.services.user.account.UserService;
+import PizzaApp.api.entity.dto.user.UserDTO;
 import PizzaApp.api.services.user.auth.AuthService;
 import PizzaApp.api.utility.auth.CookieUtils;
 import jakarta.servlet.http.Cookie;
@@ -22,14 +20,9 @@ import org.springframework.web.util.WebUtils;
 @Validated
 public class AuthController {
 
-	private final UserService userService;
-
 	private final AuthService authService;
 
-	public AuthController
-			(UserService userService,
-			 AuthService authService) {
-		this.userService = userService;
+	public AuthController(AuthService authService) {
 		this.authService = authService;
 	}
 
@@ -38,40 +31,22 @@ public class AuthController {
 		CookieUtils.loadCsrf(response, csrfToken);
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<?> register
-			(@RequestBody @Valid RegisterDTO registerDTO) {
-
-		userService.create(registerDTO);
-		return ResponseEntity.status(HttpStatus.OK).build();
-	}
-
 	@PostMapping("/login")
-	public ResponseEntity<UserDataDTO> login
-			(@Valid @RequestBody LoginDTO loginDTO,
-			 HttpServletResponse response) {
-
+	public ResponseEntity<UserDTO> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
 		AuthDTO authDTO = authService.login(loginDTO);
 		CookieUtils.newCookies(response, authDTO);
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(new UserDataDTO(authDTO.userId(), authDTO.name(), authDTO.email()));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new UserDTO(authDTO.userId(), authDTO.name(), authDTO.email()));
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout
-			(HttpServletRequest request,
-			 HttpServletResponse response) {
-
+	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 		CookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshTokens
-			(HttpServletRequest request,
-			 HttpServletResponse response) {
-
+	public ResponseEntity<?> refreshTokens(HttpServletRequest request, HttpServletResponse response) {
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
 		CookieUtils.newCookies(response, authService.refreshTokens(refreshToken));
 		return ResponseEntity.status(HttpStatus.OK).build();

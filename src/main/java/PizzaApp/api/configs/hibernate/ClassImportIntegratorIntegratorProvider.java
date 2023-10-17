@@ -5,7 +5,7 @@ import java.util.List;
 import PizzaApp.api.entity.dto.order.*;
 import PizzaApp.api.entity.dto.user.PasswordDTO;
 import PizzaApp.api.entity.dto.user.TelephoneDTO;
-import PizzaApp.api.entity.dto.user.UserDataDTO;
+import PizzaApp.api.entity.dto.user.UserDTO;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.jpa.boot.spi.IntegratorProvider;
 
@@ -22,7 +22,7 @@ public class ClassImportIntegratorIntegratorProvider implements IntegratorProvid
 				OrderSummary.class,
 				OrderPaginationResultDTO.class,
 				OrderCreatedOnDTO.class,
-				UserDataDTO.class,
+				UserDTO.class,
 				TelephoneDTO.class,
 				PasswordDTO.class
 		)));

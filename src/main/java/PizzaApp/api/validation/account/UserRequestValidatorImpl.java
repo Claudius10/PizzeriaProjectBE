@@ -19,10 +19,10 @@ public class UserRequestValidatorImpl implements UserRequestValidator {
 	// TODO: refactor this method's functionality using aop
 
 	@Override
-	public void validate(String userId, HttpServletRequest request) {
+	public void validate(Long userId, HttpServletRequest request) {
 		Cookie cookie = WebUtils.getCookie(request, "fight");
 
-		if (cookie == null || !Long.valueOf(userId).equals(jwtDecoder.decode(cookie.getValue()).getClaim("id"))) {
+		if (cookie == null || !userId.equals(jwtDecoder.decode(cookie.getValue()).getClaim("id"))) {
 			throw new AccessDeniedException("Access denied");
 		}
 	}

@@ -1,10 +1,7 @@
 package PizzaApp.api.services.user.account;
 
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
-import PizzaApp.api.entity.dto.user.EmailChangeDTO;
-import PizzaApp.api.entity.dto.user.NameChangeDTO;
-import PizzaApp.api.entity.dto.user.PasswordChangeDTO;
-import PizzaApp.api.entity.dto.user.PasswordDTO;
+import PizzaApp.api.entity.dto.user.*;
 import PizzaApp.api.entity.user.User;
 
 import java.util.Optional;
@@ -15,15 +12,17 @@ public interface UserService {
 
 	Optional<User> findByEmail(String email);
 
-	User findReference(String id);
+	UserDTO findDTOById(Long userId);
 
-	void updateName(String id, NameChangeDTO nameChangeDTO);
+	User findReference(Long userId);
 
-	void updateEmail(String id, EmailChangeDTO emailChangeDTO);
+	void updateName(Long userId, NameChangeDTO nameChangeDTO);
 
-	void updatePassword(String id, PasswordChangeDTO passwordChangeDTO);
+	void updateEmail(Long userId, EmailChangeDTO emailChangeDTO);
 
-	void delete(String id, PasswordDTO passwordDTO);
+	void updatePassword(Long userId, PasswordChangeDTO passwordChangeDTO);
 
-	String loadPassword(String id);
+	void delete(Long userId, PasswordDTO passwordDTO);
+
+	String loadPassword(Long userId);
 }

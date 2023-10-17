@@ -7,29 +7,30 @@ import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.cart.Cart;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface OrderRepository {
 
 	Long createOrder(Order order);
 
-	OrderDTO findOrder(String id);
+	OrderDTO findOrder(Long orderId);
 
-	Number findOrderCount(String userId);
+	Integer findOrderCount(Long userId);
 
-	List<OrderSummary> findOrderSummaryList(String userId, int pageSize, int pageNumber);
+	List<OrderSummary> findOrderSummaryList(Long userId, int pageSize, int pageNumber);
 
 	Long updateOrder(Order order);
 
-	void deleteById(String id);
+	void deleteById(Long orderId);
 
 	// info - for internal use only
 
-	Order findById(String id);
+	Order findById(Long orderId);
 
-	Order findReferenceById(String id);
+	void removeUserData(Long userId);
 
-	OrderCreatedOnDTO findCreatedOnById(String id);
+	Order findReferenceById(Long orderId);
 
-	Cart findOrderCart(String id);
+	OrderCreatedOnDTO findCreatedOnById(Long orderId);
+
+	Cart findOrderCart(Long orderId);
 }

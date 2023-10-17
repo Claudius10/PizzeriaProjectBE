@@ -15,19 +15,19 @@ public interface OrderService {
 
 	Long createUserOrder(NewUserOrderDTO newUserOrderDTO);
 
-	OrderDTO findUserOrder(String id);
+	OrderDTO findUserOrder(Long userId);
 
 	Long updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO);
 
-	OrderPaginationResultDTO findOrdersSummary(String userId, String pageSize, String pageNumber);
+	OrderPaginationResultDTO findUserOrdersSummary(Long userId, Integer pageSize, Integer pageNumber);
 
-	void deleteById(String id);
+	void deleteUserOrderById(Long orderId);
 
 	// info - for internal use only
 
-	Order findById(String id);
+	Order findById(Long orderId);
 
-	OrderCreatedOnDTO findCreatedOnById(String id);
+	OrderCreatedOnDTO findCreatedOnById(Long orderId);
 
 	Long createUserOrderTest(NewUserOrderDTO newUserOrderDTO, LocalDateTime createdOn);
 }

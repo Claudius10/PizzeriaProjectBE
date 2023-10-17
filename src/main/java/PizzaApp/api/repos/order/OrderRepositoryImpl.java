@@ -43,7 +43,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public OrderDTO findOrder(String id) {
+	public OrderDTO findOrder(Long orderId) {
 		return em.createQuery("""
 				select new OrderDTO(
 				   order.id,
@@ -60,17 +60,17 @@ public class OrderRepositoryImpl implements OrderRepository {
 				)
 				from Order order
 				where order.id = :orderId
-				""", OrderDTO.class).setParameter("orderId", id).getSingleResult();
+				""", OrderDTO.class).setParameter("orderId", orderId).getSingleResult();
 	}
 
 	@Override
-	public Number findOrderCount(String userId) {
+	public Integer findOrderCount(Long userId) {
 		return em.createQuery("select count(order) from Order order where order.userData.id = :userId",
-				Number.class).setParameter("userId", userId).getSingleResult();
+				Number.class).setParameter("userId", userId).getSingleResult().intValue();
 	}
 
 	@Override
-	public List<OrderSummary> findOrderSummaryList(String userId, int pageSize, int pageNumber) {
+	public List<OrderSummary> findOrderSummaryList(Long userId, int pageSize, int pageNumber) {
 		Session session = em.unwrap(Session.class);
 		return session.createQuery(
 						"select order.id, " +
@@ -104,40 +104,51 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public void deleteById(String id) {
-		em.remove(em.getReference(Order.class, id));
+	public void deleteById(Long orderId) {
+		em.remove(em.getReference(Order.class, orderId));
 	}
 
-	// info - for internal use only
+	// INFO - for internal use only
 
 	@Override
-	public OrderCreatedOnDTO findCreatedOnById(String id) {
+	public OrderCreatedOnDTO findCreatedOnById(Long orderId) {
 		return em.createQuery("""
 				select new OrderCreatedOnDTO(
 				order.createdOn,
 				order.formattedCreatedOn
 				) from Order order where order.id= :orderId
-				""", OrderCreatedOnDTO.class).setParameter("orderId", id).getSingleResult();
+				""", OrderCreatedOnDTO.class).setParameter("orderId", orderId).getSingleResult();
 	}
 
 	@Override
-	public Order findById(String id) {
-		return em.find(Order.class, id);
+	public Order findById(Long orderId) {
+		return em.find(Order.class, orderId);
+	}
+
+	// used when user deletes account
+	@Override
+	public void removeUserData(Long userId) {
+		em.createQuery("update Order order set order.contactTel = null, " +
+						"order.email = null, " +
+						"order.customerName = null " +
+						"where order.userData.id = :userId")
+				.setParameter("userId", userId)
+				.executeUpdate();
 	}
 
 	@Override
-	public Order findReferenceById(String id) {
-		return em.getReference(Order.class, id);
+	public Order findReferenceById(Long orderId) {
+		return em.getReference(Order.class, orderId);
 	}
 
 	@Override
-	public Cart findOrderCart(String id) {
+	public Cart findOrderCart(Long orderId) {
 		return em.createQuery("select order.cart from Order order where order.id = :orderId", Cart.class).
-				setParameter("orderId", id)
+				setParameter("orderId", orderId)
 				.getSingleResult();
 	}
 
-	// info - util method
+	// INFO - util method
 
 	public void syncCartItems(Order order) {
 		List<OrderItem> copy = new ArrayList<>(order.getCart().getOrderItems());

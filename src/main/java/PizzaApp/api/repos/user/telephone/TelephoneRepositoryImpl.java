@@ -16,21 +16,22 @@ public class TelephoneRepositoryImpl implements TelephoneRepository {
 	}
 
 	@Override
-	public List<TelephoneDTO> findAllByUserId(String id) {
+	public List<TelephoneDTO> findAllByUserId(Long userId) {
 		return em.createQuery("""
 							select new TelephoneDTO(
 							telehpone.id,
-							telehpone.number)
+							telehpone.number
+							)
 							from Telephone telehpone
 							where telehpone.userData.id = :userId
 						""", TelephoneDTO.class)
-				.setParameter("userId", id)
+				.setParameter("userId", userId)
 				.getResultList();
 	}
 
 	@Override
-	public Long findUserTelListSize(String id) {
+	public Long findUserTelListSize(Long userId) {
 		return (Long) em.createQuery("select count(t) from Telephone t where t.userData.id = :userId")
-				.setParameter("userId", id).getSingleResult();
+				.setParameter("userId", userId).getSingleResult();
 	}
 }

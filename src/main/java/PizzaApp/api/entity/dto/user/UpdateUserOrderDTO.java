@@ -9,7 +9,7 @@ public record UpdateUserOrderDTO(
 		Long orderId,
 		LocalDateTime createdOn,
 		String formattedCreatedOn,
-		UserOrderData userOrderData,
+		UserOrderDataDTO userOrderData,
 		OrderDetails orderDetails,
 		Cart cart) {
 }

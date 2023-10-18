@@ -21,7 +21,8 @@ public class UserData {
 
 	@OneToMany(
 			mappedBy = "userData",
-			cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+			orphanRemoval = true)
 	@JsonManagedReference
 	private List<Order> orderList;
 
@@ -32,7 +33,7 @@ public class UserData {
 	@JsonManagedReference
 	private List<Telephone> telephoneList;
 
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JoinTable(
 			name = "users_addresses",
 			joinColumns = @JoinColumn(name = "user_id"),

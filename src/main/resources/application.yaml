@@ -1,5 +1,4 @@
 spring:
-
   datasource:
     password: ${DATABASE_PASSWORD}
     url: ${DATABASE_URL}
@@ -12,12 +11,12 @@ spring:
 
   jpa:
     properties:
-
       hibernate:
-        format_sql: true
         integrator_provider: PizzaApp.api.configs.hibernate.ClassImportIntegratorIntegratorProvider
         jdbc:
           time_zone: UTC
+        show_sql: true
+        format_sql: true
 
       jakarta:
         persistence:
@@ -25,7 +24,6 @@ spring:
             mode: UNSPECIFIED
 
     open-in-view: false
-    show-sql: true
     hibernate:
       ddl-auto: update
 
@@ -37,4 +35,7 @@ server:
 
 logging:
   level:
-    org.springframework.security: TRACE
+    org.springframework.security: trace
+    org.hibernate: info
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace

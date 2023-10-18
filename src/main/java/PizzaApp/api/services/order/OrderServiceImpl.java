@@ -8,6 +8,7 @@ import PizzaApp.api.entity.dto.order.*;
 import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
 import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.entity.order.cart.Cart;
 import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.services.user.account.UserDataService;
@@ -136,18 +137,19 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderDTO findUserOrder(Long userId) {
-		return orderRepository.findOrder(userId);
+	public OrderDTO findUserOrderDTO(Long userId) {
+		return orderRepository.findOrderDTO(userId);
 	}
 
 	@Override
-	public void deleteUserOrderById(Long orderId) {
+	public void deleteUserOrderById(Long orderId, Long userId) {
 		// get order createdOn
 		OrderCreatedOnDTO createdOn = findCreatedOnById(orderId);
 		// validate whatever delete time limit passed
-		validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn.createdOn()); //FIXME - on for prod
-		// delete order if time limit did not pass
-		orderRepository.deleteById(orderId);
+		validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn.createdOn());
+		// delete the order
+		UserData userData = userDataService.findReference(userId);
+		userData.removeOrder(orderRepository.findReferenceById(orderId));
 	}
 
 	// info - for internal use only
@@ -158,8 +160,23 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	public void removeUserData(Long userId) {
+		orderRepository.removeUserData(userId);
+	}
+
+	@Override
+	public Order findReferenceById(Long orderId) {
+		return orderRepository.findReferenceById(orderId);
+	}
+
+	@Override
 	public OrderCreatedOnDTO findCreatedOnById(Long orderId) {
 		return orderRepository.findCreatedOnById(orderId);
+	}
+
+	@Override
+	public Cart findOrderCart(Long orderId) {
+		return orderRepository.findOrderCart(orderId);
 	}
 
 	@Override

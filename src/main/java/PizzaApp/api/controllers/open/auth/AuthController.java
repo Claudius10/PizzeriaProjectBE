@@ -27,12 +27,18 @@ public class AuthController {
 	}
 
 	@GetMapping("/csrf")
-	public void csrf(HttpServletResponse response, CsrfToken csrfToken) {
+	public void csrf
+			(HttpServletResponse response,
+			 CsrfToken csrfToken) {
+
 		CookieUtils.loadCsrf(response, csrfToken);
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<UserDTO> login(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+	public ResponseEntity<UserDTO> login
+			(@Valid @RequestBody LoginDTO loginDTO,
+			 HttpServletResponse response) {
+
 		AuthDTO authDTO = authService.login(loginDTO);
 		CookieUtils.newCookies(response, authDTO);
 		return ResponseEntity.status(HttpStatus.OK)
@@ -40,13 +46,19 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> logout
+			(HttpServletRequest request,
+			 HttpServletResponse response) {
+
 		CookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshTokens(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> refreshTokens
+			(HttpServletRequest request,
+			 HttpServletResponse response) {
+
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
 		CookieUtils.newCookies(response, authService.refreshTokens(refreshToken));
 		return ResponseEntity.status(HttpStatus.OK).build();

@@ -29,13 +29,13 @@ public class OrderValidatorImpl implements OrderValidator {
 	public void validateUpdate(Order order) {
 		validate(order);
 		setCreatedOn(order.getCreatedOn());
-		isCartUpdateTimeLimitValid(order); // FIXME -  off for dev (unless testing)
-		isOrderDataUpdateTimeLimitValid(); // FIXME - off for dev (unless testing)
+		isCartUpdateTimeLimitValid(order); // off for dev (unless testing)
+		isOrderDataUpdateTimeLimitValid(); // off for dev (unless testing)
 	}
 
 	@Override
 	public void validate(Order order) {
-		//isRequestWithinWorkingHours(); // FIXME - on for prod
+		isRequestWithinWorkingHours(); // off for dev
 		isCartValid(order);
 		isChangeRequestedValid(order);
 		calculatePaymentChange(order);

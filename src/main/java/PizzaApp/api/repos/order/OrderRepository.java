@@ -12,7 +12,7 @@ public interface OrderRepository {
 
 	Long createOrder(Order order);
 
-	OrderDTO findOrder(Long orderId);
+	OrderDTO findOrderDTO(Long orderId);
 
 	Integer findOrderCount(Long userId);
 

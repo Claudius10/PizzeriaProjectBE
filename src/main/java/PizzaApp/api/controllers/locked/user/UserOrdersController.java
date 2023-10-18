@@ -39,12 +39,12 @@ public class UserOrdersController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderDTO> findUserOrder(@PathVariable Long orderId) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrder(orderId));
+	public ResponseEntity<OrderDTO> findUserOrderDTO(@PathVariable Long orderId) {
+		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrderDTO(orderId));
 	}
 
 	@GetMapping("/all/{userId}")
-	public ResponseEntity<OrderPaginationResultDTO> findUserOrders
+	public ResponseEntity<OrderPaginationResultDTO> findUserOrdersSummary
 			(@PathVariable Long userId,
 			 @RequestParam Integer pageSize,
 			 @RequestParam Integer pageNumber,
@@ -71,7 +71,7 @@ public class UserOrdersController {
 			HttpServletRequest request) {
 
 		userRequestValidator.validate(userId, request);
-		orderService.deleteUserOrderById(orderId);
+		orderService.deleteUserOrderById(orderId, userId);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderId);
 	}
 }

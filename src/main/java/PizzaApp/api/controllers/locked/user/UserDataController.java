@@ -28,10 +28,11 @@ public class UserDataController {
 
 	private final UserRequestValidator userRequestValidator;
 
-	public UserDataController(UserDataService userDataService,
-							  TelephoneService telephoneService,
-							  AddressService addressService,
-							  UserRequestValidator userRequestValidator) {
+	public UserDataController
+			(UserDataService userDataService,
+			 TelephoneService telephoneService,
+			 AddressService addressService,
+			 UserRequestValidator userRequestValidator) {
 		this.userDataService = userDataService;
 		this.telephoneService = telephoneService;
 		this.addressService = addressService;

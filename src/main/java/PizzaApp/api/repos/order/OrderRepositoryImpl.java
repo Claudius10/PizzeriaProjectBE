@@ -43,7 +43,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public OrderDTO findOrder(Long orderId) {
+	public OrderDTO findOrderDTO(Long orderId) {
 		return em.createQuery("""
 				select new OrderDTO(
 				   order.id,
@@ -58,7 +58,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 				   order.orderDetails,
 				   order.cart
 				)
-				from Order order
+				from Order order join fetch order.cart.orderItems
 				where order.id = :orderId
 				""", OrderDTO.class).setParameter("orderId", orderId).getSingleResult();
 	}
@@ -122,7 +122,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public Order findById(Long orderId) {
-		return em.find(Order.class, orderId);
+		return em.createQuery("select order from Order order " +
+						"join fetch order.cart as cart join fetch cart.orderItems " +
+						"where order.id = :orderId", Order.class)
+				.setParameter("orderId", orderId)
+				.getSingleResult();
 	}
 
 	// used when user deletes account

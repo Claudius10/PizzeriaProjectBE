@@ -7,8 +7,8 @@ import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.exceptions.exceptions.user.InvalidPasswordException;
 import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
-import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.repos.user.account.UserRepository;
+import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.services.user.role.RoleService;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 
-	private final OrderRepository orderRepository;
+	private final OrderService orderService;
 
 	private final RoleService roleService;
 
@@ -33,12 +33,12 @@ public class UserServiceImpl implements UserService {
 
 	public UserServiceImpl
 			(UserRepository userRepository,
-			 OrderRepository orderRepository,
+			 OrderService orderService,
 			 RoleService roleService,
 			 UserDataService userDataService,
 			 PasswordEncoder bCryptEncoder) {
 		this.userRepository = userRepository;
-		this.orderRepository = orderRepository;
+		this.orderService = orderService;
 		this.roleService = roleService;
 		this.userDataService = userDataService;
 		this.bCryptEncoder = bCryptEncoder;
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
 	public void delete(Long userId, PasswordDTO passwordDTO) {
 		verifyPassword(userId, passwordDTO.password());
 		// remove user data from orders
-		orderRepository.removeUserData(userId); // TODO - make a test for this functionality
+		orderService.removeUserData(userId); // TODO - make a test for this functionality
 		// delete account
 		userRepository.delete(userId);
 	}

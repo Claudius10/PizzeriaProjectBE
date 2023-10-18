@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.exceptions.exceptions.order.*;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
@@ -93,6 +94,18 @@ public class OrderValidatorImpl implements OrderValidator {
 	public void isCartValid(Order order) {
 		if (order.getCart() == null || order.getCart().getOrderItems().isEmpty() || order.getCart().getTotalQuantity() <= 0) {
 			throw new EmptyCartException("La cesta no puede ser vacía");
+		}
+
+		if (order.getCart().getOrderItems().size() > 20) {
+			throw new CartSizeLimitException("Se ha superado el límite de artículos por pedido (20 art.). Contacte con nosotros" +
+					" si desea realizar el pedido");
+		}
+
+		for (OrderItem item : order.getCart().getOrderItems()) {
+			if (item.getQuantity() > 20) {
+				throw new CartSizeLimitException("Se ha superado la cantidad máxima por artículo (20 uds.). Contacte con " +
+						"nosotros si desea realizar el pedido");
+			}
 		}
 	}
 

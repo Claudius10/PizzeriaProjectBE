@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.exceptions.exceptions.order.*;
+import PizzaApp.api.exceptions.exceptions.user.InvalidPasswordException;
 import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
 import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
 import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,12 +39,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(status.value())
 						.withPath(request.getDescription(false))
-						.withErrorMsg(ex.getMessage())
+						.withErrorMsg(ex.getBindingResult().getAllErrors().get(0).getDefaultMessage())
 						.build());
 	}
 
 	@ExceptionHandler({
 			EmptyCartException.class,
+			CartSizeLimitException.class,
 			OrderDataUpdateTimeLimitException.class,
 			OrderDeleteTimeLimitException.class,
 			StoreNotOpenException.class,
@@ -94,15 +97,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.build());
 	}
 
-	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
+	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class, InvalidPasswordException.class})
 	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+
+		String errorMsg;
+		if (ex instanceof BadCredentialsException) {
+			errorMsg = "Alguno de los datos introducidos son incorrectos, revíselos";
+		} else {
+			errorMsg = ex.getMessage();
+		}
+
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
 				.body(new ApiErrorDTO.Builder(
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
 						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 						.withPath(request.getServletPath())
-						.withErrorMsg(ex.getMessage())
+						.withErrorMsg(errorMsg)
 						.build());
 
 	}

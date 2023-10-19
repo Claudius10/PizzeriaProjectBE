@@ -19,9 +19,10 @@ public class JWTUtils {
 		this.jwtDecoder = jwtDecoder;
 	}
 
+	// FE domain "https://pizzeriaprojectbe-production.up.railway.app"
 	public String createToken(Instant expiry, String username, Long userId, String roles) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
-				.issuer("https://pizzeriaprojectbe-production.up.railway.app") // this domain for prod fe
+				.issuer("https://pizzeriaprojectbe-production.up.railway.app")
 				.issuedAt(Instant.now())
 				.expiresAt(expiry)
 				.subject(username)

@@ -22,7 +22,7 @@ public final class CookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
-				//.domain(".up.railway.app") // for prod fe
+				.domain(".up.railway.app") // NOTE - on for prod fe
 				.build();
 	}
 
@@ -32,7 +32,7 @@ public final class CookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
-				//.domain(".up.railway.app") // for prod fe
+				.domain(".up.railway.app") // NOTE - on for prod fe
 				.build();
 	}
 
@@ -43,7 +43,7 @@ public final class CookieUtils {
 						"XSRF-TOKEN",
 						csrfToken.getToken(),
 						false,
-						false) // true for prod
+						true) // NOTE - true for prod
 						.toString());
 	}
 
@@ -63,35 +63,35 @@ public final class CookieUtils {
 				bakeCookie("fight", auth.accessToken(),
 						61,
 						true,
-						false) // true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_fight", "exp_d",
 						61,
 						false,
-						false) // true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("me", auth.refreshToken(),
 						65,
 						true,
-						false)
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_me", "exp_d",
 						65,
 						false,
-						false) // true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("id", String.valueOf(auth.userId()),
 						65,
 						false,
-						false)
+						true) // NOTE - true for prod
 						.toString());
 	}
 
@@ -99,8 +99,8 @@ public final class CookieUtils {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null)
 			for (Cookie cookie : cookies) {
-				//cookie.setSecure(true); // for prod fe
-				//cookie.setDomain("up.railway.app"); // for prod fe
+				cookie.setSecure(true); // NOTE - on for prod fe
+				cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);

@@ -63,8 +63,11 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.headers(headers -> {
 			headers.httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000));
+			// CSP - set on index.html on FE
 			headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
+			// X-Content-Type-Options - enabled by default with value of nosniff
 			headers.referrerPolicy(referrerPolicyConfig -> referrerPolicyConfig.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
+			// Permission-Policy - missing from spring security, old feature policy is deprecated
 		});
 
 		// cors config

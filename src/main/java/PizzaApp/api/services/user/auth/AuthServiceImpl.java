@@ -41,12 +41,12 @@ public class AuthServiceImpl implements AuthService {
 				user.getName(),
 				user.getUsername(),
 				jwtUtils.createToken(
-						Instant.now().plus(1, ChronoUnit.SECONDS),
+						Instant.now().plus(1, ChronoUnit.DAYS),
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities())),
 				jwtUtils.createToken(
-						Instant.now().plus(5, ChronoUnit.SECONDS),
+						Instant.now().plus(7, ChronoUnit.DAYS),
 						user.getUsername(),
 						user.getId(),
 						jwtUtils.parseRoles(user.getAuthorities())));
@@ -65,12 +65,12 @@ public class AuthServiceImpl implements AuthService {
 				"",
 				"",
 				jwtUtils.createToken(
-						Instant.now().plus(1, ChronoUnit.MINUTES),
+						Instant.now().plus(1, ChronoUnit.DAYS),
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
 						jwt.getClaim("roles")),
 				jwtUtils.createToken(
-						Instant.now().plus(2, ChronoUnit.MINUTES),
+						Instant.now().plus(7, ChronoUnit.DAYS),
 						jwt.getClaim("sub"),
 						jwt.getClaim("id"),
 						jwt.getClaim("roles"))

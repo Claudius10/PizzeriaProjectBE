@@ -61,35 +61,35 @@ public final class CookieUtils {
 	public static void newCookies(HttpServletResponse response, AuthDTO auth) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("fight", auth.accessToken(),
-						61,
+						24 * 60 * 60,
 						true,
 						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_fight", "exp_d",
-						61,
+						24 * 60 * 60,
 						false,
 						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("me", auth.refreshToken(),
-						65,
+						168 * 60 * 60,
 						true,
 						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_me", "exp_d",
-						65,
+						168 * 60 * 60,
 						false,
 						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("id", String.valueOf(auth.userId()),
-						65,
+						168 * 60 * 60,
 						false,
 						true) // NOTE - true for prod
 						.toString());

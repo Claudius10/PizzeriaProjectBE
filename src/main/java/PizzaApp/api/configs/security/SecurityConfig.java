@@ -26,7 +26,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.*;
-import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.*;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.server.header.StrictTransportSecurityServerHttpHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -62,12 +64,20 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.headers(headers -> {
-			headers.httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000));
-			// CSP - set on index.html on FE
-			headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
-			// X-Content-Type-Options - enabled by default with value of nosniff
-			headers.referrerPolicy(referrerPolicyConfig -> referrerPolicyConfig.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
-			// Permission-Policy - missing from spring security, old feature policy is deprecated
+			headers.defaultsDisabled();
+			headers.addHeaderWriter(new CacheControlHeadersWriter());
+			headers.addHeaderWriter(new XContentTypeOptionsHeaderWriter());
+			headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN));
+			headers.addHeaderWriter(new ReferrerPolicyHeaderWriter(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
+			headers.addHeaderWriter(new HstsHeaderWriter(31536000, true));
+			headers.addHeaderWriter(new FeaturePolicyHeaderWriter("geolocation=(self)"));
+			headers.xssProtection(xXssConfig -> xXssConfig.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK));
+			headers.contentSecurityPolicy(csp -> csp.policyDirectives(
+					"default-src 'self' https://pizzeriaprojectbe-production.up.railway.app;" +
+							"img-src data: https:;" +
+							"script - src 'self';" +
+							"font - src 'self' https: https://fonts.gstatic.com;" +
+							"style - src 'self' https://fonts.googleapis.com 'unsafe-inline';"));
 		});
 
 		// cors config

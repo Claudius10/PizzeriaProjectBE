@@ -16,7 +16,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,7 +27,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.*;
 import org.springframework.security.web.header.writers.*;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
-import org.springframework.security.web.server.header.StrictTransportSecurityServerHttpHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -72,12 +70,6 @@ public class SecurityConfig {
 			headers.addHeaderWriter(new HstsHeaderWriter(31536000, true));
 			headers.addHeaderWriter(new FeaturePolicyHeaderWriter("geolocation=(self)"));
 			headers.xssProtection(xXssConfig -> xXssConfig.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK));
-			headers.contentSecurityPolicy(csp -> csp.policyDirectives(
-					"default-src 'self' https://pizzeriaprojectbe-production.up.railway.app;" +
-							"img-src data: https:;" +
-							"script - src 'self';" +
-							"font - src 'self' https: https://fonts.gstatic.com;" +
-							"style - src 'self' https://fonts.googleapis.com 'unsafe-inline';"));
 		});
 
 		// cors config

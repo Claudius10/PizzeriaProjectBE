@@ -36,7 +36,7 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public void validate(Order order) {
-		isRequestWithinWorkingHours(); // off for dev
+		//isRequestWithinWorkingHours(); // off for dev
 		isCartValid(order);
 		isChangeRequestedValid(order);
 		calculatePaymentChange(order);

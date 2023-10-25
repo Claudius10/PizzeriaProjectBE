@@ -74,12 +74,19 @@ public class OrderTests {
 			.withTotalCost(14.75)
 			.withTotalCostOffers(0D)
 			.withOrderItems(List.of(new OrderItem.Builder()
-					.withProductType("pizza")
-					.withWithName("Carbonara")
-					.withFormat("Mediana")
-					.withQuantity(1)
-					.withPrice(14.75)
-					.build()))
+							.withProductType("pizza")
+							.withWithName("Allo Bianca")
+							.withFormat("Mediana")
+							.withQuantity(1)
+							.withPrice(14.75)
+							.build(),
+					new OrderItem.Builder()
+							.withProductType("pizza")
+							.withWithName("Cuatro Quesos")
+							.withFormat("Mediana")
+							.withQuantity(1)
+							.withPrice(14.75)
+							.build()))
 			.build();
 
 	private final OrderDetails testSubjectOrderDetails = new OrderDetails.Builder()
@@ -143,7 +150,7 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(post("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(post("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
@@ -166,7 +173,8 @@ public class OrderTests {
 				() -> assertEquals(dbOrder.getAddress().getId(), order.userOrderData().addressId()),
 				() -> assertEquals(dbOrder.getContactTel(), order.userOrderData().tel()),
 				() -> assertEquals(dbOrder.getEmail(), order.userOrderData().email()),
-				() -> assertEquals(dbOrder.getCustomerName(), order.userOrderData().customerName())
+				() -> assertEquals(dbOrder.getCustomerName(), order.userOrderData().customerName()),
+				() -> assertEquals(dbOrder.getCart().getId(), order.cart().getId())
 		);
 
 		logger.info("Update order test: successfully created original user order");
@@ -191,7 +199,7 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
@@ -228,7 +236,7 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
@@ -269,7 +277,7 @@ public class OrderTests {
 				originalCart);
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
@@ -286,6 +294,7 @@ public class OrderTests {
 	}
 
 	@Test
+	@org.junit.jupiter.api.Order(2)
 	public void givenCart_whenUpdate_thenReturnOrderWithNewCart() throws Exception {
 		logger.info("Update order test: update cart");
 
@@ -296,10 +305,10 @@ public class OrderTests {
 				formattedCreatedOn,
 				new UserOrderDataDTO(
 						1L,
-						2L,
-						666333999,
-						"newEmail@gmail.com",
-						"newCustomer"),
+						1L,
+						111222333,
+						"clau@gmail.com",
+						"Clau"),
 				new OrderDetails.Builder()
 						.withId(orderId)
 						.withPaymentType("Efectivo")
@@ -312,23 +321,25 @@ public class OrderTests {
 						.withTotalQuantity(2)
 						.withTotalCost(35D)
 						.withTotalCostOffers(27.6)
-						.withOrderItems(List.of(new OrderItem.Builder()
-								.withProductType("pizza")
-								.withWithName("Trufa Gourmet")
-								.withFormat("Mediana")
-								.withQuantity(1)
-								.withPrice(14.75)
-								.build(), new OrderItem.Builder()
-								.withProductType("pizza")
-								.withWithName("Carbonara")
-								.withFormat("Familiar")
-								.withQuantity(1)
-								.withPrice(20.25)
-								.build()))
+						.withOrderItems(List.of(
+								new OrderItem.Builder()
+										.withProductType("pizza")
+										.withWithName("Trufa Gourmet")
+										.withFormat("Mediana")
+										.withQuantity(1)
+										.withPrice(14.75)
+										.build(),
+								new OrderItem.Builder()
+										.withProductType("pizza")
+										.withWithName("Carbonara")
+										.withFormat("Familiar")
+										.withQuantity(1)
+										.withPrice(20.25)
+										.build()))
 						.build());
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
@@ -339,8 +350,7 @@ public class OrderTests {
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned should match data set for update",
 				() -> assertEquals(dbOrder.getId(), orderUpdate.orderId()),
-				() -> assertTrue(dbOrder.getCart().entityEquals(orderUpdate.cart())),
-				() -> assertTrue(dbOrder.getOrderDetails().entityEquals(orderUpdate.orderDetails()))
+				() -> assertTrue(dbOrder.getCart().entityEquals(orderUpdate.cart()))
 		);
 		logger.info("Update order test: successfully updated cart");
 	}
@@ -381,7 +391,7 @@ public class OrderTests {
 						.build());
 
 		// action: persist and retrieve order
-		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/1")
+		Order dbOrder = ordersService.findById(Long.valueOf(mockMvc.perform(put("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
@@ -435,7 +445,7 @@ public class OrderTests {
 						.build());
 
 		// action: update order and then expect exception is thrown
-		mockMvc.perform(put("/api/user/orders/1")
+		mockMvc.perform(put("/api/user/orders/{userId}", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))

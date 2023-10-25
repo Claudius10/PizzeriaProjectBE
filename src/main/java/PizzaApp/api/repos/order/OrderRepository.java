@@ -1,7 +1,7 @@
 package PizzaApp.api.repos.order;
 
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
-import PizzaApp.api.entity.dto.order.OrderDTO;
+import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderSummary;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.cart.Cart;
@@ -12,7 +12,7 @@ public interface OrderRepository {
 
 	Long createOrder(Order order);
 
-	OrderDTO findOrderDTO(Long orderId);
+	OrderDTOPojo findOrderDTO(Long orderId);
 
 	Integer findOrderCount(Long userId);
 

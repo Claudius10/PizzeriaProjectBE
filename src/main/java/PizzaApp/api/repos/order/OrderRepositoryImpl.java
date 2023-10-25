@@ -43,24 +43,32 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public OrderDTO findOrderDTO(Long orderId) {
-		return em.createQuery("""
-				select new OrderDTO(
-				   order.id,
-				   order.createdOn,
-				   order.updatedOn,
-				   order.formattedCreatedOn,
-				   order.formattedUpdatedOn,
-				   order.customerName,
-				   order.contactTel,
-				   order.email,
-				   order.address,
-				   order.orderDetails,
-				   order.cart
-				)
-				from Order order join fetch order.cart.orderItems
-				where order.id = :orderId
-				""", OrderDTO.class).setParameter("orderId", orderId).getSingleResult();
+	public OrderDTOPojo findOrderDTO(Long orderId) {
+		OrderDTOPojo order = em.createQuery("""
+						select new OrderDTOPojo(
+						   order.id,
+						   order.createdOn,
+						   order.updatedOn,
+						   order.formattedCreatedOn,
+						   order.formattedUpdatedOn,
+						   order.customerName,
+						   order.contactTel,
+						   order.email,
+						   order.address,
+						   order.orderDetails,
+						   order.cart
+								)
+						from Order order
+						where order.id = :orderId
+						""", OrderDTOPojo.class)
+				.setParameter("orderId", orderId)
+				.getSingleResult();
+
+		// select cart separately as a workaround for the time being
+		// since "join order.cart.orderItems" in the above query
+		// produces NonUniqueResultException: query did not return a unique result
+		order.setCart(findOrderCart(orderId));
+		return order;
 	}
 
 	@Override
@@ -147,7 +155,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public Cart findOrderCart(Long orderId) {
-		return em.createQuery("select order.cart from Order order where order.id = :orderId", Cart.class).
+		return em.createQuery("select order.cart from Order order join fetch order.cart.orderItems where order.id = :orderId", Cart.class).
 				setParameter("orderId", orderId)
 				.getSingleResult();
 	}

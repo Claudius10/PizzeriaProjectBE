@@ -1,6 +1,6 @@
 package PizzaApp.api.controllers.locked.user;
 
-import PizzaApp.api.entity.dto.order.OrderDTO;
+import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
 import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
 import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
@@ -39,7 +39,7 @@ public class UserOrdersController {
 	}
 
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderDTO> findUserOrderDTO(@PathVariable Long orderId) {
+	public ResponseEntity<OrderDTOPojo> findUserOrderDTO(@PathVariable Long orderId) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrderDTO(orderId));
 	}
 

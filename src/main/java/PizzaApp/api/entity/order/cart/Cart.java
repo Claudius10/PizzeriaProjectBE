@@ -178,18 +178,36 @@ public class Cart {
 		Cart cart = (Cart) o;
 
 		// orderItem contentEquals
-		boolean equalContentOfOrderItems = false;
-		for (OrderItem item : orderItems) {
-			for (OrderItem otherItem : cart.getOrderItems()) {
-				if (item.contentEquals(otherItem)) {
-					equalContentOfOrderItems = true;
+		List<Boolean> itemEqualityCheck = new ArrayList<>();
+		for (int i = 0; i < orderItems.size(); i++) {
+			for (int j = 0; j < cart.getOrderItems().size(); j++) {
+
+				if (orderItems.get(i).contentEquals(cart.orderItems.get(j))) {
+					itemEqualityCheck.add(true);
+
+					// avoid i value becoming greater than orderItems.size() value
+					if (i < orderItems.size() - 1) {
+						// move to next i if i0 is equal to j0
+						// to avoid comparing i0 to j1
+						i++;
+					}
+				} else {
+					itemEqualityCheck.add(false);
 				}
+			}
+		}
+
+		boolean areItemsEqual = true;
+		for (Boolean bool : itemEqualityCheck) {
+			if (!bool) {
+				areItemsEqual = false;
+				break;
 			}
 		}
 
 		return Objects.equals(totalQuantity, cart.totalQuantity) &&
 				Objects.equals(totalCost, cart.totalCost) &&
 				Objects.equals(totalCostOffers, cart.totalCostOffers) &&
-				equalContentOfOrderItems;
+				areItemsEqual;
 	}
 }

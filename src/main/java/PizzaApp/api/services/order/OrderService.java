@@ -1,7 +1,7 @@
 package PizzaApp.api.services.order;
 
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
-import PizzaApp.api.entity.dto.order.OrderDTO;
+import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
 import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
 import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
@@ -16,7 +16,7 @@ public interface OrderService {
 
 	Long createUserOrder(NewUserOrderDTO newUserOrderDTO);
 
-	OrderDTO findUserOrderDTO(Long userId);
+	OrderDTOPojo findUserOrderDTO(Long userId);
 
 	Long updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO);
 

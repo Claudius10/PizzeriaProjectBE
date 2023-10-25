@@ -19,6 +19,7 @@ public class ClassImportIntegratorIntegratorProvider implements IntegratorProvid
 	public List<Integrator> getIntegrators() {
 		return List.of(new ClassImportIntegrator(List.of(
 				OrderDTO.class,
+				OrderDTOPojo.class,
 				OrderSummary.class,
 				OrderPaginationResultDTO.class,
 				OrderCreatedOnDTO.class,

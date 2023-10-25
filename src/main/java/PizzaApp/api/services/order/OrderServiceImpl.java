@@ -137,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderDTO findUserOrderDTO(Long userId) {
+	public OrderDTOPojo findUserOrderDTO(Long userId) {
 		return orderRepository.findOrderDTO(userId);
 	}
 

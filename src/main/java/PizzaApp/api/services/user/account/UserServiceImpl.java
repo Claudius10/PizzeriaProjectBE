@@ -5,8 +5,6 @@ import PizzaApp.api.entity.dto.user.*;
 import PizzaApp.api.entity.user.Role;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.exceptions.exceptions.user.InvalidPasswordException;
-import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
 import PizzaApp.api.repos.user.account.UserRepository;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.services.user.role.RoleService;
@@ -14,8 +12,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -57,17 +53,7 @@ public class UserServiceImpl implements UserService {
 				.withRoles(userRole)
 				.build());
 
-		try {
-			userDataService.createData(userData);
-		} catch (DataIntegrityViolationException ex) {
-			throw new NonUniqueEmailException("Una cuenta ya existe con el correo electrónico introducido. Si no recuerda la " +
-					"contraseña, contacte con nosotros");
-		}
-	}
-
-	@Override
-	public Optional<User> findByEmail(String email) {
-		return userRepository.findByEmail(email);
+		userDataService.createData(userData);
 	}
 
 	@Override
@@ -81,31 +67,47 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateName(Long userId, NameChangeDTO nameChangeDTO) {
-		verifyPassword(userId, nameChangeDTO.password());
+	public String updateName(Long userId, NameChangeDTO nameChangeDTO) {
+		String result = verifyPassword(userId, nameChangeDTO.password());
+		if (result != null) {
+			return result;
+		}
 		userRepository.updateName(userId, nameChangeDTO.name());
+		return null;
 	}
 
 	@Override
-	public void updateEmail(Long userId, EmailChangeDTO emailChangeDTO) {
-		verifyPassword(userId, emailChangeDTO.password());
+	public String updateEmail(Long userId, EmailChangeDTO emailChangeDTO) {
+		String result = verifyPassword(userId, emailChangeDTO.password());
+		if (result != null) {
+			return result;
+		}
 		userRepository.updateEmail(userId, emailChangeDTO.email());
+		return null;
 	}
 
 	@Override
-	public void updatePassword(Long userId, PasswordChangeDTO passwordChangeDTO) {
-		verifyPassword(userId, passwordChangeDTO.currentPassword());
+	public String updatePassword(Long userId, PasswordChangeDTO passwordChangeDTO) {
+		String result = verifyPassword(userId, passwordChangeDTO.currentPassword());
+		if (result != null) {
+			return result;
+		}
 		String encodedPassword = bCryptEncoder.encode(passwordChangeDTO.newPassword());
 		userRepository.updatePassword(userId, encodedPassword);
+		return null;
 	}
 
 	@Override
-	public void delete(Long userId, PasswordDTO passwordDTO) {
-		verifyPassword(userId, passwordDTO.password());
+	public String delete(Long userId, PasswordDTO passwordDTO) {
+		String result = verifyPassword(userId, passwordDTO.password());
+		if (result != null) {
+			return result;
+		}
 		// remove user data from orders
 		orderService.removeUserData(userId); // TODO - make a test for this functionality
 		// delete account
 		userRepository.delete(userId);
+		return null;
 	}
 
 	@Override
@@ -115,9 +117,10 @@ public class UserServiceImpl implements UserService {
 
 	// util method
 
-	private void verifyPassword(Long userId, String password) {
+	private String verifyPassword(Long userId, String password) {
 		if (!bCryptEncoder.matches(password, loadPassword(userId))) {
-			throw new InvalidPasswordException("La contraseña proporcionada no coincide con la contraseña almacenada");
+			return "La contraseña proporcionada no coincide con la contraseña almacenada";
 		}
+		return null;
 	}
 }

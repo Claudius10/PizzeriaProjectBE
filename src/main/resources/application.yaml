@@ -37,5 +37,5 @@ logging:
     org.hibernate.sql: debug
     org.hibernate.orm.jdbc.bind: trace
 
-#server:
-#  port: ${PORT}
+server:
+  port: ${PORT}

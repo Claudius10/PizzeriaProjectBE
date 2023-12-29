@@ -1,19 +1,19 @@
 package PizzaApp.api.validation.account;
 
+import PizzaApp.api.configs.security.utils.JWTUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 @Component
 public class UserRequestValidatorImpl implements UserRequestValidator {
 
-	private final JwtDecoder jwtDecoder;
+	private final JWTUtils nimbusJWT;
 
-	public UserRequestValidatorImpl(JwtDecoder jwtDecoder) {
-		this.jwtDecoder = jwtDecoder;
+	public UserRequestValidatorImpl(JWTUtils nimbusJWT) {
+		this.nimbusJWT = nimbusJWT;
 	}
 
 	// TODO: refactor this method's functionality using aop
@@ -22,7 +22,7 @@ public class UserRequestValidatorImpl implements UserRequestValidator {
 	public void validate(Long userId, HttpServletRequest request) {
 		Cookie cookie = WebUtils.getCookie(request, "fight");
 
-		if (cookie == null || !userId.equals(jwtDecoder.decode(cookie.getValue()).getClaim("id"))) {
+		if (cookie == null || !userId.equals(nimbusJWT.jwtDecoder().decode(cookie.getValue()).getClaim("id"))) {
 			throw new AccessDeniedException("Access denied");
 		}
 	}

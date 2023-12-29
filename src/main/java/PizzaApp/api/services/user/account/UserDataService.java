@@ -7,11 +7,11 @@ public interface UserDataService {
 
 	void createData(UserData userData);
 
-	void addTel(Long userId, Integer telephone);
+	String addTel(Long userId, Integer telephone);
 
 	void removeTel(Long userId, Long telId);
 
-	void addAddress(Long userId, Address address);
+	String addAddress(Long userId, Address address);
 
 	void removeAddress(Long userId, Long addressId);
 

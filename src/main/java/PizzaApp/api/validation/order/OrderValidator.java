@@ -8,21 +8,21 @@ public interface OrderValidator {
 
 	OrderValidatorImpl setCurrentTime();
 
-	void validate(Order order);
+	String validate(Order order);
 
-	void isChangeRequestedValid(Order order);
+	String isChangeRequestedValid(Order order);
 
-	void isCartValid(Order order);
+	String isCartValid(Order order);
 
 	void calculatePaymentChange(Order order);
 
-	void isRequestWithinWorkingHours();
+	String isRequestWithinWorkingHours();
 
-	void validateUpdate(Order order);
+	String validateUpdate(Order order);
 
 	void isCartUpdateTimeLimitValid(Order order);
 
-	void isOrderDataUpdateTimeLimitValid();
+	String isOrderDataUpdateTimeLimitValid();
 
-	void isOrderDeleteTimeLimitValid(LocalDateTime now);
+	String isOrderDeleteTimeLimitValid(LocalDateTime now);
 }

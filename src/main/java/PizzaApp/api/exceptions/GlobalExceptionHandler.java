@@ -4,11 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
-import PizzaApp.api.exceptions.exceptions.order.*;
-import PizzaApp.api.exceptions.exceptions.user.InvalidPasswordException;
-import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
-import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
-import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -43,24 +38,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.build());
 	}
 
-	@ExceptionHandler({
-			EmptyCartException.class,
-			CartSizeLimitException.class,
-			OrderDataUpdateTimeLimitException.class,
-			OrderDeleteTimeLimitException.class,
-			StoreNotOpenException.class,
-			InvalidChangeRequestedException.class,})
-	protected ResponseEntity<ApiErrorDTO> handleCreateOrUpdateOrderExceptions(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(ex.getMessage())
-						.build());
-	}
-
 	@ExceptionHandler({ConstraintViolationException.class})
 	protected ResponseEntity<ApiErrorDTO> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
 		return ResponseEntity
@@ -73,36 +50,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.build());
 	}
 
-	@ExceptionHandler({MaxTelListSizeException.class, MaxAddressListSizeException.class})
-	protected ResponseEntity<ApiErrorDTO> handleUserDataException(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(ex.getMessage())
-						.build());
-	}
-
-	@ExceptionHandler(NonUniqueEmailException.class)
-	protected ResponseEntity<ApiErrorDTO> handleNonUniqueUsernameException(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(ex.getMessage())
-						.build());
-	}
-
-	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class, InvalidPasswordException.class})
+	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
 	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
 
 		String errorMsg;
 		if (ex instanceof BadCredentialsException) {
-			errorMsg = "Alguno de los datos introducidos son incorrectos, revíselos";
+			errorMsg = "Email o contraseña incorrecta";
 		} else {
 			errorMsg = ex.getMessage();
 		}
@@ -114,19 +67,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 						.withPath(request.getServletPath())
 						.withErrorMsg(errorMsg)
-						.build());
-
-	}
-
-	@ExceptionHandler({ExpiredTokenException.class})
-	protected ResponseEntity<ApiErrorDTO> handleTokenExceptions(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity
-				.status(HttpStatus.UNAUTHORIZED)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
-						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(ex.getMessage())
 						.build());
 
 	}

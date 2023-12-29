@@ -1,14 +1,10 @@
 package PizzaApp.api.configs.security;
 
-import PizzaApp.api.exceptions.security.RESTAccessDeniedHandler;
-import PizzaApp.api.exceptions.security.RESTAuthenticationEntryPoint;
-import PizzaApp.api.utility.jwt.keys.RSAKeyPair;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
+import PizzaApp.api.configs.security.oauth2.OAuth2RESTAccessDeniedHandler;
+import PizzaApp.api.configs.security.oauth2.OAuth2RESTAuthEntryPoint;
+import PizzaApp.api.configs.security.login.InvalidAuthHandler;
+import PizzaApp.api.configs.security.login.ValidAuthHandler;
+import PizzaApp.api.configs.security.utils.JWTUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,13 +16,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.*;
-import org.springframework.security.web.header.writers.*;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -42,40 +36,37 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
 
-	private final RSAKeyPair keys;
-	// return APIErrorDTOs based of AuthenticationExceptions
-	private final RESTAuthenticationEntryPoint restAuthenticationEntryPoint;
-	// return APIErrorDTOs based of AccessDeniedExceptions
-	private final RESTAccessDeniedHandler restAccessDeniedHandler;
+	private final JWTUtils nimbusJWT;
+
+	private final ValidAuthHandler validAuthHandler;
+
+	private final InvalidAuthHandler invalidAuthHandler;
+
 	private final CookieBearerTokenResolver cookieBearerTokenResolver;
 
-	public SecurityConfig(RSAKeyPair keys,
-						  RESTAuthenticationEntryPoint restAuthenticationEntryPoint,
-						  RESTAccessDeniedHandler restAccessDeniedHandler,
-						  CookieBearerTokenResolver cookieBearerTokenResolver) {
-		this.keys = keys;
-		this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
-		this.restAccessDeniedHandler = restAccessDeniedHandler;
+	private final OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint;
+
+	private final OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler;
+
+	public SecurityConfig
+			(JWTUtils nimbusJWT,
+			 ValidAuthHandler validAuthHandler,
+			 InvalidAuthHandler invalidAuthHandler,
+			 CookieBearerTokenResolver cookieBearerTokenResolver,
+			 OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint,
+			 OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler) {
+		this.nimbusJWT = nimbusJWT;
+		this.validAuthHandler = validAuthHandler;
+		this.invalidAuthHandler = invalidAuthHandler;
 		this.cookieBearerTokenResolver = cookieBearerTokenResolver;
+		this.oAuth2RESTAuthEntryPoint = oAuth2RESTAuthEntryPoint;
+		this.oAuth2RESTAccessDeniedHandler = oAuth2RESTAccessDeniedHandler;
 	}
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.headers(headers -> {
-			headers.defaultsDisabled();
-			headers.addHeaderWriter(new CacheControlHeadersWriter());
-			headers.addHeaderWriter(new XContentTypeOptionsHeaderWriter());
-			headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN));
-			headers.addHeaderWriter(new ReferrerPolicyHeaderWriter(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
-			headers.addHeaderWriter(new HstsHeaderWriter(31536000, true));
-			headers.addHeaderWriter(new FeaturePolicyHeaderWriter("geolocation=(self)"));
-			headers.xssProtection(xXssConfig -> xXssConfig.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK));
-		});
-
-		// cors config
+		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.cors(withDefaults());
-
-		// CSRF config
 		http.csrf(csrf -> {
 
 			// persist CSRF token in a cookie
@@ -96,36 +87,78 @@ public class SecurityConfig {
 			});
 		});
 
-		// JWT support config
+		// post authentication JWT resource protection
 		http.oauth2ResourceServer(oauth2ResourceServer -> {
 			oauth2ResourceServer.jwt(jwt -> {
-				jwt.decoder(jwtDecoder());
+				jwt.decoder(nimbusJWT.jwtDecoder());
 				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
 			});
-			oauth2ResourceServer.authenticationEntryPoint(restAuthenticationEntryPoint);
-			oauth2ResourceServer.accessDeniedHandler(restAccessDeniedHandler);
+			// customizes how jwt authentication failures are handled
+			oauth2ResourceServer.authenticationEntryPoint(oAuth2RESTAuthEntryPoint);
+			// customizes how jwt access denied errors are handled
+			oauth2ResourceServer.accessDeniedHandler(oAuth2RESTAccessDeniedHandler);
 			// load JWT from cookie instead of Authorization header
 			oauth2ResourceServer.bearerTokenResolver(cookieBearerTokenResolver);
 		});
 
-		// endpoints config
 		http.authorizeHttpRequests(auth -> {
 			auth.requestMatchers("/api/resource/**").permitAll();
 			auth.requestMatchers("/api/anon/**").permitAll();
-			auth.requestMatchers("/api/auth/**").permitAll();
+			auth.requestMatchers("/api/token/**").permitAll();
 			auth.requestMatchers("/api/user/**").hasAnyRole("USER");
 			auth.requestMatchers("/api/tests/**").hasRole("USER");
 			auth.anyRequest().authenticated();
 		});
 
-		http.sessionManagement(session ->
-				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.formLogin(formLogin -> {
+			formLogin.loginPage("/api/auth/login");
+			formLogin.successHandler(validAuthHandler);
+			formLogin.failureHandler(invalidAuthHandler);
+		});
+
+		http.logout(logout -> {
+			logout.logoutUrl("/api/auth/logout");
+			logout.deleteCookies("fight", "me", "id", "pseudo_fight", "pseudo_me");
+			// return 200 instead of redirecting on successful logout
+			logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+		});
 
 		return http.build();
 	}
 
+	/*
+	Set Access-Control-Allow-Headers when allowing headers to be passed from the client to the server (e.g. If-Match).
+	Set Access-Control-Expose-Headers when allowing headers to be passed back from the server to the client (e.g. ETag).
+	*/
+
 	@Bean
-	RequestMatcher csrfProtectionMatcher() {
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(
+				Arrays.asList("http://192.168.0.10:3000", "https://pizzeriaproject-production.up.railway.app"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
+		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(6);
+	}
+
+	@Bean
+	public AuthenticationManager authManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(userDetailsService);
+		authenticationProvider.setPasswordEncoder(passwordEncoder);
+		return new ProviderManager(authenticationProvider);
+	}
+
+	private RequestMatcher csrfProtectionMatcher() {
 		// custom CsrfFilter protection matcher implementation
 		AntPathRequestMatcher[] noCsrfTokenRoutes = {
 				new AntPathRequestMatcher("/api/resource/**"),
@@ -145,67 +178,18 @@ public class SecurityConfig {
 		};
 	}
 
-	/*
-	Set Access-Control-Allow-Headers when allowing headers to be passed from the client to the server (e.g. If-Match).
-	Set Access-Control-Expose-Headers when allowing headers to be passed back from the server to the client (e.g. ETag).
-	*/
-
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.0.10:3000", "https://pizzeriaproject-production.up.railway.app"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
-		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
-		configuration.setAllowCredentials(true);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-
-	@Bean
-	CookieCsrfTokenRepository csrfTokenRepository() {
+	private CookieCsrfTokenRepository csrfTokenRepository() {
 		CookieCsrfTokenRepository result = new CookieCsrfTokenRepository();
 		result.setCookieCustomizer((cookie) -> {
 			cookie.httpOnly(false);
-			cookie.secure(true); // NOTE - on for prod fe
-			cookie.domain(".up.railway.app"); // NOTE - on for prod fe
+			//cookie.secure(true); // NOTE - on for prod fe
+			//cookie.domain(".up.railway.app"); // NOTE - on for prod fe
 		});
 		return result;
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	public AuthenticationManager authManager(UserDetailsService userDetailsService) {
-		DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
-		daoProvider.setUserDetailsService(userDetailsService);
-		daoProvider.setPasswordEncoder(passwordEncoder());
-		return new ProviderManager(daoProvider);
-	}
-
-	@Bean
-	public JwtEncoder jwtEncoder() {
-		JWK jwk = new RSAKey.Builder(keys.getPublicKey()).privateKey(keys.getPrivateKey()).build();
-		JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-		return new NimbusJwtEncoder(jwks);
-	}
-
-	@Bean
-	public JwtDecoder jwtDecoder() {
-		NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
-		decoder.setJwtValidator(JwtValidators
-				.createDefaultWithIssuer("https://pizzeriaprojectbe-production.up.railway.app"));
-		return decoder;
-	}
-
 	// change the auto added prefix to roles from SCOPE_ to ROLE_
-	@Bean
-	public JwtAuthenticationConverter jwtAuthenticationConverter() {
+	private JwtAuthenticationConverter jwtAuthenticationConverter() {
 		JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 		jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
 		jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");

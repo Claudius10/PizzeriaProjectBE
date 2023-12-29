@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface OrderRepository {
 
-	Long createOrder(Order order);
+	String createOrder(Order order);
 
 	OrderDTOPojo findOrderDTO(Long orderId);
 
@@ -18,7 +18,7 @@ public interface OrderRepository {
 
 	List<OrderSummary> findOrderSummaryList(Long userId, int pageSize, int pageNumber);
 
-	Long updateOrder(Order order);
+	String updateOrder(Order order);
 
 	void deleteById(Long orderId);
 

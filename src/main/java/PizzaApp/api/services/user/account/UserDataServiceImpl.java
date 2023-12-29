@@ -3,8 +3,6 @@ package PizzaApp.api.services.user.account;
 import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.user.Telephone;
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.exceptions.exceptions.user.MaxAddressListSizeException;
-import PizzaApp.api.exceptions.exceptions.user.MaxTelListSizeException;
 import PizzaApp.api.repos.user.account.UserDataRepository;
 import PizzaApp.api.services.user.address.AddressService;
 import PizzaApp.api.services.user.telephone.TelephoneService;
@@ -48,13 +46,14 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public void addTel(Long userId, Integer telephone) {
+	public String addTel(Long userId, Integer telephone) {
 		if (telephoneService.findUserTelListSize(userId) == 3) {
-			throw new MaxTelListSizeException("Solo se permiten 3 números de teléfono almacenados");
+			return "Solo se permiten 3 números de teléfono almacenados";
 		}
 
 		UserData userData = findReference(userId);
 		userData.addTel(new Telephone(telephone));
+		return null;
 	}
 
 	@Override
@@ -69,9 +68,9 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
-	public void addAddress(Long userId, Address address) {
+	public String addAddress(Long userId, Address address) {
 		if (addressService.findUserAddressListSize(userId) == 3) {
-			throw new MaxAddressListSizeException("Solo se permiten 3 domicilios almacenados");
+			return "Solo se permiten 3 domicilios almacenados";
 		}
 
 		UserData userData = findReference(userId);
@@ -82,6 +81,7 @@ public class UserDataServiceImpl implements UserDataService {
 		} else {
 			userData.addAddress(address);
 		}
+		return null;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,8 +29,6 @@ import PizzaApp.api.entity.user.Address;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
-import PizzaApp.api.exceptions.exceptions.order.EmptyCartException;
-import PizzaApp.api.exceptions.exceptions.order.InvalidChangeRequestedException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -357,8 +356,7 @@ public class NewOrderTests {
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(InvalidChangeRequestedException.class)));
+				.andExpect(status().isBadRequest());
 
 		logger.info("New order test: successfully NOT created order with invalid change request ");
 	}
@@ -389,8 +387,7 @@ public class NewOrderTests {
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(order)))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(EmptyCartException.class)));
+				.andExpect(status().isBadRequest());
 
 		logger.info("New order test: successfully NOT created order with empty cart");
 	}

@@ -28,13 +28,6 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	public Optional<User> findByEmail(String email) {
-		return em.createQuery("select user from User user where user.email = :email", User.class)
-				.setParameter("email", email)
-				.getResultStream().findFirst();
-	}
-
-	@Override
 	public UserDTO findDTOById(Long userId) {
 		return em.createQuery("""
 						select new UserDTO(

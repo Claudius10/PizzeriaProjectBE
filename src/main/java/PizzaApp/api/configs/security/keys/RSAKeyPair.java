@@ -1,4 +1,4 @@
-package PizzaApp.api.utility.jwt.keys;
+package PizzaApp.api.configs.security.keys;
 
 import org.springframework.stereotype.Component;
 

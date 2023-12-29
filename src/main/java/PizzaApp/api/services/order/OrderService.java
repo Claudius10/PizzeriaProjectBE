@@ -3,8 +3,8 @@ package PizzaApp.api.services.order;
 import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
-import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
-import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
+import PizzaApp.api.entity.dto.order.UserOrderDTO;
+import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.cart.Cart;
 
@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 
 public interface OrderService {
 
-	Long createAnonOrder(Order order);
+	String createAnonOrder(Order order);
 
-	Long createUserOrder(NewUserOrderDTO newUserOrderDTO);
+	String createUserOrder(UserOrderDTO userOrderDTO);
 
-	OrderDTOPojo findUserOrderDTO(Long userId);
+	OrderDTOPojo findUserOrderDTO(Long orderId);
 
-	Long updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO);
+	String updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO);
 
 	OrderPaginationResultDTO findUserOrdersSummary(Long userId, Integer pageSize, Integer pageNumber);
 
-	void deleteUserOrderById(Long orderId, Long userId);
+	String deleteUserOrderById(Long orderId);
 
 	// info - for internal use only
 
@@ -36,5 +36,5 @@ public interface OrderService {
 
 	Cart findOrderCart(Long orderId);
 
-	Long createUserOrderTest(NewUserOrderDTO newUserOrderDTO, LocalDateTime createdOn);
+	String createUserOrderTest(UserOrderDTO userOrderDTO, LocalDateTime createdOn);
 }

@@ -1,18 +1,14 @@
-package PizzaApp.api.utility.auth;
+package PizzaApp.api.configs.security.utils;
 
-import PizzaApp.api.entity.dto.misc.AuthDTO;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.stereotype.Component;
 
-@Component
-public final class CookieUtils {
+public final class SecurityCookieUtils {
 
-	private CookieUtils() {
+	private SecurityCookieUtils() {
 	}
 
 	public static ResponseCookie bakeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
@@ -22,29 +18,8 @@ public final class CookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
-				.domain(".up.railway.app") // NOTE - on for prod fe
+				//.domain(".up.railway.app") // NOTE - on for prod fe
 				.build();
-	}
-
-	public static ResponseCookie csrfCookie(String name, String value, boolean httpOnly, boolean secure) {
-		return ResponseCookie.from(name, value)
-				.path("/")
-				.httpOnly(httpOnly)
-				.secure(secure)
-				.sameSite("Lax")
-				.domain(".up.railway.app") // NOTE - on for prod fe
-				.build();
-	}
-
-	public static void loadCsrf(HttpServletResponse response, CsrfToken csrfToken) {
-		response.addHeader(
-				HttpHeaders.SET_COOKIE,
-				csrfCookie(
-						"XSRF-TOKEN",
-						csrfToken.getToken(),
-						false,
-						true) // NOTE - true for prod
-						.toString());
 	}
 
 	public static Cookie makeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
@@ -58,40 +33,41 @@ public final class CookieUtils {
 
 	// 24 * 60 * 60 24h
 	// 168 * 60 * 60 7 days
-	public static void newCookies(HttpServletResponse response, AuthDTO auth) {
+	// TODO - set refresh token cookie expiration to original to not refresh it
+	public static void createAuthCookies(HttpServletResponse response, String accessToken, String refreshToken, Long userId) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("fight", auth.accessToken(),
+				bakeCookie("fight", accessToken,
 						24 * 60 * 60,
 						true,
-						true) // NOTE - true for prod
+						false) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_fight", "exp_d",
 						24 * 60 * 60,
 						false,
-						true) // NOTE - true for prod
+						false) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("me", auth.refreshToken(),
+				bakeCookie("me", refreshToken,
 						168 * 60 * 60,
 						true,
-						true) // NOTE - true for prod
+						false) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_me", "exp_d",
 						168 * 60 * 60,
 						false,
-						true) // NOTE - true for prod
+						false) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("id", String.valueOf(auth.userId()),
+				bakeCookie("id", String.valueOf(userId),
 						168 * 60 * 60,
 						false,
-						true) // NOTE - true for prod
+						false) // NOTE - true for prod
 						.toString());
 	}
 
@@ -99,8 +75,8 @@ public final class CookieUtils {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null)
 			for (Cookie cookie : cookies) {
-				cookie.setSecure(true); // NOTE - on for prod fe
-				cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
+				//cookie.setSecure(true); // NOTE - on for prod fe
+				//cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);

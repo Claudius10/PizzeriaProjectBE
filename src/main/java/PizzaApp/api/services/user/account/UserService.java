@@ -10,19 +10,17 @@ public interface UserService {
 
 	void create(RegisterDTO registerDTO);
 
-	Optional<User> findByEmail(String email);
-
 	UserDTO findDTOById(Long userId);
 
 	User findReference(Long userId);
 
-	void updateName(Long userId, NameChangeDTO nameChangeDTO);
+	String updateName(Long userId, NameChangeDTO nameChangeDTO);
 
-	void updateEmail(Long userId, EmailChangeDTO emailChangeDTO);
+	String updateEmail(Long userId, EmailChangeDTO emailChangeDTO);
 
-	void updatePassword(Long userId, PasswordChangeDTO passwordChangeDTO);
+	String updatePassword(Long userId, PasswordChangeDTO passwordChangeDTO);
 
-	void delete(Long userId, PasswordDTO passwordDTO);
+	String delete(Long userId, PasswordDTO passwordDTO);
 
 	String loadPassword(Long userId);
 }

@@ -2,8 +2,7 @@ package PizzaApp.api.controllers.locked.user;
 
 import PizzaApp.api.entity.dto.user.*;
 import PizzaApp.api.services.user.account.UserService;
-import PizzaApp.api.utility.auth.CookieUtils;
-import PizzaApp.api.validation.account.UserRequestValidator;
+import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -19,58 +18,48 @@ public class UserAccountController {
 
 	private final UserService userService;
 
-	private final UserRequestValidator userRequestValidator;
-
-	public UserAccountController
-			(UserService userService,
-			 UserRequestValidator userRequestValidator) {
+	public UserAccountController(UserService userService) {
 		this.userService = userService;
-		this.userRequestValidator = userRequestValidator;
 	}
 
 	@GetMapping("/{userId}")
-	public ResponseEntity<UserDTO> findUserById
-			(@PathVariable Long userId,
-			 HttpServletRequest request) {
-
-		userRequestValidator.validate(userId, request);
+	public ResponseEntity<UserDTO> findUserById(@PathVariable Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.findDTOById(userId));
 	}
 
-	@PutMapping("/{userId}/name")
-	public ResponseEntity<?> updateName
-			(@PathVariable Long userId,
-			 @Valid @RequestBody NameChangeDTO nameChangeDTO,
-			 HttpServletRequest request) {
-
-		userRequestValidator.validate(userId, request);
-		userService.updateName(userId, nameChangeDTO);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	@PutMapping("/{userId}/update/name")
+	public ResponseEntity<?> updateName(@PathVariable Long userId, @Valid @RequestBody NameChangeDTO nameChangeDTO) {
+		String isValid = userService.updateName(userId, nameChangeDTO);
+		if (isValid != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		}
 	}
 
-	@PutMapping("/{userId}/email")
-	public ResponseEntity<?> updateEmail
-			(@PathVariable Long userId,
-			 @Valid @RequestBody EmailChangeDTO emailChangeDTO,
-			 HttpServletRequest request) {
-
-		userRequestValidator.validate(userId, request);
-		userService.updateEmail(userId, emailChangeDTO);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	@PutMapping("/{userId}/update/email")
+	public ResponseEntity<?> updateEmail(@PathVariable Long userId, @Valid @RequestBody EmailChangeDTO emailChangeDTO) {
+		String isValid = userService.updateEmail(userId, emailChangeDTO);
+		if (isValid != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		}
 	}
 
-	@PutMapping("/{userId}/password")
+	@PutMapping("/{userId}/update/password")
 	public ResponseEntity<?> updatePassword
 			(@PathVariable Long userId,
 			 @Valid @RequestBody PasswordChangeDTO passwordChangeDTO,
 			 HttpServletRequest request,
 			 HttpServletResponse response) {
-
-		userRequestValidator.validate(userId, request);
-		userService.updatePassword(userId, passwordChangeDTO);
-
-		CookieUtils.eatAllCookies(request, response);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		String isValid = userService.updatePassword(userId, passwordChangeDTO);
+		if (isValid != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} else {
+			SecurityCookieUtils.eatAllCookies(request, response);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		}
 	}
 
 	@DeleteMapping("/{userId}")
@@ -79,11 +68,12 @@ public class UserAccountController {
 			 @Valid @RequestBody PasswordDTO passwordDTO,
 			 HttpServletRequest request,
 			 HttpServletResponse response) {
-
-		userRequestValidator.validate(userId, request);
-		userService.delete(userId, passwordDTO);
-
-		CookieUtils.eatAllCookies(request, response);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		String isValid = userService.delete(userId, passwordDTO);
+		if (isValid != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} else {
+			SecurityCookieUtils.eatAllCookies(request, response);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		}
 	}
 }

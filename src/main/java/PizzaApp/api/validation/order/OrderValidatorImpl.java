@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import PizzaApp.api.entity.order.OrderItem;
-import PizzaApp.api.exceptions.exceptions.order.*;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
 
@@ -27,19 +26,32 @@ public class OrderValidatorImpl implements OrderValidator {
 	}
 
 	@Override
-	public void validateUpdate(Order order) {
+	public String validateUpdate(Order order) {
 		validate(order);
 		setCreatedOn(order.getCreatedOn());
 		isCartUpdateTimeLimitValid(order); // off for dev (unless testing)
-		isOrderDataUpdateTimeLimitValid(); // off for dev (unless testing)
+		return isOrderDataUpdateTimeLimitValid();
 	}
 
 	@Override
-	public void validate(Order order) {
-		//isRequestWithinWorkingHours(); // off for dev
-		isCartValid(order);
-		isChangeRequestedValid(order);
+	public String validate(Order order) {
+/*		String isStoreOpen = isRequestWithinWorkingHours(); // off for dev
+		if (isStoreOpen != null) {
+			return isStoreOpen;
+		}*/
+
+		String isCartValid = isCartValid(order);
+		if (isCartValid != null) {
+			return isCartValid;
+		}
+
+		String isChangeRequestValid = isChangeRequestedValid(order);
+		if (isChangeRequestValid != null) {
+			return isChangeRequestValid;
+		}
+
 		calculatePaymentChange(order);
+		return null;
 	}
 
 
@@ -52,29 +64,25 @@ public class OrderValidatorImpl implements OrderValidator {
 	}
 
 	@Override
-	public void isOrderDataUpdateTimeLimitValid() {
+	public String isOrderDataUpdateTimeLimitValid() {
 		LocalDateTime orderDataUpdateTimeLimit = createdOn.plusMinutes(15);
 		if (now.isAfter(orderDataUpdateTimeLimit)) {
-			logger.info(String.format(
-					"Order data update is not allowed (createdOn: %s | now: %s) ", createdOn, now));
-			throw new OrderDataUpdateTimeLimitException(
-					"El tiempo límite para actualizar el pedido (15 minutos) ha finalizado");
+			return "El tiempo límite para actualizar el pedido (15 minutos) ha finalizado";
 		}
+		return null;
 	}
 
 	@Override
-	public void isOrderDeleteTimeLimitValid(LocalDateTime createdOn) {
+	public String isOrderDeleteTimeLimitValid(LocalDateTime createdOn) {
 		LocalDateTime orderDeleteTimeLimit = createdOn.plusMinutes(20);
 		if (now.isAfter(orderDeleteTimeLimit)) {
-			logger.info(
-					String.format("Order delete is not allowed (createdOn: %s | now: %s) ", createdOn, now));
-			throw new OrderDeleteTimeLimitException(
-					"El tiempo límite para anular el pedido (20 minutos) ha finalizado");
+			return "El tiempo límite para anular el pedido (20 minutos) ha finalizado";
 		}
+		return null;
 	}
 
 	@Override
-	public void isRequestWithinWorkingHours() {
+	public String isRequestWithinWorkingHours() {
 		// getting now plus 2 hours since host JVM is UTC +00:00
 		LocalDateTime localNow = LocalDateTime.now(ZoneOffset.UTC).plusHours(2);
 		Instant nowInstant = localNow.toInstant(ZoneOffset.UTC);
@@ -86,33 +94,35 @@ public class OrderValidatorImpl implements OrderValidator {
 		int minutes = cal.get(Calendar.MINUTE);
 
 		if (hour < 12 || hour == 23 && minutes > 40) {
-			throw new StoreNotOpenException("El horario es de las 12:00h hasta las 23:40 horas.");
+			return "La tienda está cerrada. El horario es de las 12:00h hasta las 23:40 horas.";
 		}
+		return null;
 	}
 
 	@Override
-	public void isCartValid(Order order) {
+	public String isCartValid(Order order) {
 		if (order.getCart() == null || order.getCart().getOrderItems().isEmpty() || order.getCart().getTotalQuantity() <= 0) {
-			throw new EmptyCartException("La cesta no puede ser vacía");
+			return "La cesta no puede ser vacía";
 		}
 
 		if (order.getCart().getOrderItems().size() > 20) {
-			throw new CartSizeLimitException("Se ha superado el límite de artículos por pedido (20 art.). Contacte con nosotros" +
-					" si desea realizar el pedido");
+			return "Se ha superado el límite de artículos por pedido (20 art.). Contacte con nosotros" +
+					" si desea realizar el pedido";
 		}
 
 		for (OrderItem item : order.getCart().getOrderItems()) {
 			if (item.getQuantity() > 20) {
-				throw new CartSizeLimitException("Se ha superado la cantidad máxima por artículo (20 uds.). Contacte con " +
-						"nosotros si desea realizar el pedido");
+				return "Se ha superado la cantidad máxima por artículo (20 uds.). Contacte con " +
+						"nosotros si desea realizar el pedido";
 			}
 		}
+		return null;
 	}
 
 	// value of requested change has to be greater than
 	// totalCost or totalOfferCost
 	@Override
-	public void isChangeRequestedValid(Order order) {
+	public String isChangeRequestedValid(Order order) {
 		if (order.getOrderDetails().getChangeRequested() != null) {
 
 			if ((order.getCart().getTotalCostOffers() > 0 &&
@@ -123,11 +133,11 @@ public class OrderValidatorImpl implements OrderValidator {
 
 							order.getOrderDetails().getChangeRequested() < order.getCart().getTotalCost())) {
 
-				throw new InvalidChangeRequestedException(
-						"El valor del cambio de efectivo solicitado no puede ser menor o igual "
-								+ "que el total/total con ofertas.");
+				return "El valor del cambio de efectivo solicitado no puede ser menor o igual "
+						+ "que el total/total con ofertas.";
 			}
 		}
+		return null;
 	}
 
 	// calculate totalCost or totalCostOffers - changeRequested

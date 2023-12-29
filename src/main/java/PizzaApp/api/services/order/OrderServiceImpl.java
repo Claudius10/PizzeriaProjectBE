@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import PizzaApp.api.entity.dto.order.*;
-import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
-import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
+import PizzaApp.api.entity.dto.order.UserOrderDTO;
+import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.cart.Cart;
 import PizzaApp.api.entity.user.Address;
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long createAnonOrder(Order order) {
+	public String createAnonOrder(Order order) {
 		Optional<Address> dbAddress = addressService.find(order.getAddress());
 		dbAddress.ifPresent(order::setAddress);
 		order.setUserData(null);
@@ -54,37 +54,43 @@ public class OrderServiceImpl implements OrderService {
 		// set formatted created on in UTC +2 since FE is +02:00
 		order.setFormattedCreatedOn(order.getCreatedOn().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
 
-		validator.validate(order);
+		String isOrderValid = validator.validate(order);
+		if (isOrderValid != null) {
+			return isOrderValid;
+		}
 
 		return orderRepository.createOrder(order);
 	}
 
 	@Override
-	public Long createUserOrder(NewUserOrderDTO newUserOrderDTO) {
-		Address dbAddress = addressService.findReference(newUserOrderDTO.userOrderData().addressId());
-		UserData dbUserData = userDataService.findReference(newUserOrderDTO.userOrderData().userId());
+	public String createUserOrder(UserOrderDTO userOrderDTO) {
+		Address dbAddress = addressService.findReference(userOrderDTO.userOrderData().addressId());
+		UserData dbUserData = userDataService.findReference(userOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
 				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
-				.withCustomerName(newUserOrderDTO.userOrderData().customerName())
-				.withContactTel(newUserOrderDTO.userOrderData().tel())
-				.withEmail(newUserOrderDTO.userOrderData().email())
-				.withOrderDetails(newUserOrderDTO.orderDetails())
-				.withCart(newUserOrderDTO.cart())
+				.withCustomerName(userOrderDTO.userOrderData().customerName())
+				.withContactTel(userOrderDTO.userOrderData().tel())
+				.withEmail(userOrderDTO.userOrderData().email())
+				.withOrderDetails(userOrderDTO.orderDetails())
+				.withCart(userOrderDTO.cart())
 				.withAddress(dbAddress)
 				.build();
 
 		dbUserData.addOrder(order); // also does order.setUserData(this);
 
 		// validate order
-		validator.validate(order);
+		String isOrderValid = validator.validate(order);
+		if (isOrderValid != null) {
+			return isOrderValid;
+		}
 
 		return orderRepository.createOrder(order);
 	}
 
 	@Override
-	public Long updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO) {
+	public String updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO) {
 		Address dbAddress = addressService.findReference(updateUserOrderDTO.userOrderData().addressId());
 		UserData dbUserData = userDataService.findReference(updateUserOrderDTO.userOrderData().userId());
 
@@ -106,7 +112,10 @@ public class OrderServiceImpl implements OrderService {
 		order.setCart(updateUserOrderDTO.cart());
 
 		// validate order
-		validator.setCurrentTime().validateUpdate(order);
+		String isUpdateValid = validator.setCurrentTime().validateUpdate(order);
+		if (isUpdateValid != null) {
+			return isUpdateValid;
+		}
 
 		if (order.getCart() == null) {
 			// cart is set to null if cartUpdateTimeLimit passed
@@ -137,19 +146,22 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrderDTOPojo findUserOrderDTO(Long userId) {
-		return orderRepository.findOrderDTO(userId);
+	public OrderDTOPojo findUserOrderDTO(Long orderId) {
+		return orderRepository.findOrderDTO(orderId);
 	}
 
 	@Override
-	public void deleteUserOrderById(Long orderId, Long userId) {
-		// get order createdOn
-		OrderCreatedOnDTO createdOn = findCreatedOnById(orderId);
+	public String deleteUserOrderById(Long orderId) {
+		Order orderToDelete = findById(orderId);
 		// validate whatever delete time limit passed
-		validator.setCurrentTime().isOrderDeleteTimeLimitValid(createdOn.createdOn());
+		String isDeleteValid = validator.setCurrentTime().isOrderDeleteTimeLimitValid(orderToDelete.getCreatedOn());
+		if (isDeleteValid != null) {
+			return isDeleteValid;
+		}
 		// delete the order
-		UserData userData = userDataService.findReference(userId);
+		UserData userData = userDataService.findReference(orderToDelete.getUserData().getId());
 		userData.removeOrder(orderRepository.findReferenceById(orderId));
+		return orderId.toString();
 	}
 
 	// info - for internal use only
@@ -180,25 +192,28 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long createUserOrderTest(NewUserOrderDTO newUserOrderDTO, LocalDateTime createdOn) {
-		Address dbAddress = addressService.findReference(newUserOrderDTO.userOrderData().addressId());
-		UserData dbUserData = userDataService.findReference(newUserOrderDTO.userOrderData().userId());
+	public String createUserOrderTest(UserOrderDTO userOrderDTO, LocalDateTime createdOn) {
+		Address dbAddress = addressService.findReference(userOrderDTO.userOrderData().addressId());
+		UserData dbUserData = userDataService.findReference(userOrderDTO.userOrderData().userId());
 
 		Order order = new Order.Builder()
 				.withCreatedOn(createdOn)
 				.withFormattedCreatedOn(createdOn.plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
-				.withCustomerName(newUserOrderDTO.userOrderData().customerName())
-				.withContactTel(newUserOrderDTO.userOrderData().tel())
-				.withEmail(newUserOrderDTO.userOrderData().email())
-				.withOrderDetails(newUserOrderDTO.orderDetails())
-				.withCart(newUserOrderDTO.cart())
+				.withCustomerName(userOrderDTO.userOrderData().customerName())
+				.withContactTel(userOrderDTO.userOrderData().tel())
+				.withEmail(userOrderDTO.userOrderData().email())
+				.withOrderDetails(userOrderDTO.orderDetails())
+				.withCart(userOrderDTO.cart())
 				.withAddress(dbAddress)
 				.build();
 
 		dbUserData.addOrder(order); // also does order.setUserData(this);
 
 		// validate order
-		validator.validate(order);
+		String isOrderValid = validator.validate(order);
+		if (isOrderValid != null) {
+			return isOrderValid;
+		}
 
 		return orderRepository.createOrder(order);
 	}

@@ -1,4 +1,4 @@
-package PizzaApp.api.utility.auth;
+package PizzaApp.api.configs.security.utils;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
@@ -9,14 +9,12 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Component
-public class JWTUtils {
+public class SecurityTokenUtils {
 
-	private final JwtEncoder jwtEncoder;
-	private final JwtDecoder jwtDecoder;
+	private final JWTUtils jwtUtils;
 
-	public JWTUtils(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
-		this.jwtEncoder = jwtEncoder;
-		this.jwtDecoder = jwtDecoder;
+	public SecurityTokenUtils(JWTUtils jwtUtils) {
+		this.jwtUtils = jwtUtils;
 	}
 
 	// FE domain "https://pizzeriaprojectbe-production.up.railway.app"
@@ -29,14 +27,14 @@ public class JWTUtils {
 				.claim("id", userId)
 				.claim("roles", roles)
 				.build();
-		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+		return jwtUtils.jwtEncoder().encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}
 
 	public Jwt validate(String refreshToken) {
-		return jwtDecoder.decode(refreshToken);
+		return jwtUtils.jwtDecoder().decode(refreshToken);
 	}
 
-	public String parseRoles(Collection<? extends GrantedAuthority> authorities) {
+	public String parseAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		return authorities.stream()
 				.map(GrantedAuthority::getAuthority)
 				.collect(Collectors.joining(" "));

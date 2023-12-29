@@ -22,24 +22,24 @@ public class OrderRepositoryImpl implements OrderRepository {
 	}
 
 	@Override
-	public Long createOrder(Order order) {
+	public String createOrder(Order order) {
 		// sync bi associations
 		order.setOrderDetails(order.getOrderDetails());
 		order.setCart(order.getCart());
 		syncCartItems(order);
 
 		em.persist(order);
-		return order.getId();
+		return order.getId().toString();
 	}
 
 	@Override
-	public Long updateOrder(Order order) {
+	public String updateOrder(Order order) {
 		if (order.getCart().getOrderItems() != null) {
 			syncCartItems(order);
 		}
 
 		Order theOrder = em.merge(order);
-		return theOrder.getId();
+		return theOrder.getId().toString();
 	}
 
 	@Override

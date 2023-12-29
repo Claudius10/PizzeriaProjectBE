@@ -2,6 +2,7 @@ package PizzaApp.api.entity.dto.user;
 
 import PizzaApp.api.exceptions.constraints.FieldMatch;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @FieldMatch.List({
 		@FieldMatch(
@@ -9,8 +10,14 @@ import jakarta.validation.constraints.NotBlank;
 				second = "matchingNewPassword",
 				message = "La contraseña debe coincidir")})
 public record PasswordChangeDTO(
-		@NotBlank(message = "La contraseña actual no puede faltar") String currentPassword,
-		@NotBlank(message = "La nueva contraseña no puede faltar") String newPassword,
+		@NotBlank(message = "La contraseña actual no puede faltar")
+		String currentPassword,
 
-		@NotBlank(message = "La nueva contraseña no puede faltar") String matchingNewPassword) {
+		@Size(min = 8, max = 20, message = "La contraseña tiene que contener entre 8-20 caracteres")
+		@NotBlank(message = "La nueva contraseña no puede faltar")
+		String newPassword,
+
+		@Size(min = 8, max = 20, message = "La contraseña tiene que contener entre 8-20 caracteres")
+		@NotBlank(message = "La nueva contraseña no puede faltar")
+		String matchingNewPassword) {
 }

@@ -2,6 +2,7 @@ package PizzaApp.api.controllers.open.common;
 
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.services.user.account.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,12 +26,22 @@ public class AnonController {
 
 	@PostMapping("/register")
 	public ResponseEntity<?> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO) {
-		userService.create(registerDTO);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		try {
+			userService.create(registerDTO);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		} catch (DataIntegrityViolationException ex) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Una cuenta ya existe con el correo electrónico introducido. Si no recuerda la " +
+					"contraseña, contacte con nosotros");
+		}
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<Long> createAnonOrder(@RequestBody @Valid Order order) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createAnonOrder(order));
+	public ResponseEntity<String> createAnonOrder(@RequestBody @Valid Order order) {
+		String isValid = orderService.createAnonOrder(order);
+		if (isValid != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(isValid);
+		} else {
+			return ResponseEntity.status(HttpStatus.CREATED).build();
+		}
 	}
 }

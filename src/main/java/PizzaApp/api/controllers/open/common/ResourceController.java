@@ -4,10 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import PizzaApp.api.entity.resources.Offer;
 import PizzaApp.api.entity.resources.Product;
 import PizzaApp.api.entity.resources.Store;
@@ -23,9 +20,9 @@ public class ResourceController {
 		this.resourceService = resourceService;
 	}
 
-	@GetMapping("/product/{productType}")
-	public ResponseEntity<List<Product>> findAllByType(@PathVariable String productType) {
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(resourceService.findAllProductsByType(productType));
+	@GetMapping(path = "/product", params = "type")
+	public ResponseEntity<List<Product>> findAllByType(@RequestParam String type) {
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(resourceService.findAllProductsByType(type));
 	}
 
 	@GetMapping("/store")

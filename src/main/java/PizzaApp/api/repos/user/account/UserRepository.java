@@ -9,8 +9,6 @@ public interface UserRepository {
 
 	User create(User user);
 
-	Optional<User> findByEmail(String email);
-
 	UserDTO findDTOById(Long userId);
 
 	User findReference(Long userId);

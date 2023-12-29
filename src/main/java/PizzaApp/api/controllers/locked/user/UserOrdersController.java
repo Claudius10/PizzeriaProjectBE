@@ -2,11 +2,10 @@ package PizzaApp.api.controllers.locked.user;
 
 import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
-import PizzaApp.api.entity.dto.user.NewUserOrderDTO;
-import PizzaApp.api.entity.dto.user.UpdateUserOrderDTO;
+import PizzaApp.api.entity.dto.order.UserOrderDTO;
+import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
 import PizzaApp.api.services.order.OrderService;
-import PizzaApp.api.validation.account.UserRequestValidator;
-import jakarta.servlet.http.HttpServletRequest;
+import PizzaApp.api.utility.string.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,23 +18,26 @@ public class UserOrdersController {
 
 	private final OrderService orderService;
 
-	private final UserRequestValidator userRequestValidator;
-
-	public UserOrdersController
-			(OrderService orderService,
-			 UserRequestValidator userRequestValidator) {
+	public UserOrdersController(OrderService orderService) {
 		this.orderService = orderService;
-		this.userRequestValidator = userRequestValidator;
 	}
 
-	@PostMapping("/{userId}")
-	public ResponseEntity<Long> createUserOrder
-			(@PathVariable Long userId,
-			 @RequestBody NewUserOrderDTO order,
-			 HttpServletRequest request) {
+	@PostMapping()
+	public ResponseEntity<String> createUserOrder(@RequestBody UserOrderDTO order) {
+		String result = orderService.createUserOrder(order);
+		if (StringUtils.isNumber(result)) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+		}
+	}
 
-		userRequestValidator.validate(userId, request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createUserOrder(order));
+	@GetMapping(params = {"pageNumber", "pageSize", "userId"})
+	public ResponseEntity<OrderPaginationResultDTO> findUserOrdersSummary
+			(@RequestParam Long userId,
+			 @RequestParam Integer pageSize,
+			 @RequestParam Integer pageNumber) {
+		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrdersSummary(userId, pageSize, pageNumber));
 	}
 
 	@GetMapping("/{orderId}")
@@ -43,35 +45,23 @@ public class UserOrdersController {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrderDTO(orderId));
 	}
 
-	@GetMapping("/all/{userId}")
-	public ResponseEntity<OrderPaginationResultDTO> findUserOrdersSummary
-			(@PathVariable Long userId,
-			 @RequestParam Integer pageSize,
-			 @RequestParam Integer pageNumber,
-			 HttpServletRequest request) {
-
-		userRequestValidator.validate(userId, request);
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrdersSummary(userId, pageSize, pageNumber));
+	@PutMapping()
+	public ResponseEntity<String> updateUserOrder(@RequestBody UpdateUserOrderDTO order) {
+		String result = orderService.updateUserOrder(order);
+		if (StringUtils.isNumber(result)) {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+		}
 	}
 
-	@PutMapping("/{userId}")
-	public ResponseEntity<Long> updateUserOrder
-			(@RequestBody UpdateUserOrderDTO order,
-			 @PathVariable Long userId,
-			 HttpServletRequest request) {
-
-		userRequestValidator.validate(userId, request);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderService.updateUserOrder(order));
-	}
-
-	@DeleteMapping("/{userId}/{orderId}")
-	public ResponseEntity<Long> deleteUserOrderById(
-			@PathVariable Long orderId,
-			@PathVariable Long userId,
-			HttpServletRequest request) {
-
-		userRequestValidator.validate(userId, request);
-		orderService.deleteUserOrderById(orderId, userId);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).body(orderId);
+	@DeleteMapping("/{orderId}")
+	public ResponseEntity<String> deleteUserOrderById(@PathVariable Long orderId) {
+		String result = orderService.deleteUserOrderById(orderId);
+		if (StringUtils.isNumber(result)) {
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+		}
 	}
 }

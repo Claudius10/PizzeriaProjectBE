@@ -1,9 +1,7 @@
 package PizzaApp.api.security;
 
-import PizzaApp.api.exceptions.exceptions.order.ExpiredTokenException;
-import PizzaApp.api.utility.auth.CookieUtils;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
+import PizzaApp.api.configs.security.utils.JWTUtils;
+import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -12,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,14 +35,14 @@ public class JwtTokenTests {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private JwtEncoder jwtEncoder;
+	private JWTUtils jwtUtils;
 
 	private String validAccessToken, validRefreshToken;
 
 	@BeforeAll
 	public void setup() {
 
-		validAccessToken = jwtEncoder.encode(
+		validAccessToken = jwtUtils.jwtEncoder().encode(
 						JwtEncoderParameters.from(
 								JwtClaimsSet.builder()
 										.issuer("https://pizzeriaprojectbe-production.up.railway.app")
@@ -57,7 +54,7 @@ public class JwtTokenTests {
 										.build()))
 				.getTokenValue();
 
-		validRefreshToken = jwtEncoder.encode(
+		validRefreshToken = jwtUtils.jwtEncoder().encode(
 						JwtEncoderParameters.from(
 								JwtClaimsSet.builder()
 										.issuer("https://pizzeriaprojectbe-production.up.railway.app")
@@ -75,19 +72,19 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: request logout");
 
 		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/logout")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
-						.cookie(CookieUtils.makeCookie("me", validRefreshToken, 60, true, false))
-						.cookie(CookieUtils.makeCookie("id", "1", 30, false, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("me", validRefreshToken, 60, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("id", "1", 30, false, false))
 						.with(csrf()))
 				.andExpect(status().isOk()).andReturn().getResponse();
 
 		assertAll(() -> {
 			assertEquals(0, response.getCookie("fight").getMaxAge());
-			assertEquals("", response.getCookie("fight").getValue());
+			assertNull(response.getCookie("fight").getValue());
 			assertEquals(0, response.getCookie("me").getMaxAge());
-			assertEquals("", response.getCookie("me").getValue());
+			assertNull(response.getCookie("me").getValue());
 			assertEquals(0, response.getCookie("id").getMaxAge());
-			assertEquals("", response.getCookie("id").getValue());
+			assertNull(response.getCookie("id").getValue());
 		});
 
 		logger.info("JWT Token test: successfully erased credentials after logout");
@@ -98,7 +95,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access csrf-protected resource with no csrf token");
 
 		mockMvc.perform(post("/api/tests")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
+						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
 				.andExpect(status().isUnauthorized());
 
 		logger.info("JWT Token test: successfully NOT accessed csrf-protected resource with no csrf token");
@@ -109,7 +106,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access csrf-protected resource with csrf token");
 
 		mockMvc.perform(post("/api/tests")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.with(csrf()))
 				.andExpect(status().isOk());
 
@@ -121,7 +118,7 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access secure resource with valid token and correct role");
 
 		mockMvc.perform(get("/api/tests")
-						.cookie(CookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
+						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
 				.andExpect(status().isOk());
 
 		logger.info("JWT Token test: successfully accessed resource");
@@ -140,8 +137,8 @@ public class JwtTokenTests {
 	public void givenExpiredAccessTokenAndValidRefreshToken_whenRequestingNewTokens_thenReturnNewTokens() throws Exception {
 		logger.info("JWT Token test: request new tokens with expired access token and valid refresh token");
 
-		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/refresh")
-						.cookie(CookieUtils.makeCookie("me", validRefreshToken, 30, true, false))
+		MockHttpServletResponse response = mockMvc.perform(post("/api/token/refresh")
+						.cookie(SecurityCookieUtils.makeCookie("me", validRefreshToken, 30, true, false))
 						.with(csrf()))
 				.andExpect(status().isOk()).andReturn().getResponse();
 
@@ -158,10 +155,7 @@ public class JwtTokenTests {
 	public void givenExpiredAccessTokenAndExpiredRefreshToken_whenRequestingNewTokens_thenThrowError() throws Exception {
 		logger.info("JWT Token test: request new tokens with expired access and refresh tokens");
 
-		mockMvc.perform(post("/api/auth/refresh")
-						.with(csrf()))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(ExpiredTokenException.class)));
+		mockMvc.perform(post("/api/token/refresh").with(csrf())).andExpect(status().isBadRequest());
 
 		logger.info("JWT Token test: successfully NOT received new tokens");
 	}
@@ -171,9 +165,9 @@ public class JwtTokenTests {
 		logger.info("JWT Token test: access secure resource with token that has no issuer");
 
 		mockMvc.perform(get("/api/tests")
-						.cookie(CookieUtils.makeCookie(
+						.cookie(SecurityCookieUtils.makeCookie(
 								"fight",
-								jwtEncoder.encode(JwtEncoderParameters.from
+								jwtUtils.jwtEncoder().encode(JwtEncoderParameters.from
 												(JwtClaimsSet.builder()
 														.subject("test subject")
 														.issuedAt(Instant.now())

@@ -1,7 +1,6 @@
 package PizzaApp.api.security;
 
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
-import PizzaApp.api.exceptions.exceptions.user.NonUniqueEmailException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +17,7 @@ import java.util.logging.Logger;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -46,8 +45,7 @@ public class RegisterTests {
 										"password",
 										"password")))
 						.with(csrf()))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(NonUniqueEmailException.class)));
+				.andExpect(status().isBadRequest());
 
 		logger.info("Register test: successfully NOT registered already exiting email");
 	}

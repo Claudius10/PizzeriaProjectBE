@@ -1,16 +1,10 @@
 package PizzaApp.api.security;
 
-import PizzaApp.api.entity.dto.misc.LoginDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -29,20 +23,13 @@ public class LoginTests {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	@Test
 	public void givenNonExistingCredentials_whenLogin_thenThrowException() throws Exception {
 		logger.info("Authentication test: login with non existing credentials");
 
-		mockMvc.perform(post("/api/auth/login")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(
-								new LoginDTO("void@email.com", "randomPassword")))
+		mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword")
 						.with(csrf()))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(BadCredentialsException.class)));
+				.andExpect(status().isUnauthorized());
 
 		logger.info("Authentication test: successfully NOT logged in with non existing credentials");
 	}
@@ -51,13 +38,9 @@ public class LoginTests {
 	public void givenBadPassword_whenLogin_thenThrowException() throws Exception {
 		logger.info("Authentication test: login with wrong password to existing username");
 
-		mockMvc.perform(post("/api/auth/login")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(
-								new LoginDTO("clau@gmail.com", "wrong-password")))
+		mockMvc.perform(post("/api/auth/login?username=clau@gmail.com&password=wrong_password")
 						.with(csrf()))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(BadCredentialsException.class)));
+				.andExpect(status().isUnauthorized());
 
 		logger.info("Authentication test: successfully NOT logged in with wrong password to existing username");
 	}
@@ -66,13 +49,9 @@ public class LoginTests {
 	public void givenBadUsername_whenLogin_thenThrowException() throws Exception {
 		logger.info("Authentication test: login with wrong username to existing password");
 
-		mockMvc.perform(post("/api/auth/login")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(
-								new LoginDTO("clau2@gmail.com", "password")))
+		mockMvc.perform(post("/api/auth/login?username=clau2@gmail.com&password=password")
 						.with(csrf()))
-				.andExpect(result -> MatcherAssert.assertThat(result.getResolvedException(),
-						CoreMatchers.instanceOf(BadCredentialsException.class)));
+				.andExpect(status().isUnauthorized());
 
 		logger.info("Authentication test: successfully NOT logged in with wrong username to existing password");
 	}
@@ -81,10 +60,7 @@ public class LoginTests {
 	public void givenCorrectCredentials_whenLogin_thenThrowException() throws Exception {
 		logger.info("Authentication test: login with correct credentials");
 
-		mockMvc.perform(post("/api/auth/login")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(
-								new LoginDTO("clau@gmail.com", "password")))
+		mockMvc.perform(post("/api/auth/login?username=clau@gmail.com&password=password")
 						.with(csrf()))
 				.andExpect(status().isOk());
 

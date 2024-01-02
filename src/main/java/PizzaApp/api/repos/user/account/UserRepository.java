@@ -3,8 +3,6 @@ package PizzaApp.api.repos.user.account;
 import PizzaApp.api.entity.dto.user.UserDTO;
 import PizzaApp.api.entity.user.User;
 
-import java.util.Optional;
-
 public interface UserRepository {
 
 	User create(User user);
@@ -20,6 +18,4 @@ public interface UserRepository {
 	void updatePassword(Long userId, String password);
 
 	String loadPassword(Long userId);
-
-	void delete(Long userId);
 }

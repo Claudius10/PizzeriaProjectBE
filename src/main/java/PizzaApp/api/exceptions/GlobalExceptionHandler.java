@@ -1,8 +1,5 @@
 package PizzaApp.api.exceptions;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,8 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			 WebRequest request) {
 		return ResponseEntity
 				.status(status)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+				.body(new ApiErrorDTO.Builder()
 						.withStatusCode(status.value())
 						.withPath(request.getDescription(false))
 						.withErrorMsg(ex.getBindingResult().getAllErrors().get(0).getDefaultMessage())
@@ -42,8 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<ApiErrorDTO> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
 		return ResponseEntity
 				.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+				.body(new ApiErrorDTO.Builder()
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
 						.withErrorMsg(ex.getMessage())
@@ -62,12 +57,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
-				.body(new ApiErrorDTO.Builder(
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")))
+				.body(new ApiErrorDTO.Builder()
 						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 						.withPath(request.getServletPath())
 						.withErrorMsg(errorMsg)
 						.build());
-
 	}
 }

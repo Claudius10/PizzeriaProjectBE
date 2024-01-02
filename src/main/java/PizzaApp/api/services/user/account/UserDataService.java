@@ -18,4 +18,6 @@ public interface UserDataService {
 	UserData findReference(Long userId);
 
 	UserData findById(Long userId);
+
+	void delete(Long userId);
 }

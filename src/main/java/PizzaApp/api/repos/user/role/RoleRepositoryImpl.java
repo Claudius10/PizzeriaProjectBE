@@ -5,8 +5,6 @@ import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.user.Role;
 import jakarta.persistence.EntityManager;
 
-import java.util.Optional;
-
 @Repository
 public class RoleRepositoryImpl implements RoleRepository {
 
@@ -22,9 +20,9 @@ public class RoleRepositoryImpl implements RoleRepository {
 	}
 
 	@Override
-	public Optional<Role> findByName(String roleName) {
+	public Role findByName(String roleName) {
 		return em.createQuery("select role from Role role where role.name = :roleName", Role.class)
 				.setParameter("roleName", roleName)
-				.getResultStream().findFirst();
+				.getSingleResult();
 	}
 }

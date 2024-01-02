@@ -6,19 +6,13 @@ import PizzaApp.api.entity.user.User;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
 	private final EntityManager em;
-	private final UserDataRepository userDataRepository;
 
-	public UserRepositoryImpl
-			(EntityManager em,
-			 UserDataRepository userDataRepository) {
+	public UserRepositoryImpl(EntityManager em) {
 		this.em = em;
-		this.userDataRepository = userDataRepository;
 	}
 
 	@Override
@@ -71,6 +65,7 @@ public class UserRepositoryImpl implements UserRepository {
 				.executeUpdate();
 	}
 
+	// for internal use only
 	@Override
 	public String loadPassword(Long userId) {
 		return em.createQuery("""
@@ -79,11 +74,5 @@ public class UserRepositoryImpl implements UserRepository {
 						)
 						from User u where u.id = :id""",
 				PasswordDTO.class).setParameter("id", userId).getSingleResult().password();
-	}
-
-	@Override
-	public void delete(Long userId) {
-		// delete user data (cascades to user)
-		em.remove(userDataRepository.findReference(userId));
 	}
 }

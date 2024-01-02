@@ -9,4 +9,6 @@ public interface UserDataRepository {
 	UserData findReference(Long userId);
 
 	UserData findById(Long userId);
+
+	void delete(Long userId);
 }

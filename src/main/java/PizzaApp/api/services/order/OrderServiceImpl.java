@@ -5,8 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import PizzaApp.api.entity.dto.order.*;
-import PizzaApp.api.entity.dto.order.UserOrderDTO;
-import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.cart.Cart;
 import PizzaApp.api.entity.user.Address;
@@ -112,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setCart(updateUserOrderDTO.cart());
 
 		// validate order
-		String isUpdateValid = validator.setCurrentTime().validateUpdate(order);
+		String isUpdateValid = validator.validateUpdate(order);
 		if (isUpdateValid != null) {
 			return isUpdateValid;
 		}
@@ -154,7 +152,7 @@ public class OrderServiceImpl implements OrderService {
 	public String deleteUserOrderById(Long orderId) {
 		Order orderToDelete = findById(orderId);
 		// validate whatever delete time limit passed
-		String isDeleteValid = validator.setCurrentTime().isOrderDeleteTimeLimitValid(orderToDelete.getCreatedOn());
+		String isDeleteValid = validator.isOrderDeleteTimeLimitValid(orderToDelete.getCreatedOn());
 		if (isDeleteValid != null) {
 			return isDeleteValid;
 		}

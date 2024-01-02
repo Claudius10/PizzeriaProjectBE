@@ -1,5 +1,8 @@
 package PizzaApp.api.exceptions.errorDTO;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public record ApiErrorDTO
 
 		(String timesStamp,
@@ -21,11 +24,8 @@ public record ApiErrorDTO
 
 		private String errorMsg;
 
-		public Builder(String timeStamp) {
-			if (timeStamp == null) {
-				throw new IllegalStateException("Timestamp cannot be null.");
-			}
-			this.timeStamp = timeStamp;
+		public Builder() {
+			this.timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy"));
 		}
 
 		public Builder withStatusCode(int statusCode) {

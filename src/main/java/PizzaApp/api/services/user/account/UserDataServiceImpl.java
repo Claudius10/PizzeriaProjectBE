@@ -46,6 +46,11 @@ public class UserDataServiceImpl implements UserDataService {
 	}
 
 	@Override
+	public void delete(Long userId) {
+		userDataRepository.delete(userId);
+	}
+
+	@Override
 	public String addTel(Long userId, Integer telephone) {
 		if (telephoneService.findUserTelListSize(userId) == 3) {
 			return "Solo se permiten 3 números de teléfono almacenados";

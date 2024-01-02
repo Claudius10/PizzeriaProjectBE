@@ -113,7 +113,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 	@Override
 	public void deleteById(Long orderId) {
-		em.remove(em.getReference(Order.class, orderId));
+		em.remove(findReferenceById(orderId));
 	}
 
 	// INFO - for internal use only
@@ -137,17 +137,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 				.getSingleResult();
 	}
 
-	// used when user deletes account
-	@Override
-	public void removeUserData(Long userId) {
-		em.createQuery("update Order order set order.contactTel = null, " +
-						"order.email = null, " +
-						"order.customerName = null " +
-						"where order.userData.id = :userId")
-				.setParameter("userId", userId)
-				.executeUpdate();
-	}
-
 	@Override
 	public Order findReferenceById(Long orderId) {
 		return em.getReference(Order.class, orderId);
@@ -160,7 +149,16 @@ public class OrderRepositoryImpl implements OrderRepository {
 				.getSingleResult();
 	}
 
-	// INFO - util method
+	// used when user deletes account
+	@Override
+	public void removeUserData(Long userId) {
+		em.createQuery("update Order order set order.contactTel = null, " +
+						"order.email = null, " +
+						"order.customerName = null " +
+						"where order.userData.id = :userId")
+				.setParameter("userId", userId)
+				.executeUpdate();
+	}
 
 	public void syncCartItems(Order order) {
 		List<OrderItem> copy = new ArrayList<>(order.getCart().getOrderItems());

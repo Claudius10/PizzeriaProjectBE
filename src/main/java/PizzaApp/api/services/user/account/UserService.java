@@ -4,8 +4,6 @@ import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.entity.dto.user.*;
 import PizzaApp.api.entity.user.User;
 
-import java.util.Optional;
-
 public interface UserService {
 
 	void create(RegisterDTO registerDTO);

@@ -10,19 +10,17 @@ import org.springframework.web.util.WebUtils;
 @Component
 public class UserRequestValidatorImpl implements UserRequestValidator {
 
-	private final JWTUtils nimbusJWT;
+	private final JWTUtils jwtUtils;
 
-	public UserRequestValidatorImpl(JWTUtils nimbusJWT) {
-		this.nimbusJWT = nimbusJWT;
+	public UserRequestValidatorImpl(JWTUtils jwtUtils) {
+		this.jwtUtils = jwtUtils;
 	}
-
-	// TODO: refactor this method's functionality using aop
 
 	@Override
 	public void validate(Long userId, HttpServletRequest request) {
 		Cookie cookie = WebUtils.getCookie(request, "fight");
 
-		if (cookie == null || !userId.equals(nimbusJWT.jwtDecoder().decode(cookie.getValue()).getClaim("id"))) {
+		if (cookie == null || !userId.equals(jwtUtils.jwtDecoder().decode(cookie.getValue()).getClaim("id"))) {
 			throw new AccessDeniedException("Access denied");
 		}
 	}

@@ -33,7 +33,6 @@ public final class SecurityCookieUtils {
 
 	// 24 * 60 * 60 24h
 	// 168 * 60 * 60 7 days
-	// TODO - set refresh token cookie expiration to original to not refresh it
 	public static void createAuthCookies(HttpServletResponse response, String accessToken, String refreshToken, Long userId) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("fight", accessToken,

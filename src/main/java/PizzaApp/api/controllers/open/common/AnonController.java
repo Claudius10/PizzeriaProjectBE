@@ -1,7 +1,9 @@
 package PizzaApp.api.controllers.open.common;
 
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
+import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.services.user.account.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,21 +27,31 @@ public class AnonController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO) {
+	public ResponseEntity<?> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) {
 		try {
 			userService.create(registerDTO);
 			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (DataIntegrityViolationException ex) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Una cuenta ya existe con el correo electrónico introducido. Si no recuerda la " +
-					"contraseña, contacte con nosotros");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+					new ApiErrorDTO.Builder()
+							.withStatusCode(HttpStatus.BAD_REQUEST.value())
+							.withPath(request.getServletPath())
+							.withErrorMsg("Una cuenta ya existe con el correo electrónico introducido. Si no recuerda la " +
+									"contraseña, contacte con nosotros")
+							.build());
 		}
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<String> createAnonOrder(@RequestBody @Valid Order order) {
-		String isValid = orderService.createAnonOrder(order);
-		if (isValid != null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(isValid);
+	public ResponseEntity<?> createAnonOrder(@RequestBody @Valid Order order, HttpServletRequest request) {
+		String isInvalid = orderService.createAnonOrder(order);
+		if (isInvalid != null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+					new ApiErrorDTO.Builder()
+							.withStatusCode(HttpStatus.BAD_REQUEST.value())
+							.withPath(request.getServletPath())
+							.withErrorMsg(isInvalid)
+							.build());
 		} else {
 			return ResponseEntity.status(HttpStatus.CREATED).build();
 		}

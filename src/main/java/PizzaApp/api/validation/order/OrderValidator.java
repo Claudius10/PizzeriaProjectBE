@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 
 public interface OrderValidator {
 
-	OrderValidatorImpl setCurrentTime();
-
 	String validate(Order order);
 
 	String isChangeRequestedValid(Order order);

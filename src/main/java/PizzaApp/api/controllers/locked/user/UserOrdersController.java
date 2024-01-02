@@ -4,8 +4,10 @@ import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
 import PizzaApp.api.entity.dto.order.UserOrderDTO;
 import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
+import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.utility.string.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,13 +25,9 @@ public class UserOrdersController {
 	}
 
 	@PostMapping()
-	public ResponseEntity<String> createUserOrder(@RequestBody UserOrderDTO order) {
+	public ResponseEntity<?> createUserOrder(@RequestBody UserOrderDTO order, HttpServletRequest request) {
 		String result = orderService.createUserOrder(order);
-		if (StringUtils.isNumber(result)) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(result);
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-		}
+		return getResponseEntity(request, result);
 	}
 
 	@GetMapping(params = {"pageNumber", "pageSize", "userId"})
@@ -46,22 +44,27 @@ public class UserOrdersController {
 	}
 
 	@PutMapping()
-	public ResponseEntity<String> updateUserOrder(@RequestBody UpdateUserOrderDTO order) {
+	public ResponseEntity<?> updateUserOrder(@RequestBody UpdateUserOrderDTO order, HttpServletRequest request) {
 		String result = orderService.updateUserOrder(order);
-		if (StringUtils.isNumber(result)) {
-			return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
-		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-		}
+		return getResponseEntity(request, result);
 	}
 
 	@DeleteMapping("/{orderId}")
-	public ResponseEntity<String> deleteUserOrderById(@PathVariable Long orderId) {
+	public ResponseEntity<?> deleteUserOrderById(@PathVariable Long orderId, HttpServletRequest request) {
 		String result = orderService.deleteUserOrderById(orderId);
+		return getResponseEntity(request, result);
+	}
+
+	private ResponseEntity<?> getResponseEntity(HttpServletRequest request, String result) {
 		if (StringUtils.isNumber(result)) {
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body(result);
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+					new ApiErrorDTO.Builder()
+							.withStatusCode(HttpStatus.BAD_REQUEST.value())
+							.withPath(request.getServletPath())
+							.withErrorMsg(result)
+							.build());
 		}
 	}
 }

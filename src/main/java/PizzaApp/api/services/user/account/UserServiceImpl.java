@@ -9,7 +9,6 @@ import PizzaApp.api.repos.user.account.UserRepository;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.services.user.role.RoleService;
 import jakarta.transaction.Transactional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void create(RegisterDTO registerDTO) {
-		Role userRole = roleService.findByName("USER").get();
+		Role userRole = roleService.findByName("USER");
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 
 		UserData userData = new UserData();
@@ -104,18 +103,17 @@ public class UserServiceImpl implements UserService {
 			return result;
 		}
 		// remove user data from orders
-		orderService.removeUserData(userId); // TODO - make a test for this functionality
-		// delete account
-		userRepository.delete(userId);
+		orderService.removeUserData(userId);
+		// delete UserData which cascades delete to User
+		userDataService.delete(userId);
 		return null;
 	}
 
+	// util methods for internal use only
 	@Override
 	public String loadPassword(Long userId) {
 		return userRepository.loadPassword(userId);
 	}
-
-	// util method
 
 	private String verifyPassword(Long userId, String password) {
 		if (!bCryptEncoder.matches(password, loadPassword(userId))) {

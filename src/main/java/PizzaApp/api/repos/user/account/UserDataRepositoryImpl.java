@@ -27,4 +27,10 @@ public class UserDataRepositoryImpl implements UserDataRepository {
 	public UserData findById(Long userId) {
 		return em.find(UserData.class, userId);
 	}
+
+	@Override
+	public void delete(Long userId) {
+		// delete user data (cascades to user)
+		em.remove(findReference(userId));
+	}
 }

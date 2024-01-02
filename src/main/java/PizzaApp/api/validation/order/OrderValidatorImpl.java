@@ -5,29 +5,20 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import PizzaApp.api.entity.order.OrderItem;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
 
-// Could turn this into an Util class
-
 @Component
 public class OrderValidatorImpl implements OrderValidator {
 
-	private final Logger logger = Logger.getLogger(getClass().getName());
-	private LocalDateTime now;
-	private LocalDateTime createdOn;
-
-	public OrderValidatorImpl setCurrentTime() {
-		setNow(LocalDateTime.now());
-		return this;
-	}
+	private LocalDateTime now, createdOn;
 
 	@Override
 	public String validateUpdate(Order order) {
 		validate(order);
+		setNow(LocalDateTime.now());
 		setCreatedOn(order.getCreatedOn());
 		isCartUpdateTimeLimitValid(order); // off for dev (unless testing)
 		return isOrderDataUpdateTimeLimitValid();
@@ -74,6 +65,7 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public String isOrderDeleteTimeLimitValid(LocalDateTime createdOn) {
+		setNow(LocalDateTime.now());
 		LocalDateTime orderDeleteTimeLimit = createdOn.plusMinutes(20);
 		if (now.isAfter(orderDeleteTimeLimit)) {
 			return "El tiempo límite para anular el pedido (20 minutos) ha finalizado";

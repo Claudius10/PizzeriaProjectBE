@@ -1,10 +1,13 @@
 package PizzaApp.api.configs.security.utils;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,29 @@ public class SecurityTokenUtils {
 				.claim("roles", roles)
 				.build();
 		return jwtUtils.jwtEncoder().encode(JwtEncoderParameters.from(claims)).getTokenValue();
+	}
+
+	public String refreshTokens(HttpServletResponse response, Cookie refreshToken) {
+		if (refreshToken == null) {
+			return "Expired refresh token";
+		}
+
+		Jwt jwt = validate(refreshToken.getValue());
+
+		String accessToken = createToken(
+				Instant.now().plus(1, ChronoUnit.DAYS),
+				jwt.getClaim("sub"),
+				jwt.getClaim("id"),
+				jwt.getClaim("roles"));
+
+		String newRefreshToken = createToken(
+				Instant.now().plus(7, ChronoUnit.DAYS),
+				jwt.getClaim("sub"),
+				jwt.getClaim("id"),
+				jwt.getClaim("roles"));
+
+		SecurityCookieUtils.createAuthCookies(response, accessToken, newRefreshToken, jwt.getClaim("id"));
+		return null;
 	}
 
 	public Jwt validate(String refreshToken) {

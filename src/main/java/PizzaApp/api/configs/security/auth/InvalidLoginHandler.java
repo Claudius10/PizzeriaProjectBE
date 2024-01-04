@@ -1,4 +1,4 @@
-package PizzaApp.api.configs.security.login;
+package PizzaApp.api.configs.security.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Component
-public class InvalidAuthHandler implements AuthenticationFailureHandler {
+public class InvalidLoginHandler implements AuthenticationFailureHandler {
 
 	private final HandlerExceptionResolver resolver;
 
-	public InvalidAuthHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+	public InvalidLoginHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
 		this.resolver = resolver;
 	}
 

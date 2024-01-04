@@ -1,4 +1,4 @@
-package PizzaApp.api.configs.security.login;
+package PizzaApp.api.configs.security.auth;
 
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
@@ -13,11 +13,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @Component
-public class ValidAuthHandler implements AuthenticationSuccessHandler {
+public class ValidLoginHandler implements AuthenticationSuccessHandler {
 
 	private final SecurityTokenUtils securityTokenUtils;
 
-	public ValidAuthHandler(SecurityTokenUtils securityTokenUtils) {
+	public ValidLoginHandler(SecurityTokenUtils securityTokenUtils) {
 		this.securityTokenUtils = securityTokenUtils;
 	}
 

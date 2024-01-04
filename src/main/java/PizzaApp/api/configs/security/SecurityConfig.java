@@ -1,9 +1,10 @@
 package PizzaApp.api.configs.security;
 
+import PizzaApp.api.configs.security.auth.EatAllCookies;
 import PizzaApp.api.configs.security.oauth2.OAuth2RESTAccessDeniedHandler;
 import PizzaApp.api.configs.security.oauth2.OAuth2RESTAuthEntryPoint;
-import PizzaApp.api.configs.security.login.InvalidAuthHandler;
-import PizzaApp.api.configs.security.login.ValidAuthHandler;
+import PizzaApp.api.configs.security.auth.InvalidLoginHandler;
+import PizzaApp.api.configs.security.auth.ValidLoginHandler;
 import PizzaApp.api.configs.security.utils.JWTUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,9 +39,11 @@ public class SecurityConfig {
 
 	private final JWTUtils nimbusJWT;
 
-	private final ValidAuthHandler validAuthHandler;
+	private final ValidLoginHandler validAuthHandler;
 
-	private final InvalidAuthHandler invalidAuthHandler;
+	private final InvalidLoginHandler invalidAuthHandler;
+
+	private final EatAllCookies eatAllCookies;
 
 	private final CookieBearerTokenResolver cookieBearerTokenResolver;
 
@@ -50,14 +53,15 @@ public class SecurityConfig {
 
 	public SecurityConfig
 			(JWTUtils nimbusJWT,
-			 ValidAuthHandler validAuthHandler,
-			 InvalidAuthHandler invalidAuthHandler,
-			 CookieBearerTokenResolver cookieBearerTokenResolver,
+			 ValidLoginHandler validAuthHandler,
+			 InvalidLoginHandler invalidAuthHandler,
+			 EatAllCookies eatAllCookies, CookieBearerTokenResolver cookieBearerTokenResolver,
 			 OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint,
 			 OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler) {
 		this.nimbusJWT = nimbusJWT;
 		this.validAuthHandler = validAuthHandler;
 		this.invalidAuthHandler = invalidAuthHandler;
+		this.eatAllCookies = eatAllCookies;
 		this.cookieBearerTokenResolver = cookieBearerTokenResolver;
 		this.oAuth2RESTAuthEntryPoint = oAuth2RESTAuthEntryPoint;
 		this.oAuth2RESTAccessDeniedHandler = oAuth2RESTAccessDeniedHandler;
@@ -118,8 +122,8 @@ public class SecurityConfig {
 
 		http.logout(logout -> {
 			logout.logoutUrl("/api/auth/logout");
-			logout.deleteCookies("fight", "me", "id", "pseudo_fight", "pseudo_me");
-			// return 200 instead of redirecting on successful logout
+			logout.addLogoutHandler(eatAllCookies);
+			// return 200 on successful logout
 			logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
 		});
 

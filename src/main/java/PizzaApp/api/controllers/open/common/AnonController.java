@@ -3,6 +3,7 @@ package PizzaApp.api.controllers.open.common;
 import PizzaApp.api.entity.dto.misc.RegisterDTO;
 import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
 import PizzaApp.api.services.user.account.UserService;
+import PizzaApp.api.utility.string.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,7 @@ public class AnonController {
 	@PostMapping("/order")
 	public ResponseEntity<?> createAnonOrder(@RequestBody @Valid Order order, HttpServletRequest request) {
 		String isInvalid = orderService.createAnonOrder(order);
-		if (isInvalid != null) {
+		if (!StringUtils.isNumber(isInvalid)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
 					new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.BAD_REQUEST.value())

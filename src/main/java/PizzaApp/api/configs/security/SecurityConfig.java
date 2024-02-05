@@ -70,7 +70,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-		http.cors(withDefaults());
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		http.csrf(csrf -> {
 
 			// persist CSRF token in a cookie
@@ -139,7 +139,8 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.0.10:3000", "https://pizzeriaproject-production.up.railway.app"));
+				Arrays.asList("http://192.168.0.10:3000", "http://localhost:3000/", "https://pizzeriaproject-production.up" +
+						".railway.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
 		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));

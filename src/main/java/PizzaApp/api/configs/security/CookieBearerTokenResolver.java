@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 @Component
-final class CookieBearerTokenResolver implements BearerTokenResolver {
+public final class CookieBearerTokenResolver implements BearerTokenResolver {
 
 	@Override
 	public String resolve(HttpServletRequest request) {

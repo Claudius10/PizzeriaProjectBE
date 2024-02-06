@@ -18,7 +18,7 @@ public final class SecurityCookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
-				.domain(".up.railway.app") // NOTE - on for prod fe
+				.domain("up.railway.app") // NOTE - on for prod fe
 				.build();
 	}
 
@@ -75,7 +75,7 @@ public final class SecurityCookieUtils {
 		if (cookies != null)
 			for (Cookie cookie : cookies) {
 				cookie.setSecure(true); // NOTE - on for prod fe
-				cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
+				cookie.setDomain(".up.railway.app"); // NOTE - on for prod fe
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);

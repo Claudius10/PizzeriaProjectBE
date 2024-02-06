@@ -188,7 +188,7 @@ public class SecurityConfig {
 		result.setCookieCustomizer((cookie) -> {
 			cookie.httpOnly(false);
 			cookie.secure(true); // NOTE - on for prod fe
-			cookie.domain(".up.railway.app"); // NOTE - on for prod fe
+			cookie.domain("up.railway.app"); // NOTE - on for prod fe
 		});
 		return result;
 	}

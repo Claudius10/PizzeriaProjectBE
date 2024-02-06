@@ -1,8 +1,12 @@
 FROM eclipse-temurin:21-jdk as build
+
 COPY . /app
 WORKDIR /app
+
+RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 RUN mv -f target/*.jar app.jar
+
 
 FROM eclipse-temurin:21-jre
 ARG DATABASE_URL

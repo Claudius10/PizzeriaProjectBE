@@ -33,11 +33,7 @@ public class SecurityTokenUtils {
 		return jwtUtils.jwtEncoder().encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}
 
-	public String refreshTokens(HttpServletResponse response, Cookie refreshToken) {
-		if (refreshToken == null) {
-			return "Expired refresh token";
-		}
-
+	public void refreshTokens(HttpServletResponse response, Cookie refreshToken) {
 		Jwt jwt = validate(refreshToken.getValue());
 
 		String accessToken = createToken(
@@ -53,7 +49,6 @@ public class SecurityTokenUtils {
 				jwt.getClaim("roles"));
 
 		SecurityCookieUtils.createAuthCookies(response, accessToken, newRefreshToken, jwt.getClaim("id"));
-		return null;
 	}
 
 	public Jwt validate(String refreshToken) {

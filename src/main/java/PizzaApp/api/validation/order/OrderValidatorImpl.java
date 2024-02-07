@@ -6,77 +6,133 @@ import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 
+import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderItem;
+import PizzaApp.api.repos.order.OrderRepository;
 import org.springframework.stereotype.Component;
 import PizzaApp.api.entity.order.Order;
 
 @Component
 public class OrderValidatorImpl implements OrderValidator {
 
-	private LocalDateTime now, createdOn;
+	private final OrderRepository orderRepository;
 
-	@Override
-	public String validateUpdate(Order order) {
-		validate(order);
-		setNow(LocalDateTime.now());
-		setCreatedOn(order.getCreatedOn());
-		isCartUpdateTimeLimitValid(order); // off for dev (unless testing)
-		return isOrderDataUpdateTimeLimitValid();
+	public OrderValidatorImpl(OrderRepository orderRepository) {
+		this.orderRepository = orderRepository;
 	}
 
 	@Override
-	public String validate(Order order) {
-/*		String isStoreOpen = isRequestWithinWorkingHours(); // off for dev
-		if (isStoreOpen != null) {
-			return isStoreOpen;
-		}*/
-
-		String isCartValid = isCartValid(order);
-		if (isCartValid != null) {
-			return isCartValid;
+	public OrderValidationResult validate(Order order) {
+		if (!isCartEmpty(order.getCart())) {
+			return new OrderValidationResult("La cesta no puede ser vacía.");
 		}
 
-		String isChangeRequestValid = isChangeRequestedValid(order);
-		if (isChangeRequestValid != null) {
-			return isChangeRequestValid;
+		if (!isProductListSizeValid(order.getCart())) {
+			return new OrderValidationResult("Se ha superado el límite de artículos por pedido (20). Contacte con " + "nosotros si desea realizar el pedido.");
 		}
 
+		if (!isProductsQuantityValid(order.getCart())) {
+			return new OrderValidationResult("Se ha superado el límite de unidades por artículo (20). Contacte con " + "nosotros si desea realizar el pedido.");
+		}
+
+		if (!isChangeRequestedValid(order.getOrderDetails().getChangeRequested(), order.getCart())) {
+			return new OrderValidationResult("El valor del cambio de efectivo solicitado no puede ser menor o igual " + "que el total o total con ofertas.");
+		}
+
+		// NOTE - turn on for prod
+/*
+		if (!isRequestWithinWorkingHours()) {
+			return new OrderValidationResult("La tienda está cerrada. El horario es de las 12:00h hasta las 23:40 horas.");
+		}
+*/
 		calculatePaymentChange(order);
-		return null;
+		return new OrderValidationResult();
 	}
 
+	@Override
+	public OrderValidationResult validateUpdate(Order order) {
+		if (!isOrderDataUpdateTimeLimitValid(order.getCreatedOn())) {
+			return new OrderValidationResult("El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.");
+		}
+
+		if (!isCartUpdateTimeLimitValid(order.getCreatedOn())) {
+			OrderValidationResult result = validate(order);
+			if (result.isValid()) {
+				return new OrderValidationResult(false);
+			}
+		}
+
+		return validate(order);
+	}
+
+	public OrderValidationResult validateDelete(Long orderId) {
+		if (LocalDateTime.now().isAfter(orderRepository.findCreatedOnById(orderId).createdOn().plusMinutes(20))) {
+			return new OrderValidationResult("El tiempo límite para anular el pedido (20 minutos) ha finalizado.");
+		}
+		return new OrderValidationResult();
+	}
 
 	@Override
-	public void isCartUpdateTimeLimitValid(Order order) {
-		LocalDateTime cartUpdateTimeLimit = createdOn.plusMinutes(10);
-		if (now.isAfter(cartUpdateTimeLimit)) {
-			order.setCart(null);
+	public boolean isCartEmpty(Cart cart) {
+		return cart != null && !cart.getOrderItems().isEmpty() && cart.getTotalQuantity() > 0;
+	}
+
+	@Override
+	public boolean isProductListSizeValid(Cart cart) {
+		return cart.getOrderItems().size() <= 20;
+	}
+
+	@Override
+	public boolean isProductsQuantityValid(Cart cart) {
+		for (OrderItem item : cart.getOrderItems()) {
+			if (item.getQuantity() > 20) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// changeRequested > totalCost || totalOfferCost
+	@Override
+	public boolean isChangeRequestedValid(Double changeRequested, Cart cart) {
+		if (changeRequested == null) {
+			return true;
+		}
+		return (cart.getTotalCostOffers() <= 0 || changeRequested >= cart.getTotalCostOffers()) && (cart.getTotalCostOffers() != 0 || changeRequested >= cart.getTotalCost());
+	}
+
+	@Override
+	public boolean isCartUpdateTimeLimitValid(LocalDateTime createdOn) {
+		return LocalDateTime.now().isBefore(createdOn.plusMinutes(10));
+	}
+
+	@Override
+	public boolean isOrderDataUpdateTimeLimitValid(LocalDateTime createdOn) {
+		return LocalDateTime.now().isBefore(createdOn.plusMinutes(15));
+	}
+
+	// changeRequested == null || (changeRequested - totalCostOffers || totalCost)
+	@Override
+	public void calculatePaymentChange(Order order) {
+		if (order.getOrderDetails().getChangeRequested() == null) {
+			order.getOrderDetails().setPaymentChange(null);
+			return;
+		}
+
+		if (order.getCart().getTotalCostOffers() != 0) {
+			order.getOrderDetails().setPaymentChange(order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCostOffers());
+			return;
+		}
+
+		if (order.getCart().getTotalCostOffers() == 0) {
+			order.getOrderDetails().setPaymentChange(order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCost());
 		}
 	}
 
 	@Override
-	public String isOrderDataUpdateTimeLimitValid() {
-		LocalDateTime orderDataUpdateTimeLimit = createdOn.plusMinutes(15);
-		if (now.isAfter(orderDataUpdateTimeLimit)) {
-			return "Advertencia: el tiempo límite para actualizar el pedido (15 minutos) ha finalizado";
-		}
-		return null;
-	}
-
-	@Override
-	public String isOrderDeleteTimeLimitValid(LocalDateTime createdOn) {
-		setNow(LocalDateTime.now());
-		LocalDateTime orderDeleteTimeLimit = createdOn.plusMinutes(20);
-		if (now.isAfter(orderDeleteTimeLimit)) {
-			return "Advertencia: el tiempo límite para anular el pedido (20 minutos) ha finalizado";
-		}
-		return null;
-	}
-
-	@Override
-	public String isRequestWithinWorkingHours() {
-		// getting now plus 2 hours since host JVM is UTC +00:00
-		LocalDateTime localNow = LocalDateTime.now(ZoneOffset.UTC).plusHours(2);
+	public boolean isRequestWithinWorkingHours() {
+		// getting now plus 1 hour since host JVM is UTC +00:00
+		LocalDateTime localNow = LocalDateTime.now(ZoneOffset.UTC).plusHours(1);
 		Instant nowInstant = localNow.toInstant(ZoneOffset.UTC);
 		Date date = Date.from(nowInstant);
 
@@ -84,78 +140,6 @@ public class OrderValidatorImpl implements OrderValidator {
 		cal.setTime(date);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minutes = cal.get(Calendar.MINUTE);
-
-		if (hour < 12 || hour == 23 && minutes > 40) {
-			return "Advertencia: la tienda está cerrada. El horario es de las 12:00h hasta las 23:40 horas.";
-		}
-		return null;
-	}
-
-	@Override
-	public String isCartValid(Order order) {
-		if (order.getCart() == null || order.getCart().getOrderItems().isEmpty() || order.getCart().getTotalQuantity() <= 0) {
-			return "Advertencia: la cesta no puede ser vacía";
-		}
-
-		if (order.getCart().getOrderItems().size() > 20) {
-			return "Advertencia: se ha superado el límite de artículos por pedido (20 art.). Contacte con nosotros" +
-					" si desea realizar el pedido";
-		}
-
-		for (OrderItem item : order.getCart().getOrderItems()) {
-			if (item.getQuantity() > 20) {
-				return "Advertencia: se ha superado la cantidad máxima por artículo (20 uds.). Contacte con " +
-						"nosotros si desea realizar el pedido";
-			}
-		}
-		return null;
-	}
-
-	// value of requested change has to be greater than
-	// totalCost or totalOfferCost
-	@Override
-	public String isChangeRequestedValid(Order order) {
-		if (order.getOrderDetails().getChangeRequested() != null) {
-
-			if ((order.getCart().getTotalCostOffers() > 0 &&
-
-					order.getOrderDetails().getChangeRequested() < order.getCart().getTotalCostOffers()) ||
-
-					(order.getCart().getTotalCostOffers() == 0 &&
-
-							order.getOrderDetails().getChangeRequested() < order.getCart().getTotalCost())) {
-
-				return "Advertencia: el valor del cambio de efectivo solicitado no puede ser menor o igual "
-						+ "que el total/total con ofertas.";
-			}
-		}
-		return null;
-	}
-
-	// calculate totalCost or totalCostOffers - changeRequested
-	// the result being the change to give back to the client
-	@Override
-	public void calculatePaymentChange(Order order) {
-		if (order.getOrderDetails().getChangeRequested() == null) {
-			order.getOrderDetails().setPaymentChange(null);
-		} else {
-
-			if (order.getCart().getTotalCostOffers() > 0) {
-				order.getOrderDetails().setPaymentChange
-						(order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCostOffers());
-
-			} else {
-				order.getOrderDetails().setPaymentChange
-						(order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCost());
-			}
-		}
-	}
-
-	public void setNow(LocalDateTime now) {
-		this.now = now;
-	}
-
-	public void setCreatedOn(LocalDateTime createdOn) {
-		this.createdOn = createdOn;
+		return hour >= 12 && (hour != 23 || minutes <= 40);
 	}
 }

@@ -1,6 +1,6 @@
 package PizzaApp.api.exceptions.constraints;
 
-import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.entity.address.Address;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.exceptions.constraints.IntegerLength;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import PizzaApp.api.entity.order.cart.Cart;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

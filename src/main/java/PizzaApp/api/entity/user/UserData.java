@@ -2,6 +2,8 @@ package PizzaApp.api.entity.user;
 
 import java.util.*;
 
+import PizzaApp.api.entity.address.Address;
+import PizzaApp.api.entity.telephone.Telephone;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import PizzaApp.api.entity.order.Order;

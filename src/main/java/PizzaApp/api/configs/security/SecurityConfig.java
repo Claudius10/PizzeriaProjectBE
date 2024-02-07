@@ -1,6 +1,6 @@
 package PizzaApp.api.configs.security;
 
-import PizzaApp.api.configs.security.auth.EatAllCookies;
+import PizzaApp.api.configs.security.auth.ClearCookiesLogoutHandler;
 import PizzaApp.api.configs.security.oauth2.OAuth2RESTAccessDeniedHandler;
 import PizzaApp.api.configs.security.oauth2.OAuth2RESTAuthEntryPoint;
 import PizzaApp.api.configs.security.auth.InvalidLoginHandler;
@@ -32,8 +32,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 public class SecurityConfig {
 
@@ -43,7 +41,7 @@ public class SecurityConfig {
 
 	private final InvalidLoginHandler invalidAuthHandler;
 
-	private final EatAllCookies eatAllCookies;
+	private final ClearCookiesLogoutHandler clearCookiesLogoutHandler;
 
 	private final CookieBearerTokenResolver cookieBearerTokenResolver;
 
@@ -55,13 +53,13 @@ public class SecurityConfig {
 			(JWTUtils nimbusJWT,
 			 ValidLoginHandler validAuthHandler,
 			 InvalidLoginHandler invalidAuthHandler,
-			 EatAllCookies eatAllCookies, CookieBearerTokenResolver cookieBearerTokenResolver,
+			 ClearCookiesLogoutHandler clearCookiesLogoutHandler, CookieBearerTokenResolver cookieBearerTokenResolver,
 			 OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint,
 			 OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler) {
 		this.nimbusJWT = nimbusJWT;
 		this.validAuthHandler = validAuthHandler;
 		this.invalidAuthHandler = invalidAuthHandler;
-		this.eatAllCookies = eatAllCookies;
+		this.clearCookiesLogoutHandler = clearCookiesLogoutHandler;
 		this.cookieBearerTokenResolver = cookieBearerTokenResolver;
 		this.oAuth2RESTAuthEntryPoint = oAuth2RESTAuthEntryPoint;
 		this.oAuth2RESTAccessDeniedHandler = oAuth2RESTAccessDeniedHandler;
@@ -73,15 +71,11 @@ public class SecurityConfig {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		http.csrf(csrf -> {
 
-			// persist CSRF token in a cookie
-			csrf.csrfTokenRepository(csrfTokenRepository());
-
-			// resolve CSRF token off the x-xsrf-token HTTP request header
-			csrf.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler());
+			csrf.csrfTokenRepository(csrfTokenRepository()); // persist CSRF token in a cookie
+			csrf.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()); // get CSRF token off x-xsrf-token header
 
 			// https://github.com/spring-projects/spring-security/issues/8668 for
 			// enabling CSRF token protection for post auth requests with JWT tokens
-			// with a custom ant matcher (csrfProtectionMatcher bean)
 			csrf.withObjectPostProcessor(new ObjectPostProcessor<CsrfFilter>() {
 				@Override
 				public <O extends CsrfFilter> O postProcess(O object) {
@@ -97,12 +91,9 @@ public class SecurityConfig {
 				jwt.decoder(nimbusJWT.jwtDecoder());
 				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
 			});
-			// customizes how jwt authentication failures are handled
-			oauth2ResourceServer.authenticationEntryPoint(oAuth2RESTAuthEntryPoint);
-			// customizes how jwt access denied errors are handled
-			oauth2ResourceServer.accessDeniedHandler(oAuth2RESTAccessDeniedHandler);
-			// load JWT from cookie instead of Authorization header
-			oauth2ResourceServer.bearerTokenResolver(cookieBearerTokenResolver);
+			oauth2ResourceServer.authenticationEntryPoint(oAuth2RESTAuthEntryPoint); // handle jwt auth failure
+			oauth2ResourceServer.accessDeniedHandler(oAuth2RESTAccessDeniedHandler); // handle jwt access denied
+			oauth2ResourceServer.bearerTokenResolver(cookieBearerTokenResolver); // load JWT from cookie
 		});
 
 		http.authorizeHttpRequests(auth -> {
@@ -122,32 +113,11 @@ public class SecurityConfig {
 
 		http.logout(logout -> {
 			logout.logoutUrl("/api/auth/logout");
-			logout.addLogoutHandler(eatAllCookies);
-			// return 200 on successful logout
-			logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+			logout.addLogoutHandler(clearCookiesLogoutHandler);
+			logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()); // return 200 on successful logout
 		});
 
 		return http.build();
-	}
-
-	/*
-	Set Access-Control-Allow-Headers when allowing headers to be passed from the client to the server (e.g. If-Match).
-	Set Access-Control-Expose-Headers when allowing headers to be passed back from the server to the client (e.g. ETag).
-	*/
-
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.0.10:3000", "http://localhost:3000/", "https://pizzeriaproject-production.up" +
-						".railway.app"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
-		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
-		configuration.setAllowCredentials(true);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
 	}
 
 	@Bean
@@ -161,6 +131,25 @@ public class SecurityConfig {
 		authenticationProvider.setUserDetailsService(userDetailsService);
 		authenticationProvider.setPasswordEncoder(passwordEncoder);
 		return new ProviderManager(authenticationProvider);
+	}
+
+	/*
+	Set Access-Control-Allow-Headers when allowing headers to be passed from the client to the server (e.g. If-Match).
+	Set Access-Control-Expose-Headers when allowing headers to be passed back from the server to the client (e.g. ETag).
+	*/
+
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(
+				Arrays.asList("http://192.168.0.10:3000", "http://localhost:3000", "https://pizzeriaproject-production.up" +
+						".railway.app"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
+		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 	private RequestMatcher csrfProtectionMatcher() {

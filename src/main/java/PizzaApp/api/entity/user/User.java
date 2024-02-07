@@ -1,5 +1,6 @@
 package PizzaApp.api.entity.user;
 
+import PizzaApp.api.entity.role.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

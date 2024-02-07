@@ -1,7 +1,6 @@
 package PizzaApp.api.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import PizzaApp.api.entity.order.cart.Cart;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

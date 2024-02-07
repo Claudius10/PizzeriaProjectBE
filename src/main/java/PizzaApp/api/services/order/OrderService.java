@@ -6,7 +6,7 @@ import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
 import PizzaApp.api.entity.dto.order.UserOrderDTO;
 import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.cart.Cart;
+import PizzaApp.api.entity.order.Cart;
 
 import java.time.LocalDateTime;
 
@@ -16,13 +16,13 @@ public interface OrderService {
 
 	String createUserOrder(UserOrderDTO userOrderDTO);
 
-	OrderDTOPojo findUserOrderDTO(Long orderId);
-
 	String updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO);
 
-	OrderPaginationResultDTO findUserOrdersSummary(Long userId, Integer pageSize, Integer pageNumber);
+	String deleteUserOrderById(Long orderId, Long userId);
 
-	String deleteUserOrderById(Long orderId);
+	OrderDTOPojo findUserOrderDTO(Long orderId);
+
+	OrderPaginationResultDTO findUserOrdersSummary(Long userId, Integer pageSize, Integer pageNumber);
 
 	// info - for internal use only
 

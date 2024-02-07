@@ -80,11 +80,11 @@ public class JwtTokenTests {
 
 		assertAll(() -> {
 			assertEquals(0, response.getCookie("fight").getMaxAge());
-			assertNull(response.getCookie("fight").getValue());
+			assertEquals("", response.getCookie("fight").getValue());
 			assertEquals(0, response.getCookie("me").getMaxAge());
-			assertNull(response.getCookie("me").getValue());
+			assertEquals("", response.getCookie("me").getValue());
 			assertEquals(0, response.getCookie("id").getMaxAge());
-			assertNull(response.getCookie("id").getValue());
+			assertEquals("", response.getCookie("id").getValue());
 		});
 
 		logger.info("JWT Token test: successfully erased credentials after logout");
@@ -143,9 +143,9 @@ public class JwtTokenTests {
 				.andExpect(status().isOk()).andReturn().getResponse();
 
 		assertAll(() -> {
-			assertEquals(61, response.getCookie("fight").getMaxAge());
+			assertEquals(86400, response.getCookie("fight").getMaxAge());
 			// expected value is the age of the cookie
-			assertEquals(65, response.getCookie("me").getMaxAge());
+			assertEquals(604800, response.getCookie("me").getMaxAge());
 		});
 
 		logger.info("JWT Token test: successfully received new tokens");

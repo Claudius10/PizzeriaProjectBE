@@ -1,6 +1,6 @@
 package PizzaApp.api.exceptions;
 
-import PizzaApp.api.exceptions.errorDTO.ApiErrorDTO;
+import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,6 +16,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -25,12 +30,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			 HttpHeaders headers,
 			 HttpStatusCode status,
 			 WebRequest request) {
+
+		List<String> errorMessages = new ArrayList<>();
+		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+			errorMessages.add("Error del atributo " + "'" + error.getField() + "' con input: '" + error.getRejectedValue() +
+					"'. Razón: " + error.getDefaultMessage());
+		}
+
 		return ResponseEntity
 				.status(status)
 				.body(new ApiErrorDTO.Builder()
 						.withStatusCode(status.value())
 						.withPath(request.getDescription(false))
-						.withErrorMsg(ex.getBindingResult().getAllErrors().get(0).getDefaultMessage())
+						.withErrorMsg(String.valueOf(errorMessages))
 						.build());
 	}
 
@@ -42,6 +54,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.withStatusCode(HttpStatus.BAD_REQUEST.value())
 						.withPath(request.getServletPath())
 						.withErrorMsg(ex.getMessage())
+						.build());
+	}
+
+	@ExceptionHandler({SQLIntegrityConstraintViolationException.class})
+	protected ResponseEntity<ApiErrorDTO> handleDuplicateDatabaseEntry(HttpServletRequest request, SQLIntegrityConstraintViolationException ex) {
+		String message = ex.getMessage();
+		if (ex.getErrorCode() == 1062) {
+			message = String.valueOf(ex.getErrorCode());
+		}
+
+		return ResponseEntity
+				.status(HttpStatus.BAD_REQUEST)
+				.body(new ApiErrorDTO.Builder()
+						.withStatusCode(HttpStatus.BAD_REQUEST.value())
+						.withPath(request.getServletPath())
+						.withErrorMsg(message)
 						.build());
 	}
 

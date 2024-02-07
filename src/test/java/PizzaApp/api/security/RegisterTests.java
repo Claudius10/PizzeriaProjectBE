@@ -1,6 +1,6 @@
 package PizzaApp.api.security;
 
-import PizzaApp.api.entity.dto.misc.RegisterDTO;
+import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import PizzaApp.api.entity.dto.order.*;
-import PizzaApp.api.entity.order.cart.Cart;
+import PizzaApp.api.entity.order.Cart;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import PizzaApp.api.entity.order.Order;
@@ -109,11 +109,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 								((double) tuple[8])
 						)
 				)).getResultList();
-	}
-
-	@Override
-	public void deleteById(Long orderId) {
-		em.remove(findReferenceById(orderId));
 	}
 
 	// INFO - for internal use only

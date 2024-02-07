@@ -4,7 +4,7 @@ import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
 import PizzaApp.api.entity.dto.order.OrderDTOPojo;
 import PizzaApp.api.entity.dto.order.OrderSummary;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.cart.Cart;
+import PizzaApp.api.entity.order.Cart;
 
 import java.util.List;
 
@@ -19,8 +19,6 @@ public interface OrderRepository {
 	List<OrderSummary> findOrderSummaryList(Long userId, int pageSize, int pageNumber);
 
 	String updateOrder(Order order);
-
-	void deleteById(Long orderId);
 
 	// info - for internal use only
 

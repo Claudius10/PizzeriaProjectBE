@@ -1,8 +1,8 @@
 package PizzaApp.api.entity.dto.order;
 
 import PizzaApp.api.entity.order.OrderDetails;
-import PizzaApp.api.entity.order.cart.Cart;
-import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.entity.order.Cart;
+import PizzaApp.api.entity.address.Address;
 
 import java.time.LocalDateTime;
 

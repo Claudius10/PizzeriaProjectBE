@@ -1,0 +1,28 @@
+package PizzaApp.api.repos.role;
+
+import org.springframework.stereotype.Repository;
+
+import PizzaApp.api.entity.role.Role;
+import jakarta.persistence.EntityManager;
+
+@Repository
+public class RoleRepositoryImpl implements RoleRepository {
+
+	private final EntityManager em;
+
+	public RoleRepositoryImpl(EntityManager em) {
+		this.em = em;
+	}
+
+	@Override
+	public void create(Role role) {
+		em.persist(role);
+	}
+
+	@Override
+	public Role findByName(String roleName) {
+		return em.createQuery("select role from Role role where role.name = :roleName", Role.class)
+				.setParameter("roleName", roleName)
+				.getSingleResult();
+	}
+}

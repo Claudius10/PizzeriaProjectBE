@@ -6,14 +6,13 @@ import java.util.Optional;
 
 import PizzaApp.api.entity.dto.order.*;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.cart.Cart;
-import PizzaApp.api.entity.user.Address;
+import PizzaApp.api.entity.order.Cart;
+import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.user.UserData;
-import PizzaApp.api.services.user.account.UserDataService;
-import PizzaApp.api.services.user.address.AddressService;
+import PizzaApp.api.services.user.UserDataService;
+import PizzaApp.api.services.address.AddressService;
 import org.springframework.stereotype.Service;
 import PizzaApp.api.repos.order.OrderRepository;
-import PizzaApp.api.validation.order.OrderValidator;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -26,18 +25,13 @@ public class OrderServiceImpl implements OrderService {
 
 	private final UserDataService userDataService;
 
-	private final OrderValidator validator;
-
 	public OrderServiceImpl
 			(OrderRepository orderRepository,
 			 AddressService addressService,
-			 UserDataService userDataService,
-			 OrderValidator validator) {
+			 UserDataService userDataService) {
 		this.orderRepository = orderRepository;
 		this.addressService = addressService;
 		this.userDataService = userDataService;
-
-		this.validator = validator;
 	}
 
 	@Override
@@ -49,13 +43,8 @@ public class OrderServiceImpl implements OrderService {
 		// set created on in standard UTC (+00:00)
 		order.setCreatedOn(LocalDateTime.now());
 
-		// set formatted created on in UTC +2 since FE is +02:00
-		order.setFormattedCreatedOn(order.getCreatedOn().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
-
-		String isOrderValid = validator.validate(order);
-		if (isOrderValid != null) {
-			return isOrderValid;
-		}
+		// set formatted created on in UTC +1 cause db is in UTC
+		order.setFormattedCreatedOn(order.getCreatedOn().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
 
 		return orderRepository.createOrder(order);
 	}
@@ -77,51 +66,43 @@ public class OrderServiceImpl implements OrderService {
 				.build();
 
 		dbUserData.addOrder(order); // also does order.setUserData(this);
-
-		// validate order
-		String isOrderValid = validator.validate(order);
-		if (isOrderValid != null) {
-			return isOrderValid;
-		}
-
 		return orderRepository.createOrder(order);
 	}
 
 	@Override
 	public String updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO) {
-		Address dbAddress = addressService.findReference(updateUserOrderDTO.userOrderData().addressId());
-		UserData dbUserData = userDataService.findReference(updateUserOrderDTO.userOrderData().userId());
+		Address dbAddress = addressService.findReference(updateUserOrderDTO.getUserOrderData().addressId());
+		UserData dbUserData = userDataService.findReference(updateUserOrderDTO.getUserOrderData().userId());
 
 		Order order = new Order.Builder()
 				.withUpdatedOn(LocalDateTime.now())
 				.withFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
-				.withId(updateUserOrderDTO.orderId())
-				.withCreatedOn(updateUserOrderDTO.createdOn())
-				.withFormattedCreatedOn(updateUserOrderDTO.formattedCreatedOn())
-				.withCustomerName(updateUserOrderDTO.userOrderData().customerName())
-				.withEmail(updateUserOrderDTO.userOrderData().email())
-				.withContactTel(updateUserOrderDTO.userOrderData().tel())
+				.withId(updateUserOrderDTO.getOrderId())
+				.withCreatedOn(updateUserOrderDTO.getCreatedOn())
+				.withFormattedCreatedOn(updateUserOrderDTO.getFormattedCreatedOn())
+				.withCustomerName(updateUserOrderDTO.getUserOrderData().customerName())
+				.withEmail(updateUserOrderDTO.getUserOrderData().email())
+				.withContactTel(updateUserOrderDTO.getUserOrderData().tel())
 				.withAddress(dbAddress)
 				.withUser(dbUserData)
 				.build();
 
-		// sync bi associations
-		order.setOrderDetails(updateUserOrderDTO.orderDetails());
-		order.setCart(updateUserOrderDTO.cart());
-
-		// validate order
-		String isUpdateValid = validator.validateUpdate(order);
-		if (isUpdateValid != null) {
-			return isUpdateValid;
-		}
-
-		if (order.getCart() == null) {
-			// cart is set to null if cartUpdateTimeLimit passed
-			// in such case, set back the original cart
+		order.setOrderDetails(updateUserOrderDTO.getOrderDetails());
+		// cart == null if !isCartUpdateValid
+		if (updateUserOrderDTO.getCart() == null) {
 			order.setCart(orderRepository.findOrderCart(order.getId()));
+		} else {
+			order.setCart(updateUserOrderDTO.getCart());
 		}
 
 		return orderRepository.updateOrder(order);
+	}
+
+	@Override
+	public String deleteUserOrderById(Long orderId, Long userId) {
+		UserData userData = userDataService.findReference(userId);
+		userData.removeOrder(orderRepository.findReferenceById(orderId));
+		return orderId.toString();
 	}
 
 	@Override
@@ -146,20 +127,6 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public OrderDTOPojo findUserOrderDTO(Long orderId) {
 		return orderRepository.findOrderDTO(orderId);
-	}
-
-	@Override
-	public String deleteUserOrderById(Long orderId) {
-		Order orderToDelete = findById(orderId);
-		// validate whatever delete time limit passed
-		String isDeleteValid = validator.isOrderDeleteTimeLimitValid(orderToDelete.getCreatedOn());
-		if (isDeleteValid != null) {
-			return isDeleteValid;
-		}
-		// delete the order
-		UserData userData = userDataService.findReference(orderToDelete.getUserData().getId());
-		userData.removeOrder(orderRepository.findReferenceById(orderId));
-		return orderId.toString();
 	}
 
 	// info - for internal use only
@@ -206,13 +173,6 @@ public class OrderServiceImpl implements OrderService {
 				.build();
 
 		dbUserData.addOrder(order); // also does order.setUserData(this);
-
-		// validate order
-		String isOrderValid = validator.validate(order);
-		if (isOrderValid != null) {
-			return isOrderValid;
-		}
-
 		return orderRepository.createOrder(order);
 	}
 }

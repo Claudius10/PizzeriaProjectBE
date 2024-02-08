@@ -40,11 +40,10 @@ public class OrderValidatorImpl implements OrderValidator {
 		}
 
 		// NOTE - turn on for prod
-/*
 		if (!isRequestWithinWorkingHours()) {
 			return new OrderValidationResult("La tienda está cerrada. El horario es de las 12:00h hasta las 23:40 horas.");
 		}
-*/
+
 		calculatePaymentChange(order);
 		return new OrderValidationResult();
 	}
@@ -140,6 +139,6 @@ public class OrderValidatorImpl implements OrderValidator {
 		cal.setTime(date);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minutes = cal.get(Calendar.MINUTE);
-		return hour >= 12 && (hour != 23 || minutes <= 40);
+		return hour >= 9 && (hour != 23 || minutes <= 30);
 	}
 }

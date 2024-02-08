@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order order = new Order.Builder()
 				.withUpdatedOn(LocalDateTime.now())
-				.withFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
+				.withFormattedUpdatedOn(LocalDateTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")))
 				.withId(updateUserOrderDTO.getOrderId())
 				.withCreatedOn(updateUserOrderDTO.getCreatedOn())
 				.withFormattedCreatedOn(updateUserOrderDTO.getFormattedCreatedOn())

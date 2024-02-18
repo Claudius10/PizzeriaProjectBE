@@ -22,10 +22,10 @@ public class Address {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "street")
+	@Column(name = "street", nullable = false)
 	private String street;
 
-	@Column(name = "street_nr")
+	@Column(name = "street_nr", nullable = false)
 	private Integer streetNr;
 
 	@Column(name = "gate")
@@ -168,7 +168,7 @@ public class Address {
 				+ staircase + ", floor=" + floor + ", door=" + door + "]";
 	}
 
-	public boolean entityEquals(Object o) {
+	public boolean contentEquals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Address address = (Address) o;

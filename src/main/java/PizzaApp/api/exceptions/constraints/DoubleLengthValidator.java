@@ -17,9 +17,10 @@ public class DoubleLengthValidator implements ConstraintValidator<DoubleLengthNu
 	public boolean isValid(Double value, ConstraintValidatorContext context) {
 		// validate whatever the double field value is between min and max
 		if (value != null) {
-			return (String.valueOf(value.doubleValue()).length() >= min
-					&& String.valueOf(value.doubleValue()).length() <= max);
+			int length = String.valueOf(value.doubleValue()).length();
+			return (length >= min && length <= max);
 		} else {
+
 			// return true if value is null
 			return true;
 		}

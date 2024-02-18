@@ -26,11 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid
-			(MethodArgumentNotValidException ex,
-			 HttpHeaders headers,
-			 HttpStatusCode status,
-			 WebRequest request) {
-
+			(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		List<String> errorMessages = new ArrayList<>();
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			errorMessages.add("Error del atributo " + "'" + error.getField() + "' con input: '" + error.getRejectedValue() +

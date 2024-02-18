@@ -24,6 +24,17 @@ public class LoginTests {
 	private MockMvc mockMvc;
 
 	@Test
+	public void givenCorrectCredentials_whenLogin_thenLogin() throws Exception {
+		logger.info("Authentication test: login with correct credentials");
+
+		mockMvc.perform(post("/api/auth/login?username=clau@gmail.com&password=password")
+						.with(csrf()))
+				.andExpect(status().isOk());
+
+		logger.info("Authentication test: successfully logged in with correct credentials");
+	}
+
+	@Test
 	public void givenNonExistingCredentials_whenLogin_thenThrowException() throws Exception {
 		logger.info("Authentication test: login with non existing credentials");
 
@@ -49,21 +60,10 @@ public class LoginTests {
 	public void givenBadUsername_whenLogin_thenThrowException() throws Exception {
 		logger.info("Authentication test: login with wrong username to existing password");
 
-		mockMvc.perform(post("/api/auth/login?username=clau2@gmail.com&password=password")
+		mockMvc.perform(post("/api/auth/login?username=clau2dsadsadasdas@gmail.com&password=password")
 						.with(csrf()))
 				.andExpect(status().isUnauthorized());
 
 		logger.info("Authentication test: successfully NOT logged in with wrong username to existing password");
-	}
-
-	@Test
-	public void givenCorrectCredentials_whenLogin_thenThrowException() throws Exception {
-		logger.info("Authentication test: login with correct credentials");
-
-		mockMvc.perform(post("/api/auth/login?username=clau@gmail.com&password=password")
-						.with(csrf()))
-				.andExpect(status().isOk());
-
-		logger.info("Authentication test: successfully logged in with correct credentials");
 	}
 }

@@ -1,40 +1,32 @@
 package PizzaApp.api.services.order;
 
-import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
-import PizzaApp.api.entity.dto.order.OrderDTOPojo;
-import PizzaApp.api.entity.dto.order.OrderPaginationResultDTO;
-import PizzaApp.api.entity.dto.order.UserOrderDTO;
-import PizzaApp.api.entity.dto.order.UpdateUserOrderDTO;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.Cart;
+import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
+import PizzaApp.api.entity.order.dto.NewUserOrderDTO;
+import PizzaApp.api.entity.order.dto.OrderDTO;
+import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
+import PizzaApp.api.repos.order.projections.OrderSummary;
+import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
 
 public interface OrderService {
 
-	String createAnonOrder(Order order);
+	OrderDTO findDTOById(Long orderId);
 
-	String createUserOrder(UserOrderDTO userOrderDTO);
+	Long createAnonOrder(NewAnonOrderDTO newAnonOrder);
 
-	String updateUserOrder(UpdateUserOrderDTO updateUserOrderDTO);
+	Long createUserOrder(NewUserOrderDTO newUserOrder);
 
-	String deleteUserOrderById(Long orderId, Long userId);
+	Long updateUserOrder(UpdateUserOrderDTO updateUserOrder);
 
-	OrderDTOPojo findUserOrderDTO(Long orderId);
+	Long deleteUserOrderById(Long orderId);
 
-	OrderPaginationResultDTO findUserOrdersSummary(Long userId, Integer pageSize, Integer pageNumber);
+	Page<OrderSummary> findUserOrderSummary(Long userId, int size, int page);
 
 	// info - for internal use only
 
-	Order findById(Long orderId);
+	Order findByIdNoLazy(Long orderId);
 
-	void removeUserData(Long userId);
-
-	Order findReferenceById(Long orderId);
-
-	OrderCreatedOnDTO findCreatedOnById(Long orderId);
-
-	Cart findOrderCart(Long orderId);
-
-	String createUserOrderTest(UserOrderDTO userOrderDTO, LocalDateTime createdOn);
+	LocalDateTime findCreatedOnById(Long orderId);
 }

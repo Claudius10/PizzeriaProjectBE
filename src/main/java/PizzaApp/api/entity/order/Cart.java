@@ -52,57 +52,48 @@ public class Cart {
 	public Cart() {
 	}
 
-	private Cart(Builder builder) {
-		this.id = builder.id;
-		this.totalQuantity = builder.totalQuantity;
-		this.totalCost = builder.totalCost;
-		this.totalCostOffers = builder.totalCostOffers;
-		this.orderItems = builder.orderItems;
-		this.order = null;
-	}
-
 	public static class Builder {
-		private Long id;
-		private Integer totalQuantity;
-		private Double totalCost;
-		private Double totalCostOffers;
-		private List<OrderItem> orderItems;
+
+		private final Cart cart = new Cart();
 
 		public Builder() {
 		}
 
 		public Builder withId(Long id) {
-			this.id = id;
+			cart.id = id;
 			return this;
 		}
 
 		public Builder withTotalQuantity(Integer totalQuantity) {
-			this.totalQuantity = totalQuantity;
+			cart.totalQuantity = totalQuantity;
 			return this;
 		}
 
 		public Builder withTotalCost(Double totalCost) {
-			this.totalCost = totalCost;
+			cart.totalCost = totalCost;
 			return this;
 		}
 
 		public Builder withTotalCostOffers(Double totalCostOffers) {
-			this.totalCostOffers = totalCostOffers;
+			cart.totalCostOffers = totalCostOffers;
 			return this;
 		}
 
 		public Builder withOrderItems(List<OrderItem> orderItems) {
-			this.orderItems = new ArrayList<>(orderItems);
+			cart.orderItems = new ArrayList<>();
+			for (OrderItem item : orderItems) {
+				cart.addItem(item);
+			}
 			return this;
 		}
 
 		public Builder withEmptyItemList() {
-			this.orderItems = new ArrayList<>();
+			cart.orderItems = new ArrayList<>();
 			return this;
 		}
 
 		public Cart build() {
-			return new Cart(this);
+			return cart;
 		}
 	}
 
@@ -170,7 +161,7 @@ public class Cart {
 				+ totalCostOffers + "]";
 	}
 
-	public boolean entityEquals(Object o) {
+	public boolean contentEquals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Cart cart = (Cart) o;

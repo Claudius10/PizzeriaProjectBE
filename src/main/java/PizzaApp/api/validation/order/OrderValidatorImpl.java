@@ -7,10 +7,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import PizzaApp.api.entity.order.Cart;
+import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.repos.order.OrderRepository;
 import org.springframework.stereotype.Component;
-import PizzaApp.api.entity.order.Order;
 
 @Component
 public class OrderValidatorImpl implements OrderValidator {
@@ -22,50 +22,50 @@ public class OrderValidatorImpl implements OrderValidator {
 	}
 
 	@Override
-	public OrderValidationResult validate(Order order) {
-		if (!isCartEmpty(order.getCart())) {
+	public OrderValidationResult validate(Cart cart, OrderDetails orderDetails) {
+		if (!isCartEmpty(cart)) {
 			return new OrderValidationResult("La cesta no puede ser vacía.");
 		}
 
-		if (!isProductListSizeValid(order.getCart())) {
+		if (!isProductListSizeValid(cart)) {
 			return new OrderValidationResult("Se ha superado el límite de artículos por pedido (20). Contacte con " + "nosotros si desea realizar el pedido.");
 		}
 
-		if (!isProductsQuantityValid(order.getCart())) {
+		if (!isProductsQuantityValid(cart)) {
 			return new OrderValidationResult("Se ha superado el límite de unidades por artículo (20). Contacte con " + "nosotros si desea realizar el pedido.");
 		}
 
-		if (!isChangeRequestedValid(order.getOrderDetails().getChangeRequested(), order.getCart())) {
+		if (!isChangeRequestedValid(orderDetails.getChangeRequested(), cart)) {
 			return new OrderValidationResult("El valor del cambio de efectivo solicitado no puede ser menor o igual " + "que el total o total con ofertas.");
 		}
 
 		// NOTE - turn on for prod
-		if (!isRequestWithinWorkingHours()) {
+/*		if (!isRequestWithinWorkingHours()) {
 			return new OrderValidationResult("La tienda está cerrada. El horario es de las 12:00h hasta las 23:40 horas.");
-		}
+		}*/
 
-		calculatePaymentChange(order);
+		calculatePaymentChange(cart, orderDetails);
 		return new OrderValidationResult();
 	}
 
 	@Override
-	public OrderValidationResult validateUpdate(Order order) {
-		if (!isOrderDataUpdateTimeLimitValid(order.getCreatedOn())) {
+	public OrderValidationResult validateUpdate(Cart cart, OrderDetails orderDetails, LocalDateTime createdOn) {
+		if (!isOrderDataUpdateTimeLimitValid(createdOn)) {
 			return new OrderValidationResult("El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.");
 		}
 
-		if (!isCartUpdateTimeLimitValid(order.getCreatedOn())) {
-			OrderValidationResult result = validate(order);
+		if (!isCartUpdateTimeLimitValid(createdOn)) {
+			OrderValidationResult result = validate(cart, orderDetails);
 			if (result.isValid()) {
 				return new OrderValidationResult(false);
 			}
 		}
 
-		return validate(order);
+		return validate(cart, orderDetails);
 	}
 
 	public OrderValidationResult validateDelete(Long orderId) {
-		if (LocalDateTime.now().isAfter(orderRepository.findCreatedOnById(orderId).createdOn().plusMinutes(20))) {
+		if (LocalDateTime.now().isAfter(orderRepository.findCreatedOnById(orderId).getCreatedOn().plusMinutes(20))) {
 			return new OrderValidationResult("El tiempo límite para anular el pedido (20 minutos) ha finalizado.");
 		}
 		return new OrderValidationResult();
@@ -112,19 +112,19 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	// changeRequested == null || (changeRequested - totalCostOffers || totalCost)
 	@Override
-	public void calculatePaymentChange(Order order) {
-		if (order.getOrderDetails().getChangeRequested() == null) {
-			order.getOrderDetails().setPaymentChange(null);
+	public void calculatePaymentChange(Cart cart, OrderDetails orderDetails) {
+		if (orderDetails.getChangeRequested() == null) {
+			orderDetails.setPaymentChange(null);
 			return;
 		}
 
-		if (order.getCart().getTotalCostOffers() != 0) {
-			order.getOrderDetails().setPaymentChange(order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCostOffers());
+		if (cart.getTotalCostOffers() != 0) {
+			orderDetails.setPaymentChange(orderDetails.getChangeRequested() - cart.getTotalCostOffers());
 			return;
 		}
 
-		if (order.getCart().getTotalCostOffers() == 0) {
-			order.getOrderDetails().setPaymentChange(order.getOrderDetails().getChangeRequested() - order.getCart().getTotalCost());
+		if (cart.getTotalCostOffers() == 0) {
+			orderDetails.setPaymentChange(orderDetails.getChangeRequested() - cart.getTotalCost());
 		}
 	}
 

@@ -27,7 +27,7 @@ public class SecurityTokenUtils {
 				.issuedAt(Instant.now())
 				.expiresAt(expiry)
 				.subject(username)
-				.claim("id", userId)
+				.claim("userId", userId)
 				.claim("roles", roles)
 				.build();
 		return jwtUtils.jwtEncoder().encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -39,13 +39,13 @@ public class SecurityTokenUtils {
 		String accessToken = createToken(
 				Instant.now().plus(1, ChronoUnit.DAYS),
 				jwt.getClaim("sub"),
-				jwt.getClaim("id"),
+				jwt.getClaim("userId"),
 				jwt.getClaim("roles"));
 
 		String newRefreshToken = createToken(
 				Instant.now().plus(7, ChronoUnit.DAYS),
 				jwt.getClaim("sub"),
-				jwt.getClaim("id"),
+				jwt.getClaim("userId"),
 				jwt.getClaim("roles"));
 
 		SecurityCookieUtils.createAuthCookies(response, accessToken, newRefreshToken, jwt.getClaim("id"));

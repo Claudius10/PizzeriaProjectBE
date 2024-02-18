@@ -1,18 +1,20 @@
 package PizzaApp.api.services.user;
 
+import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
-import PizzaApp.api.entity.dto.user.*;
 import PizzaApp.api.entity.role.Role;
 import PizzaApp.api.entity.user.User;
-import PizzaApp.api.entity.user.UserData;
 import PizzaApp.api.repos.user.UserRepository;
-import PizzaApp.api.services.order.OrderService;
+import PizzaApp.api.repos.user.projections.UserProjection;
+import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.role.RoleService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -20,24 +22,20 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 
-	private final OrderService orderService;
-
 	private final RoleService roleService;
 
-	private final UserDataService userDataService;
+	private final AddressService addressService;
 
 	private final PasswordEncoder bCryptEncoder;
 
-	public UserServiceImpl
-			(UserRepository userRepository,
-			 OrderService orderService,
-			 RoleService roleService,
-			 UserDataService userDataService,
-			 PasswordEncoder bCryptEncoder) {
+	public UserServiceImpl(
+			UserRepository userRepository,
+			RoleService roleService,
+			AddressService addressService,
+			PasswordEncoder bCryptEncoder) {
 		this.userRepository = userRepository;
-		this.orderService = orderService;
 		this.roleService = roleService;
-		this.userDataService = userDataService;
+		this.addressService = addressService;
 		this.bCryptEncoder = bCryptEncoder;
 	}
 
@@ -46,53 +44,105 @@ public class UserServiceImpl implements UserService {
 		Role userRole = roleService.findByName("USER");
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 
-		UserData userData = new UserData();
-		userData.setUser(new User.Builder()
+		User user = new User.Builder()
 				.withName(registerDTO.name())
 				.withEmail(registerDTO.email())
 				.withPassword(encodedPassword)
 				.withRoles(userRole)
-				.build());
+				.build();
 
-		userDataService.createData(userData);
+		userRepository.save(user);
 	}
 
 	@Override
-	public UserDTO findDTOById(Long userId) {
-		return userRepository.findDTOById(userId);
+	public Set<Address> findAddressListById(Long userId) {
+		return userRepository.findAddressListById(userId);
+	}
+
+	@Override
+	public boolean addAddress(Long userId, Address address) {
+		Optional<User> user = findById(userId);
+		Optional<Address> dbAddress = addressService.findByExample(address);
+
+		if (user.isPresent()) {
+
+			if (user.get().getAddressList().size() >= 3) {
+				return false;
+			}
+
+			if (dbAddress.isPresent()) {
+				user.get().addAddress(dbAddress.get());
+			} else {
+				user.get().addAddress(address);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void removeAddress(Long userId, Long addressId) {
+		User user = findReference(userId);
+		Optional<Address> addressToRemove =
+				user.getAddressList()
+						.stream()
+						.filter(address1 -> address1.getId().equals(addressId))
+						.findFirst();
+		addressToRemove.ifPresent(user::removeAddress);
+	}
+
+	@Override
+	public Optional<User> findById(Long userId) {
+		return userRepository.findById(userId);
+	}
+
+	@Override
+	public UserProjection findDTOById(Long userId) {
+		return userRepository.findUserById(userId);
 	}
 
 	@Override
 	public User findReference(Long userId) {
-		return userRepository.findReference(userId);
-	}
-
-	@Override
-	public String findUserEmailById(Long userId) {
-		return userRepository.findUserEmailById(userId);
+		return userRepository.getReferenceById(userId);
 	}
 
 	@Override
 	public void updateName(String password, Long userId, String name) {
-		userRepository.updateName(userId, name);
+		userRepository.updateUserName(userId, name);
 	}
 
 	@Override
 	public void updateEmail(String password, Long userId, String email) {
-		userRepository.updateEmail(userId, email);
+		userRepository.updateUserEmail(userId, email);
+	}
+
+	@Override
+	public void updateUserContactNumber(String password, Long userId, Integer contactNumber) {
+		userRepository.updateUserContactNumber(userId, contactNumber);
 	}
 
 	@Override
 	public void updatePassword(String password, Long userId, String newPassword) {
 		String encodedPassword = bCryptEncoder.encode(newPassword);
-		userRepository.updatePassword(userId, encodedPassword);
+		userRepository.updateUserPassword(userId, encodedPassword);
 	}
 
 	@Override
 	public void delete(String password, Long userId) {
-		// remove user data from orders
-		orderService.removeUserData(userId);
-		// delete UserData which cascades delete to User
-		userDataService.delete(userId);
+		userRepository.deleteById(userId);
+	}
+
+	// for internal use only
+
+	@Override
+	public User findByEmail(String userEmail) {
+		Optional<User> user = userRepository.findByEmail(userEmail);
+		if (user.isPresent()) {
+			return user.get();
+		} else {
+			throw new UsernameNotFoundException("User with email " + userEmail + " not found.");
+		}
 	}
 }

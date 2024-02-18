@@ -33,6 +33,24 @@ public class RegisterTests {
 	private ObjectMapper objectMapper;
 
 	@Test
+	public void givenRegistrationRequest_whenRegister_thenRegisterUser() throws Exception {
+		logger.info("Register test: register user");
+
+		mockMvc.perform(post("/api/anon/register")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(
+								new RegisterDTO("Clau Dos",
+										"clau2@gmail.com",
+										"clau2@gmail.com",
+										"password",
+										"password")))
+						.with(csrf()))
+				.andExpect(status().isOk());
+
+		logger.info("Register test: successfully registered user");
+	}
+
+	@Test
 	public void givenExistingEmail_whenRegister_thenThrowException() throws Exception {
 		logger.info("Register test: try to register with existing email");
 

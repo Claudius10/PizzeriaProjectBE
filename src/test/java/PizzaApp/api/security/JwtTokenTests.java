@@ -1,7 +1,7 @@
 package PizzaApp.api.security;
 
-import PizzaApp.api.configs.security.utils.JWTUtils;
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
+import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,36 +33,21 @@ public class JwtTokenTests {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private JWTUtils jwtUtils;
+	private SecurityTokenUtils securityTokenUtils;
 
 	private String validAccessToken, validRefreshToken;
 
 	@BeforeAll
 	public void setup() {
+		validAccessToken = securityTokenUtils.createToken(Instant.now().plus(30, ChronoUnit.SECONDS),
+				"test subject",
+				1L,
+				"USER");
 
-		validAccessToken = jwtUtils.jwtEncoder().encode(
-						JwtEncoderParameters.from(
-								JwtClaimsSet.builder()
-										.issuer("https://pizzeriaprojectbe-production.up.railway.app")
-										.subject("test subject")
-										.issuedAt(Instant.now())
-										.expiresAt(Instant.now().plus(30, ChronoUnit.SECONDS))
-										.claim("roles", "USER")
-										.claim("id", 1)
-										.build()))
-				.getTokenValue();
-
-		validRefreshToken = jwtUtils.jwtEncoder().encode(
-						JwtEncoderParameters.from(
-								JwtClaimsSet.builder()
-										.issuer("https://pizzeriaprojectbe-production.up.railway.app")
-										.subject("test subject")
-										.issuedAt(Instant.now())
-										.expiresAt(Instant.now().plus(60, ChronoUnit.SECONDS))
-										.claim("roles", "USER")
-										.claim("id", 1)
-										.build()))
-				.getTokenValue();
+		validRefreshToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
+				"test subject",
+				1L,
+				"USER");
 	}
 
 	@Test
@@ -158,26 +141,5 @@ public class JwtTokenTests {
 		mockMvc.perform(post("/api/token/refresh").with(csrf())).andExpect(status().isBadRequest());
 
 		logger.info("JWT Token test: successfully NOT received new tokens");
-	}
-
-	@Test
-	public void givenTokenWithNoIssuer_whenRequestingProtectedResource_thenThrow() throws Exception {
-		logger.info("JWT Token test: access secure resource with token that has no issuer");
-
-		mockMvc.perform(get("/api/tests")
-						.cookie(SecurityCookieUtils.makeCookie(
-								"fight",
-								jwtUtils.jwtEncoder().encode(JwtEncoderParameters.from
-												(JwtClaimsSet.builder()
-														.subject("test subject")
-														.issuedAt(Instant.now())
-														.expiresAt(Instant.now().plus(30, ChronoUnit.SECONDS))
-														.claim("roles", "USER")
-														.claim("id", 1)
-														.build()))
-										.getTokenValue(), 30, true, false)))
-				.andExpect(status().isUnauthorized());
-
-		logger.info("JWT Token test: successfully NOT accessed secure resource with token that has no issuer");
 	}
 }

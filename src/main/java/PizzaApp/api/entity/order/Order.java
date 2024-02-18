@@ -3,18 +3,13 @@ package PizzaApp.api.entity.order;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import PizzaApp.api.entity.user.UserData;
+import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.address.Address;
-import PizzaApp.api.exceptions.constraints.IntegerLength;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 
 @Entity(name = "Order")
-@Table(name = "customer_order")
+@Table(name = "orders")
 public class Order {
 
 	@Id
@@ -34,141 +29,34 @@ public class Order {
 	@Column(name = "formatted_updated_on")
 	private String formattedUpdatedOn;
 
-	@Column(name = "c_name")
-	@Pattern(regexp = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$",
-			message = "Compruebe que el nombre y apellido(s) esté compuesto solo por un mínimo de 2 y un máximo de 50 letras")
-	private String customerName;
+	@Column(name = "anon_customer_name")
+	private String anonCustomerName;
 
-	@Column(name = "contact_tel")
-	@IntegerLength(min = 9, max = 9, message = "Compruebe que el número de teléfono tenga 9 digitos")
-	private Integer contactTel;
+	@Column(name = "anon_customer_number")
+	private Integer anonCustomerContactNumber;
 
-	@Column(name = "email")
-	@Email(message = "El formato del email no es aceptado")
-	private String email;
+	@Column(name = "anon_customer_email")
+	private String anonCustomerEmail;
 
-	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-	@Valid
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
+			fetch = FetchType.LAZY)
 	private Address address;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "userdata_id")
-	@JsonBackReference
-	private UserData userData;
-
-	@OneToOne(mappedBy = "order",
-			cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JsonManagedReference
-	@Valid
 	private OrderDetails orderDetails;
 
-	@OneToOne(mappedBy = "order",
-			cascade = CascadeType.ALL)
+	// NOTE - bidirectional OneToOne association's non-owning side
+	//  can only be lazy fetched if the association is never null ->
+	//  optional = false
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	private Cart cart;
 
+	@ManyToOne(fetch = FetchType.LAZY) // on delete set null for the user FK (manually set in db)
+	private User user;
+
 	public Order() {
-	}
-
-	private Order(Builder builder) {
-		this.id = builder.id;
-		this.createdOn = builder.createdOn;
-		this.updatedOn = builder.updatedOn;
-		this.formattedCreatedOn = builder.formattedCreatedOn;
-		this.formattedUpdatedOn = builder.formattedUpdatedOn;
-		this.customerName = builder.customerName;
-		this.contactTel = builder.contactTel;
-		this.email = builder.email;
-		this.address = builder.address;
-		this.orderDetails = builder.orderDetails;
-		this.cart = builder.cart;
-		this.userData = builder.userData;
-	}
-
-	public static class Builder {
-		private Long id;
-
-		private LocalDateTime createdOn, updatedOn;
-
-		private String customerName, email, formattedCreatedOn, formattedUpdatedOn;
-
-		private Integer contactTel;
-
-		private Address address;
-
-		private OrderDetails orderDetails;
-
-		private Cart cart;
-
-		private UserData userData;
-
-		public Builder() {
-		}
-
-		public Builder withId(long id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withCreatedOn(LocalDateTime createdOn) {
-			this.createdOn = createdOn;
-			return this;
-		}
-
-		public Builder withFormattedCreatedOn(String formattedCreatedOn) {
-			this.formattedCreatedOn = formattedCreatedOn;
-			return this;
-		}
-
-		public Builder withFormattedUpdatedOn(String formattedUpdatedOn) {
-			this.formattedUpdatedOn = formattedUpdatedOn;
-			return this;
-		}
-
-		public Builder withUpdatedOn(LocalDateTime updatedOn) {
-			this.updatedOn = updatedOn;
-			return this;
-		}
-
-		public Builder withCustomerName(String customerName) {
-			this.customerName = customerName;
-			return this;
-		}
-
-
-		public Builder withContactTel(Integer contactTel) {
-			this.contactTel = contactTel;
-			return this;
-		}
-
-		public Builder withEmail(String email) {
-			this.email = email;
-			return this;
-		}
-
-		public Builder withAddress(Address address) {
-			this.address = address;
-			return this;
-		}
-
-		public Builder withOrderDetails(OrderDetails orderDetails) {
-			this.orderDetails = orderDetails;
-			return this;
-		}
-
-		public Builder withCart(Cart cart) {
-			this.cart = cart;
-			return this;
-		}
-
-		public Builder withUser(UserData user) {
-			this.userData = user;
-			return this;
-		}
-
-		public Order build() {
-			return new Order(this);
-		}
 	}
 
 	public void setOrderDetails(OrderDetails orderDetails) {
@@ -217,28 +105,44 @@ public class Order {
 		this.updatedOn = updatedOn;
 	}
 
-	public String getCustomerName() {
-		return customerName;
+	public String getFormattedCreatedOn() {
+		return formattedCreatedOn;
 	}
 
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setFormattedCreatedOn(String formattedCreatedOn) {
+		this.formattedCreatedOn = formattedCreatedOn;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getFormattedUpdatedOn() {
+		return formattedUpdatedOn;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setFormattedUpdatedOn(String formattedUpdatedOn) {
+		this.formattedUpdatedOn = formattedUpdatedOn;
 	}
 
-	public Integer getContactTel() {
-		return contactTel;
+	public String getAnonCustomerName() {
+		return anonCustomerName;
 	}
 
-	public void setContactTel(Integer contactTel) {
-		this.contactTel = contactTel;
+	public void setAnonCustomerName(String anonCustomerName) {
+		this.anonCustomerName = anonCustomerName;
+	}
+
+	public Integer getAnonCustomerContactNumber() {
+		return anonCustomerContactNumber;
+	}
+
+	public void setAnonCustomerContactNumber(Integer anonCustomerContactNumber) {
+		this.anonCustomerContactNumber = anonCustomerContactNumber;
+	}
+
+	public String getAnonCustomerEmail() {
+		return anonCustomerEmail;
+	}
+
+	public void setAnonCustomerEmail(String anonCustomerEmail) {
+		this.anonCustomerEmail = anonCustomerEmail;
 	}
 
 	public Address getAddress() {
@@ -257,28 +161,80 @@ public class Order {
 		return cart;
 	}
 
-	public UserData getUserData() {
-		return userData;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserData(UserData userData) {
-		this.userData = userData;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public String getFormattedCreatedOn() {
-		return formattedCreatedOn;
-	}
+	public static class Builder {
 
-	public void setFormattedCreatedOn(String formattedCreatedOn) {
-		this.formattedCreatedOn = formattedCreatedOn;
-	}
+		private final Order order = new Order();
 
-	public String getFormattedUpdatedOn() {
-		return formattedUpdatedOn;
-	}
+		public Builder() {
+		}
 
-	public void setFormattedUpdatedOn(String formattedUpdatedOn) {
-		this.formattedUpdatedOn = formattedUpdatedOn;
+		public Builder withId(long id) {
+			order.id = id;
+			return this;
+		}
+
+		public Builder withCreatedOn(LocalDateTime createdOn) {
+			order.createdOn = createdOn;
+			return this;
+		}
+
+		public Builder withFormattedCreatedOn(String formattedCreatedOn) {
+			order.formattedCreatedOn = formattedCreatedOn;
+			return this;
+		}
+
+		public Builder withFormattedUpdatedOn(String formattedUpdatedOn) {
+			order.formattedUpdatedOn = formattedUpdatedOn;
+			return this;
+		}
+
+		public Builder withUpdatedOn(LocalDateTime updatedOn) {
+			order.updatedOn = updatedOn;
+			return this;
+		}
+
+		public Builder withAddress(Address address) {
+			order.address = address;
+			return this;
+		}
+
+		public Builder withOrderDetails(OrderDetails orderDetails) {
+			order.setOrderDetails(orderDetails);
+			return this;
+		}
+
+		public Builder withCart(Cart cart) {
+			order.setCart(cart);
+			return this;
+		}
+
+		public Builder withAnonCustomer(String anonCustomerName, Integer anonCustomerContactNumber, String anonCustomerEmail) {
+			order.anonCustomerName = anonCustomerName;
+			order.anonCustomerContactNumber = anonCustomerContactNumber;
+			order.anonCustomerEmail = anonCustomerEmail;
+			order.user = null;
+			return this;
+		}
+
+		public Builder withUser(User user) {
+			order.anonCustomerName = null;
+			order.anonCustomerContactNumber = null;
+			order.anonCustomerEmail = null;
+			order.user = user;
+			return this;
+		}
+
+		public Order build() {
+			return order;
+		}
 	}
 
 	@Override
@@ -297,46 +253,15 @@ public class Order {
 		return id != null && id.equals(((Order) obj).getId());
 	}
 
-	public boolean entityEquals(Object o) {
+	public boolean contentEquals(Object o) {
 		Order order = (Order) o;
-
-		// orderItem contentEquals
-		boolean equalContentOfOrderItems = false;
-		if (order.getCart() != null) {
-			for (OrderItem item : cart.getOrderItems()) {
-				for (OrderItem otherItem : order.cart.getOrderItems()) {
-					if (item.contentEquals(otherItem)) {
-						equalContentOfOrderItems = true;
-					}
-				}
-			}
-		} else {
-			equalContentOfOrderItems = true;
-		}
-
 		return Objects.equals(createdOn, order.createdOn) &&
 				Objects.equals(updatedOn, order.updatedOn) &&
-
-				Objects.equals(customerName, order.customerName) &&
-				Objects.equals(contactTel, order.contactTel) &&
-				Objects.equals(email, order.getEmail()) &&
-
-				Objects.equals(address.getStreet(), order.address.getStreet()) &&
-				Objects.equals(address.getStreetNr(), order.address.getStreetNr()) &&
-				Objects.equals(address.getStaircase(), order.address.getStaircase()) &&
-				Objects.equals(address.getGate(), order.address.getGate()) &&
-				Objects.equals(address.getFloor(), order.address.getFloor()) &&
-				Objects.equals(address.getDoor(), order.address.getDoor()) &&
-
-				Objects.equals(orderDetails.getDeliveryHour(), order.orderDetails.getDeliveryHour()) &&
-				Objects.equals(orderDetails.getPaymentType(), order.orderDetails.getPaymentType()) &&
-				Objects.equals(orderDetails.getChangeRequested(), order.orderDetails.getChangeRequested()) &&
-				Objects.equals(orderDetails.getPaymentChange(), order.orderDetails.getPaymentChange()) &&
-				Objects.equals(orderDetails.getDeliveryComment(), order.orderDetails.getDeliveryComment()) &&
-
-				Objects.equals(cart.getTotalQuantity(), order.cart.getTotalQuantity()) &&
-				Objects.equals(cart.getTotalCost(), order.cart.getTotalCost()) &&
-				Objects.equals(cart.getTotalCostOffers(), order.cart.getTotalCostOffers()) &&
-				equalContentOfOrderItems;
+				Objects.equals(anonCustomerName, order.getAnonCustomerName()) &&
+				Objects.equals(anonCustomerContactNumber, order.getAnonCustomerContactNumber()) &&
+				Objects.equals(anonCustomerEmail, order.getAnonCustomerEmail()) &&
+				this.address.contentEquals(order.address) &&
+				this.orderDetails.contentEquals(order.orderDetails) &&
+				this.cart.contentEquals(order.cart);
 	}
 }

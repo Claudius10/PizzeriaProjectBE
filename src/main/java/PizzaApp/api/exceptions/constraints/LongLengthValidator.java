@@ -17,8 +17,9 @@ public class LongLengthValidator implements ConstraintValidator<LongLength, Long
 	public boolean isValid(Long value, ConstraintValidatorContext context) {
 		// validate whatever value is null
 		// and
-		// validate whatever the long field value is inbetween min and max
-		return (value != null && (String.valueOf(value.longValue()).length() >= min
-				&& String.valueOf(value.longValue()).length() <= max));
+		// validate whatever the long field value is in between min and max
+		if (value == null) return false;
+		int length = String.valueOf(value.longValue()).length();
+		return (length >= min && length <= max);
 	}
 }

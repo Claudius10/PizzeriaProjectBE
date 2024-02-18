@@ -141,7 +141,7 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.0.10:3000", "http://localhost:3000", "https://pizzeriaproject-production.up" +
+				Arrays.asList("http://192.168.1.128:3000", "http://localhost:3000", "https://pizzeriaproject-production.up" +
 						".railway.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
@@ -176,8 +176,8 @@ public class SecurityConfig {
 		CookieCsrfTokenRepository result = new CookieCsrfTokenRepository();
 		result.setCookieCustomizer((cookie) -> {
 			cookie.httpOnly(false);
-			cookie.secure(true); // NOTE - on for prod fe
-			cookie.domain("up.railway.app"); // NOTE - on for prod fe
+			//cookie.secure(true); // NOTE - on for prod fe
+			//cookie.domain("up.railway.app"); // NOTE - on for prod fe
 		});
 		return result;
 	}

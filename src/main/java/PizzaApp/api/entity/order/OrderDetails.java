@@ -161,7 +161,7 @@ public class OrderDetails {
 				+ deliveryComment + "]";
 	}
 
-	public boolean entityEquals(Object o) {
+	public boolean contentEquals(Object o) {
 		OrderDetails that = (OrderDetails) o;
 		return Objects.equals(deliveryHour, that.deliveryHour)
 				&& Objects.equals(paymentType, that.paymentType)

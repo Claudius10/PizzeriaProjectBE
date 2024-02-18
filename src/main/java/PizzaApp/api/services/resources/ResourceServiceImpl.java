@@ -30,12 +30,12 @@ public class ResourceServiceImpl implements ResourceService {
 
 	@Override
 	public List<Product> findAllProductsByType(String productType) {
-		return productRepository.findAllByType(productType);
+		return productRepository.findAllByProductType(productType);
 	}
 
 	@Override
 	public List<Store> findAllStores() {
-		return storeRepository.findAll();
+		return storeRepository.findAllStores();
 	}
 
 	@Override

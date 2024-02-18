@@ -1,10 +1,15 @@
 package PizzaApp.api.repos.resources;
 
+import PizzaApp.api.entity.resources.Store;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
-import PizzaApp.api.entity.resources.Store;
+@Repository
+public interface StoreRepository extends JpaRepository<Store, Long> {
 
-public interface StoreRepository {
-
-	List<Store> findAll();
+	@Query("from Store store join fetch store.address")
+	List<Store> findAllStores();
 }

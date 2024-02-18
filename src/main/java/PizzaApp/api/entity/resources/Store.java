@@ -23,7 +23,7 @@ public class Store {
 	@Column(name = "name")
 	private String name;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
 	@JoinColumn(name = "address_id")
 	private Address address;
 

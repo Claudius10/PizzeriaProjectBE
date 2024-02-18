@@ -1,34 +1,27 @@
 package PizzaApp.api.repos.order;
 
-import PizzaApp.api.entity.dto.order.OrderCreatedOnDTO;
-import PizzaApp.api.entity.dto.order.OrderDTOPojo;
-import PizzaApp.api.entity.dto.order.OrderSummary;
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.Cart;
+import PizzaApp.api.repos.order.projections.*;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
-public interface OrderRepository {
+	@Query("from Order order " +
+			"join fetch order.orderDetails " +
+			"join fetch order.address " +
+			"join fetch order.cart as cart " +
+			"join fetch cart.orderItems " +
+			"left join fetch order.user " +
+			"where order.id = :orderId")
+	Order findByIdNoLazy(Long orderId);
 
-	String createOrder(Order order);
+	Page<OrderSummary> findAllByUser_Id(Long userId, Pageable pageable);
 
-	OrderDTOPojo findOrderDTO(Long orderId);
+	// internal use only
 
-	Integer findOrderCount(Long userId);
-
-	List<OrderSummary> findOrderSummaryList(Long userId, int pageSize, int pageNumber);
-
-	String updateOrder(Order order);
-
-	// info - for internal use only
-
-	Order findById(Long orderId);
-
-	void removeUserData(Long userId);
-
-	Order findReferenceById(Long orderId);
-
-	OrderCreatedOnDTO findCreatedOnById(Long orderId);
-
-	Cart findOrderCart(Long orderId);
+	CreatedOnOnly findCreatedOnById(Long orderId);
 }

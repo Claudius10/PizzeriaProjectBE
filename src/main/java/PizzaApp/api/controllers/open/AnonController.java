@@ -2,6 +2,7 @@ package PizzaApp.api.controllers.open;
 
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
 import PizzaApp.api.services.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.services.order.OrderService;
 import jakarta.validation.Valid;
 
@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 public class AnonController {
 
 	private final UserService userService;
+
 	private final OrderService orderService;
 
 	public AnonController(UserService userService, OrderService orderService) {
@@ -42,7 +43,7 @@ public class AnonController {
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<String> createAnonOrder(@RequestBody @Valid Order order, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.createAnonOrder(order));
+	public ResponseEntity<Long> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(orderService.createAnonOrder(newAnonOrder));
 	}
 }

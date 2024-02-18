@@ -2,10 +2,8 @@ package PizzaApp.api.configs.hibernate;
 
 import java.util.List;
 
-import PizzaApp.api.entity.dto.order.*;
-import PizzaApp.api.entity.dto.user.PasswordDTO;
-import PizzaApp.api.entity.dto.user.TelephoneDTO;
-import PizzaApp.api.entity.dto.user.UserDTO;
+import PizzaApp.api.entity.user.dto.PasswordDTO;
+import PizzaApp.api.entity.order.dto.OrderDTO;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.jpa.boot.spi.IntegratorProvider;
 
@@ -19,12 +17,6 @@ public class ClassImportIntegratorIntegratorProvider implements IntegratorProvid
 	public List<Integrator> getIntegrators() {
 		return List.of(new ClassImportIntegrator(List.of(
 				OrderDTO.class,
-				OrderDTOPojo.class,
-				OrderSummary.class,
-				OrderPaginationResultDTO.class,
-				OrderCreatedOnDTO.class,
-				UserDTO.class,
-				TelephoneDTO.class,
 				PasswordDTO.class
 		)));
 	}

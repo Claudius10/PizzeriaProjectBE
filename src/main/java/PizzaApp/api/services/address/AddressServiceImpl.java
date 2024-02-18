@@ -1,11 +1,12 @@
 package PizzaApp.api.services.address;
 
 import PizzaApp.api.repos.address.AddressRepository;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import PizzaApp.api.entity.address.Address;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,25 +21,25 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Address findReference(Long addressId) {
-		return addressRepository.findReference(addressId);
+		return addressRepository.getReferenceById(addressId);
 	}
 
 	@Override
-	public Optional<Address> find(Address address) {
+	public Address findAddressById(Long addressId) {
+		return addressRepository.findAddressById(addressId);
+	}
+
+	public Optional<Address> findByExample(Address address) {
+		// if address is already in db return it
 		if (address.getId() != null) {
-			return Optional.ofNullable(findReference(address.getId()));
-		} else {
-			return addressRepository.findAddress(address);
+			return addressRepository.findById(address.getId());
 		}
-	}
 
-	@Override
-	public List<Address> findAllByUserId(Long userId) {
-		return addressRepository.findAllByUserId(userId);
-	}
+		ExampleMatcher matcher = ExampleMatcher.matching()
+				.withIgnoreNullValues()
+				.withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
 
-	@Override
-	public Integer findUserAddressListSize(Long userId) {
-		return addressRepository.findUserAddressListSize(userId);
+		Example<Address> example = Example.of(address, matcher);
+		return addressRepository.findOne(example);
 	}
 }

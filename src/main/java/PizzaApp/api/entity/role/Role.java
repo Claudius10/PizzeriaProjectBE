@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Objects;
+
 @Entity(name = "Role")
 @Table(name = "role")
 public class Role implements GrantedAuthority {
@@ -45,18 +47,15 @@ public class Role implements GrantedAuthority {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj instanceof Role) {
-			return this.name.equals(((Role) obj).name);
-		}
-		return false;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Role role = (Role) o;
+		return Objects.equals(name, role.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return this.name.hashCode();
+		return Objects.hash(name);
 	}
 }

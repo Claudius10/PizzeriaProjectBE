@@ -1,10 +1,11 @@
 package PizzaApp.api.repos.role;
 
 import PizzaApp.api.entity.role.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface RoleRepository {
+@Repository
+public interface RoleRepository extends JpaRepository<Role, Long> {
 
-	void create(Role role);
-
-	Role findByName(String roleName);
+	Role findByName(String name);
 }

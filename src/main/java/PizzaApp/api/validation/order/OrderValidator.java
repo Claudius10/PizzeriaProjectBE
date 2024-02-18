@@ -1,15 +1,15 @@
 package PizzaApp.api.validation.order;
 
 import PizzaApp.api.entity.order.Cart;
-import PizzaApp.api.entity.order.Order;
+import PizzaApp.api.entity.order.OrderDetails;
 
 import java.time.LocalDateTime;
 
 public interface OrderValidator {
 
-	OrderValidationResult validate(Order order);
+	OrderValidationResult validate(Cart cart, OrderDetails orderDetails);
 
-	OrderValidationResult validateUpdate(Order order);
+	OrderValidationResult validateUpdate(Cart cart, OrderDetails orderDetails, LocalDateTime createdOn);
 
 	OrderValidationResult validateDelete(Long orderId);
 
@@ -25,7 +25,7 @@ public interface OrderValidator {
 
 	boolean isOrderDataUpdateTimeLimitValid(LocalDateTime createdOn);
 
-	void calculatePaymentChange(Order order);
+	void calculatePaymentChange(Cart cart, OrderDetails orderDetails);
 
 	boolean isRequestWithinWorkingHours();
 }

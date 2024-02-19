@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void create(RegisterDTO registerDTO) {
+	public Long create(RegisterDTO registerDTO) {
 		Role userRole = roleService.findByName("USER");
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 				.withRoles(userRole)
 				.build();
 
-		userRepository.save(user);
+		return userRepository.save(user).getId();
 	}
 
 	@Override
@@ -61,25 +61,20 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean addAddress(Long userId, Address address) {
-		Optional<User> user = findById(userId);
+		User user = findByIdWithAddressList(userId);
 		Optional<Address> dbAddress = addressService.findByExample(address);
 
-		if (user.isPresent()) {
-
-			if (user.get().getAddressList().size() >= 3) {
-				return false;
-			}
-
-			if (dbAddress.isPresent()) {
-				user.get().addAddress(dbAddress.get());
-			} else {
-				user.get().addAddress(address);
-			}
-
-			return true;
+		if (user.getAddressList().size() >= 3) {
+			return false;
 		}
 
-		return false;
+		if (dbAddress.isPresent()) {
+			user.addAddress(dbAddress.get());
+		} else {
+			user.addAddress(address);
+		}
+
+		return true;
 	}
 
 	@Override
@@ -130,7 +125,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void delete(String password, Long userId) {
+	public void updateDelete(String password, Long userId) {
 		userRepository.deleteById(userId);
 	}
 
@@ -138,11 +133,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findByEmail(String userEmail) {
-		Optional<User> user = userRepository.findByEmail(userEmail);
+		Optional<User> user = userRepository.findByEmailWithRoles(userEmail);
 		if (user.isPresent()) {
 			return user.get();
 		} else {
 			throw new UsernameNotFoundException("User with email " + userEmail + " not found.");
 		}
+	}
+
+	@Override
+	public User findByIdWithAddressList(Long userId) {
+		return userRepository.findByIdWithAddressList(userId);
 	}
 }

@@ -48,7 +48,7 @@ public class SecurityTokenUtils {
 				jwt.getClaim("userId"),
 				jwt.getClaim("roles"));
 
-		SecurityCookieUtils.createAuthCookies(response, accessToken, newRefreshToken, jwt.getClaim("id"));
+		SecurityCookieUtils.createAuthCookies(response, accessToken, newRefreshToken, jwt.getClaim("userId"));
 	}
 
 	public Jwt validate(String refreshToken) {

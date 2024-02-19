@@ -175,9 +175,9 @@ public class SecurityConfig {
 	private CookieCsrfTokenRepository csrfTokenRepository() {
 		CookieCsrfTokenRepository result = new CookieCsrfTokenRepository();
 		result.setCookieCustomizer((cookie) -> {
-			cookie.httpOnly(false);
-			//cookie.secure(true); // NOTE - on for prod fe
-			//cookie.domain("up.railway.app"); // NOTE - on for prod fe
+			cookie.httpOnly(true);
+			cookie.secure(true); // NOTE - on for prod fe
+			cookie.domain("up.railway.app"); // NOTE - on for prod fe
 		});
 		return result;
 	}

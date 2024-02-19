@@ -32,7 +32,7 @@ public class User implements UserDetails {
 			inverseJoinColumns = @JoinColumn(name = "address_id"))
 	private Set<Address> addressList;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH})
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JoinTable(name = "users_roles",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))

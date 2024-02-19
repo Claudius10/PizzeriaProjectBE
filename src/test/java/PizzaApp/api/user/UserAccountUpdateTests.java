@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -46,15 +48,21 @@ public class UserAccountUpdateTests {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@BeforeAll
+	@AfterAll
+	void cleanUp() {
+		JdbcTestUtils.deleteFromTables(jdbcTemplate, "users_roles", "users_addresses", "user");
+	}
+
 	public Long createUserTestSubject(RegisterDTO registerDTO) throws Exception {
-		mockMvc.perform(post("/api/anon/register")
+		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))
 						.with(csrf()))
-				.andExpect(status().isOk());
-
-		User user = userService.findByEmail(registerDTO.email());
-		return user.getId();
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
 	}
 
 	@Test

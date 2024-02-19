@@ -40,9 +40,9 @@ public class OrderValidatorImpl implements OrderValidator {
 		}
 
 		// NOTE - turn on for prod
-/*		if (!isRequestWithinWorkingHours()) {
-			return new OrderValidationResult("La tienda está cerrada. El horario es de las 12:00h hasta las 23:40 horas.");
-		}*/
+		if (!isRequestWithinWorkingHours()) {
+			return new OrderValidationResult("La tienda está cerrada. El horario es de las 9:00h hasta las 23:40 horas.");
+		}
 
 		calculatePaymentChange(cart, orderDetails);
 		return new OrderValidationResult();

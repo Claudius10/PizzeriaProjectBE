@@ -60,7 +60,7 @@ public class UserController {
 	@DeleteMapping("/{userId}/address/{addressId}")
 	public ResponseEntity<?> deleteUserAddress(@PathVariable Long userId, @PathVariable Long addressId, HttpServletRequest request) {
 		userService.removeAddress(userId, addressId);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{userId}/name")
@@ -100,7 +100,7 @@ public class UserController {
 			 @Valid @RequestBody PasswordDTO passwordDTO,
 			 HttpServletRequest request,
 			 HttpServletResponse response) {
-		userService.delete(passwordDTO.password(), userId);
+		userService.updateDelete(passwordDTO.password(), userId);
 		SecurityCookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}

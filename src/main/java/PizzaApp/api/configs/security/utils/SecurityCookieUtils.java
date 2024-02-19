@@ -18,7 +18,7 @@ public final class SecurityCookieUtils {
 				.httpOnly(httpOnly)
 				.secure(secure)
 				.sameSite("Lax")
-				//.domain("up.railway.app") // NOTE - on for prod fe
+				.domain("up.railway.app") // NOTE - on for prod fe
 				.build();
 	}
 
@@ -38,35 +38,35 @@ public final class SecurityCookieUtils {
 				bakeCookie("fight", accessToken,
 						24 * 60 * 60,
 						true,
-						false) // NOTE - true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_fight", "exp_d",
 						24 * 60 * 60,
 						false,
-						false) // NOTE - true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("me", refreshToken,
 						168 * 60 * 60,
 						true,
-						false) // NOTE - true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_me", "exp_d",
 						168 * 60 * 60,
 						false,
-						false) // NOTE - true for prod
+						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("id", String.valueOf(userId),
 						168 * 60 * 60,
 						false,
-						false) // NOTE - true for prod
+						true) // NOTE - true for prod
 						.toString());
 	}
 
@@ -74,8 +74,8 @@ public final class SecurityCookieUtils {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null)
 			for (Cookie cookie : cookies) {
-				//cookie.setSecure(true); // NOTE - on for prod fe
-				//cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
+				cookie.setSecure(true); // NOTE - on for prod fe
+				cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);

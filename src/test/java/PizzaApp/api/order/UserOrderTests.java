@@ -5,23 +5,22 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
+import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.order.dto.NewUserOrderDTO;
 import PizzaApp.api.entity.order.dto.OrderDTO;
 import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
-import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.dto.PasswordDTO;
 import PizzaApp.api.repos.address.AddressRepository;
-import PizzaApp.api.repos.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -29,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import PizzaApp.api.entity.order.Cart;
@@ -53,10 +54,10 @@ public class UserOrderTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private UserRepository userRepository;
+	private AddressRepository addressRepository;
 
 	@Autowired
-	private AddressRepository addressRepository;
+	private JdbcTemplate jdbcTemplate;
 
 	// test objects
 	private final OrderDetails testSubjectOrderDetails = new OrderDetails.Builder()
@@ -80,15 +81,18 @@ public class UserOrderTests {
 
 	private Long addressId, newAddressId;
 
+	@BeforeAll
+	@AfterAll
+	void cleanUp() {
+		JdbcTestUtils.deleteFromTables(jdbcTemplate, "users_roles", "users_addresses", "user", "order_item", "cart", "order_details", "orders");
+	}
+
 	public Long createUserTestSubject(RegisterDTO registerDTO) throws Exception {
-		mockMvc.perform(post("/api/anon/register")
+		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))
 						.with(csrf()))
-				.andExpect(status().isOk());
-
-		Optional<User> user = userRepository.findByEmail(registerDTO.email());
-		return user.map(User::getId).orElse(null);
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
 	}
 
 	public OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {
@@ -141,7 +145,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestCreateOrder@gmail.com",
 				testUserId,
 				"USER");
 
@@ -159,6 +163,7 @@ public class UserOrderTests {
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",
+				() -> assertEquals(dbOrder.getUser().id(), newOrder.userId()),
 				() -> assertEquals(dbOrder.getAddress().getId(), newOrder.addressId()),
 				() -> assertTrue(dbOrder.getCart().contentEquals(newOrder.cart())),
 				() -> assertTrue(dbOrder.getOrderDetails().contentEquals(newOrder.orderDetails()))
@@ -183,7 +188,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateAddress@gmail.com",
 				testUserId,
 				"USER");
 
@@ -233,7 +238,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateOrderDetails@gmail.com",
 				testUserId,
 				"USER");
 
@@ -288,7 +293,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateOrderCart@gmail.com",
 				testUserId,
 				"USER");
 
@@ -358,7 +363,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateOrderCartAndOrderDetails@gmail.com",
 				testUserId,
 				"USER");
 
@@ -419,6 +424,7 @@ public class UserOrderTests {
 		logger.info("Update order test: successfully updated cart and orderDetails");
 	}
 
+	// testing ValidateOrderOperation aspect
 	@Test
 	public void givenCartUpdateAfterTimeLimit_whenUpdate_thenCorrectlySetNewCartToNullAndUseOriginalCart() throws Exception {
 		logger.info("Update order test: update cart after time limit");
@@ -435,7 +441,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateOrderCartAfterTimeLimit@gmail.com",
 				testUserId,
 				"USER");
 
@@ -490,8 +496,9 @@ public class UserOrderTests {
 		logger.info("Update order test: cart successfully NOT updated due to time limit constraint");
 	}
 
+	// testing ValidateOrderOperation aspect
 	@Test
-	public void givenOrderDataUpdateAfterTimeLimit_whenUpdate_thenThrowException() throws Exception {
+	public void givenOrderDataUpdateAfterTimeLimit_whenUpdate_thenDontAllowUpdate() throws Exception {
 		logger.info("Update order test: update order data after time limit");
 
 		// create user test subject
@@ -506,7 +513,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateOrderDataAfterTimeLimit@gmail.com",
 				testUserId,
 				"USER");
 
@@ -550,19 +557,24 @@ public class UserOrderTests {
 										.build()))
 						.build());
 
-		mockMvc.perform(put("/api/user/orders")
+		String response = mockMvc.perform(put("/api/user/orders")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
 						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(testUserId), 1800, false, false))
 						.with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+		ApiErrorDTO error = objectMapper.readValue(response, ApiErrorDTO.class);
+
+		assertEquals("El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.", error.errorMsg());
 
 		logger.info("Update order test: order data successfully NOT updated due to time limit constraint");
 	}
 
+	// testing ValidateOrderOperation aspect
 	@Test
-	public void givenOrderDeleteAfterTimeLimit_whenDelete_thenThrowException() throws Exception {
+	public void givenOrderDeleteAfterTimeLimit_whenDelete_thenDontAllowDelete() throws Exception {
 		logger.info("Update order test: delete order after time limit");
 
 		// create user test subject
@@ -577,7 +589,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestDeleteOrderAfterTimeLimite@gmail.com",
 				testUserId,
 				"USER");
 
@@ -587,11 +599,15 @@ public class UserOrderTests {
 
 		// delete order test subject
 
-		mockMvc.perform(delete("/api/user/orders/{orderId}", newOrder.getId())
+		String response = mockMvc.perform(delete("/api/user/orders/{orderId}", newOrder.getId())
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
 						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(testUserId), 1800, false, false))
 						.with(csrf()))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+		ApiErrorDTO error = objectMapper.readValue(response, ApiErrorDTO.class);
+
+		assertEquals("El tiempo límite para anular el pedido (20 minutos) ha finalizado.", error.errorMsg());
 
 		logger.info("Update order test: order successfully NOT deleted due to time limit constraint");
 	}
@@ -612,7 +628,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestDeleteOrder@gmail.com",
 				testUserId,
 				"USER");
 
@@ -631,7 +647,6 @@ public class UserOrderTests {
 		logger.info("Update order test: order successfully deleted order");
 	}
 
-	// NOTE - this test needs on delete set null for user FK in orders table since it's a ManyToOne uni
 	@Test
 	public void givenUserAccountDelete_whenUpdatingOrders_thenSetOrderUserIdToNull() throws Exception {
 		logger.info("Update order test: set order's user id to null if user deletes account");
@@ -648,7 +663,7 @@ public class UserOrderTests {
 		// create JWT token
 
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"test subject",
+				"OrderTestUpdateSetOrderUserIdToNull@gmail.com",
 				testUserId,
 				"USER");
 

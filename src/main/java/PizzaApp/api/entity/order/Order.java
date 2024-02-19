@@ -53,7 +53,7 @@ public class Order {
 	@JsonManagedReference
 	private Cart cart;
 
-	@ManyToOne(fetch = FetchType.LAZY) // on delete set null for the user FK (manually set in db)
+	@ManyToOne(fetch = FetchType.LAZY) // on delete set null for the user FK
 	private User user;
 
 	public Order() {

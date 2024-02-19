@@ -4,14 +4,13 @@ import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.repos.user.projections.UserProjection;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 import java.util.Set;
 
 public interface UserService {
 
-	void create(RegisterDTO registerDTO);
+	Long create(RegisterDTO registerDTO);
 
 	Set<Address> findAddressListById(Long userId);
 
@@ -33,10 +32,12 @@ public interface UserService {
 
 	void updatePassword(String password, Long userId, String newPassword);
 
-	void delete(String password, Long userId);
+	void updateDelete(String password, Long userId);
 
 	// for internal use only
 
 	User findByEmail(String userEmail);
+
+	User findByIdWithAddressList(Long userId);
 }
 

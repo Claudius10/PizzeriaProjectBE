@@ -4,20 +4,21 @@ import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
-import PizzaApp.api.entity.user.User;
-import PizzaApp.api.repos.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -40,17 +41,20 @@ public class UserIdValidationTests {
 	private SecurityTokenUtils securityTokenUtils;
 
 	@Autowired
-	private UserRepository userRepository;
+	private JdbcTemplate jdbcTemplate;
+
+	@BeforeAll
+	@AfterAll
+	void cleanUp() {
+		JdbcTestUtils.deleteFromTables(jdbcTemplate, "users_roles", "users_addresses", "user");
+	}
 
 	public Long createUserTestSubject(RegisterDTO registerDTO) throws Exception {
-		mockMvc.perform(post("/api/anon/register")
+		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))
 						.with(csrf()))
-				.andExpect(status().isOk());
-
-		Optional<User> user = userRepository.findByEmail(registerDTO.email());
-		return user.map(User::getId).orElse(null);
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
 	}
 
 	// test for ValidateUserIdentity aspect

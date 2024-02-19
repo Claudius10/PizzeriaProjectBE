@@ -30,8 +30,7 @@ public class AnonController {
 	@PostMapping("/register")
 	public ResponseEntity<?> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) {
 		try {
-			userService.create(registerDTO);
-			return ResponseEntity.status(HttpStatus.OK).build();
+			return ResponseEntity.status(HttpStatus.OK).body(userService.create(registerDTO));
 		} catch (DataIntegrityViolationException ex) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(new ApiErrorDTO.Builder()

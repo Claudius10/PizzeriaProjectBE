@@ -1,5 +1,6 @@
 package PizzaApp.api.configs.security;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -7,6 +8,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.WebUtils;
 
 import java.util.function.Supplier;
 
@@ -24,6 +26,12 @@ final class SpaCsrfTokenRequestHandler extends CsrfTokenRequestAttributeHandler 
 
 	@Override
 	public String resolveCsrfTokenValue(HttpServletRequest request, CsrfToken csrfToken) {
+		// attempt to load csrf token from cookie
+		Cookie csrfCookie = WebUtils.getCookie(request, "XSRF-TOKEN");
+		if (csrfCookie != null) {
+			return csrfCookie.getValue();
+		}
+
 		/*
 		 * If the request contains a request header, use CsrfTokenRequestAttributeHandler
 		 * to resolve the CsrfToken. This applies when a single-page application includes
@@ -33,6 +41,7 @@ final class SpaCsrfTokenRequestHandler extends CsrfTokenRequestAttributeHandler 
 		if (StringUtils.hasText(request.getHeader(csrfToken.getHeaderName()))) {
 			return super.resolveCsrfTokenValue(request, csrfToken);
 		}
+
 		/*
 		 * In all other cases (e.g. if the request contains a request parameter), use
 		 * XorCsrfTokenRequestAttributeHandler to resolve the CsrfToken. This applies

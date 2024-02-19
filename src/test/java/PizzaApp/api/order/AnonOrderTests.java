@@ -2,9 +2,11 @@ package PizzaApp.api.order;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 
+import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
 import PizzaApp.api.services.order.OrderService;
 import org.hamcrest.CoreMatchers;
@@ -85,7 +87,6 @@ public class AnonOrderTests {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newAnonOrderDTO)))
 				.andReturn().getResponse().getContentAsString()));
-
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",
@@ -302,10 +303,14 @@ public class AnonOrderTests {
 		);
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/anon/order")
+		String response = mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newAnonOrderDTO)))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest()).andReturn().getResponse().getContentAsString();
+
+		ApiErrorDTO error = objectMapper.readValue(response, ApiErrorDTO.class);
+
+		assertEquals("El valor del cambio de efectivo solicitado no puede ser menor o igual que el total o total con ofertas.", error.errorMsg());
 
 		logger.info("New order test: successfully NOT created order with invalid change request ");
 	}
@@ -332,10 +337,14 @@ public class AnonOrderTests {
 		);
 
 		// action: send post request and expect ex is thrown
-		mockMvc.perform(post("/api/anon/order")
+		String response = mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newAnonOrderDTO)))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+		ApiErrorDTO error = objectMapper.readValue(response, ApiErrorDTO.class);
+
+		assertEquals("La cesta no puede ser vacía.", error.errorMsg());
 
 		logger.info("New order test: successfully NOT created order with empty cart");
 	}

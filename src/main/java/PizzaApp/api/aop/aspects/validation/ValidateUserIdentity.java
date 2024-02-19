@@ -34,9 +34,9 @@ public class ValidateUserIdentity {
 
 		SecurityContext context = SecurityContextHolder.getContext();
 		Authentication authentication = context.getAuthentication();
-		Jwt jwt = (Jwt) authentication.getPrincipal();
+		Jwt validatedAccessToken = (Jwt) authentication.getPrincipal();
 
-		if (!userIdCookie.getValue().matches(jwt.getClaimAsString("userId"))) {
+		if (!userIdCookie.getValue().matches(validatedAccessToken.getClaimAsString("userId"))) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
 					new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.UNAUTHORIZED.value())

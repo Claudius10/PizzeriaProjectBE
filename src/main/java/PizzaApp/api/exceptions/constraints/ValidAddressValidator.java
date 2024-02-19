@@ -24,16 +24,16 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 			return false;
 		}
 
-		if (String.valueOf(address.getStreetNr()).length() < 1 && String.valueOf(address.getStreetNr()).length() > 4) {
+		if (String.valueOf(address.getStreetNr()).isEmpty() && String.valueOf(address.getStreetNr()).length() > 4) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("El número de la calle solo puede contener un máximo de 4 digitos")
+			context.buildConstraintViolationWithTemplate("El número de la calle solo puede contener un máximo de 4 dígitos")
 					.addPropertyNode("streetNr").addConstraintViolation();
 			return false;
 		}
 
 		if (address.getGate() != null && !address.getGate().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("La puerta solo puede contener un máximo de 25 letras y/o digitos, y " +
+			context.buildConstraintViolationWithTemplate("La puerta solo puede contener un máximo de 25 letras y/o dígitos, y " +
 							"los " +
 							"símbolos " +
 							". " +
@@ -44,7 +44,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 
 		if (address.getStaircase() != null && !address.getStaircase().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("La escalera solo puede contener un máximo de 25 letras y/o digitos, y los " +
+			context.buildConstraintViolationWithTemplate("La escalera solo puede contener un máximo de 25 letras y/o dígitos, y los " +
 							"símbolos ." +
 							" " +
 							", : ; ( ) -")
@@ -54,7 +54,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 
 		if (address.getFloor() != null && !address.getFloor().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("El piso solo puede contener un máximo de 25 letras y/o digitos, y los " +
+			context.buildConstraintViolationWithTemplate("El piso solo puede contener un máximo de 25 letras y/o dígitos, y los " +
 							"símbolos ." +
 							" " +
 							", : ; ( ) -")
@@ -64,7 +64,7 @@ public class ValidAddressValidator implements ConstraintValidator<ValidAddress, 
 
 		if (address.getDoor() != null && !address.getDoor().matches("^[a-zA-Z0-9.,:;()\sÁÉÍÓÚáéíóúÑñ-]{0,25}$")) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("La puerta solo puede contener un máximo de 25 letras y/o digitos, y " +
+			context.buildConstraintViolationWithTemplate("La puerta solo puede contener un máximo de 25 letras y/o dígitos, y " +
 							"los " +
 							"símbolos ." +
 							" " +

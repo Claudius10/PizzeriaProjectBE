@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface AddressService {
 
+	Long create(Address address);
+
 	Optional<Address> findByExample(Address address);
 
 	Address findReference(Long addressId);

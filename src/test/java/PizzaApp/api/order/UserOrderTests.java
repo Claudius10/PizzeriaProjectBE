@@ -20,7 +20,7 @@ import PizzaApp.api.entity.order.dto.OrderDTO;
 import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.entity.user.dto.PasswordDTO;
-import PizzaApp.api.repos.address.AddressRepository;
+import PizzaApp.api.services.address.AddressService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -54,7 +54,7 @@ public class UserOrderTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private AddressRepository addressRepository;
+	private AddressService addressService;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -80,6 +80,21 @@ public class UserOrderTests {
 			.build();
 
 	private Long addressId, newAddressId;
+
+	@BeforeAll
+	public void setup() {
+		// create address test subject for testing
+		addressId = addressService.create(new Address.Builder()
+				.withStreet("Elm street")
+				.withStreetNr(15)
+				.build());
+
+		newAddressId = addressService.create(new Address.Builder()
+				.withStreet("Baker Street")
+				.withStreetNr(221)
+				.withDoor("b")
+				.build());
+	}
 
 	@BeforeAll
 	@AfterAll
@@ -112,21 +127,6 @@ public class UserOrderTests {
 						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
 						.with(csrf()))
 				.andReturn().getResponse().getContentAsString()), userId, validAccessToken);
-	}
-
-	@BeforeAll
-	public void setup() {
-		// create address test subject for testing
-		addressId = addressRepository.save(new Address.Builder()
-				.withStreet("Elm street")
-				.withStreetNr(15)
-				.build()).getId();
-
-		newAddressId = addressRepository.save(new Address.Builder()
-				.withStreet("Baker Street")
-				.withStreetNr(221)
-				.withDoor("b")
-				.build()).getId();
 	}
 
 	@Test

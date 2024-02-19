@@ -29,6 +29,16 @@ public class AddressServiceImpl implements AddressService {
 		return addressRepository.findAddressById(addressId);
 	}
 
+	@Override
+	public Long create(Address address) {
+		Optional<Address> addressToSave = findByExample(address);
+		if (addressToSave.isPresent()) {
+			return addressToSave.get().getId();
+		} else {
+			return addressRepository.save(address).getId();
+		}
+	}
+
 	public Optional<Address> findByExample(Address address) {
 		// if address is already in db return it
 		if (address.getId() != null) {

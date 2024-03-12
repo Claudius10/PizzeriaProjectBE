@@ -39,11 +39,6 @@ public class OrderValidatorImpl implements OrderValidator {
 			return new OrderValidationResult("El valor del cambio de efectivo solicitado no puede ser menor o igual " + "que el total o total con ofertas.");
 		}
 
-		// NOTE - turn on for prod
-		if (!isRequestWithinWorkingHours()) {
-			return new OrderValidationResult("La tienda está cerrada. El horario es de las 9:00h hasta las 23:40 horas.");
-		}
-
 		calculatePaymentChange(cart, orderDetails);
 		return new OrderValidationResult();
 	}

@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.web.csrf.CsrfToken;
 
 public final class SecurityCookieUtils {
 
@@ -29,6 +30,17 @@ public final class SecurityCookieUtils {
 		cookie.setHttpOnly(httpOnly);
 		cookie.setSecure(secure);
 		return cookie;
+	}
+
+	public static void loadCsrf(HttpServletResponse response, CsrfToken csrfToken) {
+		response.addHeader(HttpHeaders.SET_COOKIE,
+				bakeCookie(
+						"XSRF-TOKEN",
+						csrfToken.getToken(),
+						30,
+						true,
+						true) // NOTE - true for prod
+						.toString());
 	}
 
 	// 24 * 60 * 60 24h

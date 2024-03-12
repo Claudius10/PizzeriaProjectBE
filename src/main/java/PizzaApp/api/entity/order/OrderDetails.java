@@ -31,7 +31,7 @@ public class OrderDetails {
 	private Double paymentChange;
 
 	@Column(name = "delivery_comment")
-	@Pattern(regexp = "^[a-zA-Z0-9!¡¿?.,\s]{0,150}$", message = "Observación: máximo 150 valores. Solo letras (sin tildes), dígitos, !¡ ?¿ . , : ; se aceptan.")
+	@Pattern(regexp = "^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ!¡¿?.,\s]{0,150}$", message = "Observación: máximo 150 valores. Solo letras (sin tildes), dígitos, !¡ ?¿ . , : ; se aceptan.")
 	private String deliveryComment;
 
 	@OneToOne(fetch = FetchType.LAZY)

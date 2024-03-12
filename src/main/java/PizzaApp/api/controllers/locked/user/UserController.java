@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,12 @@ public class UserController {
 
 	public UserController(UserService userService) {
 		this.userService = userService;
+	}
+
+	@ValidateUserId
+	@GetMapping("/csrf")
+	public void csrf(HttpServletResponse response, CsrfToken csrfToken) {
+		SecurityCookieUtils.loadCsrf(response, csrfToken);
 	}
 
 	@ValidateUserId

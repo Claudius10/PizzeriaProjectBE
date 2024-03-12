@@ -1,10 +1,7 @@
 package PizzaApp.api.services.order;
 
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
-import PizzaApp.api.entity.order.dto.NewUserOrderDTO;
-import PizzaApp.api.entity.order.dto.OrderDTO;
-import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
+import PizzaApp.api.entity.order.dto.*;
 import PizzaApp.api.repos.order.projections.OrderSummary;
 import org.springframework.data.domain.*;
 

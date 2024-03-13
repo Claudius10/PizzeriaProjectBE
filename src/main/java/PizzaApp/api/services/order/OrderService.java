@@ -11,7 +11,7 @@ public interface OrderService {
 
 	OrderDTO findDTOById(Long orderId);
 
-	Long createAnonOrder(NewAnonOrderDTO newAnonOrder);
+	CreatedAnonOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder);
 
 	Long createUserOrder(NewUserOrderDTO newUserOrder);
 

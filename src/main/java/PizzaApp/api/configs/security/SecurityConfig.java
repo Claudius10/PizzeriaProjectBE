@@ -72,7 +72,7 @@ public class SecurityConfig {
 		http.csrf(csrf -> {
 
 			csrf.csrfTokenRepository(csrfTokenRepository()); // persist CSRF token in a cookie
-			csrf.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()); // get CSRF token off x-xsrf-token header
+			csrf.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()); // get CSRF token off cookie
 
 			// https://github.com/spring-projects/spring-security/issues/8668 for
 			// enabling CSRF token protection for post auth requests with JWT tokens

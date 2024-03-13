@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long createAnonOrder(NewAnonOrderDTO newAnonOrder) {
+	public CreatedAnonOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder) {
 
 		Cart cart = new Cart.Builder()
 				.withTotalQuantity(newAnonOrder.cart().getTotalQuantity())
@@ -66,7 +66,17 @@ public class OrderServiceImpl implements OrderService {
 		Optional<Address> dbAddress = addressService.findByExample(newAnonOrder.address());
 		dbAddress.ifPresent(anonOrder::setAddress);
 
-		return orderRepository.save(anonOrder).getId();
+		Order order = orderRepository.save(anonOrder);
+		return new CreatedAnonOrderDTO(
+				order.getId(),
+				order.getFormattedCreatedOn(),
+				order.getAnonCustomerName(),
+				order.getAnonCustomerContactNumber(),
+				order.getAnonCustomerEmail(),
+				order.getAddress(),
+				order.getOrderDetails(),
+				order.getCart()
+		);
 	}
 
 	@Override

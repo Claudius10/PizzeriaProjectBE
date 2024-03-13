@@ -2,6 +2,7 @@ package PizzaApp.api.controllers.open;
 
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.entity.order.dto.CreatedAnonOrderDTO;
 import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
 import PizzaApp.api.services.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +43,7 @@ public class AnonController {
 	}
 
 	@PostMapping("/order")
-	public ResponseEntity<Long> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) {
+	public ResponseEntity<CreatedAnonOrderDTO> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(orderService.createAnonOrder(newAnonOrder));
 	}
 }

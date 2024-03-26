@@ -168,6 +168,6 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public LocalDateTime findCreatedOnById(Long orderId) {
-		return orderRepository.findCreatedOnById(orderId).getCreatedOn();
+		return orderRepository.findCreatedOnById(orderId).createdOn();
 	}
 }

@@ -2,8 +2,10 @@ package PizzaApp.api.validation.order;
 
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
+import PizzaApp.api.entity.order.OrderItem;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface OrderValidator {
 
@@ -15,17 +17,15 @@ public interface OrderValidator {
 
 	boolean isCartEmpty(Cart cart);
 
-	boolean isProductListSizeValid(Cart cart);
+	boolean isProductListSizeValid(int orderItemListSize);
 
-	boolean isProductsQuantityValid(Cart cart);
+	boolean isProductsQuantityValid(List<OrderItem> items);
 
-	boolean isChangeRequestedValid(Double changeRequested, Cart cart);
+	boolean isChangeRequestedValid(Double changeRequested, Double totalCostAfterOffers, Double totalCost);
 
 	boolean isCartUpdateTimeLimitValid(LocalDateTime createdOn);
 
 	boolean isOrderDataUpdateTimeLimitValid(LocalDateTime createdOn);
 
-	void calculatePaymentChange(Cart cart, OrderDetails orderDetails);
-
-	boolean isRequestWithinWorkingHours();
+	Double calculatePaymentChange(Double changeRequested, Double totalCost, Double totalCostAfterOffers);
 }

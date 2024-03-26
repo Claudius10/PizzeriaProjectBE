@@ -89,6 +89,7 @@ public class Cart {
 
 		public Builder withEmptyItemList() {
 			cart.orderItems = new ArrayList<>();
+			cart.totalQuantity = 0;
 			return this;
 		}
 

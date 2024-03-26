@@ -19,7 +19,7 @@
 
     <dependencies>
 
-        <!-- Spring -->
+        <!-- Spring Web -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

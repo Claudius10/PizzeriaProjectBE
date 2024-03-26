@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.entity.order.dto.CreatedAnonOrderDTO;
 import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
 import PizzaApp.api.services.order.OrderService;
 import org.hamcrest.CoreMatchers;
@@ -82,11 +83,15 @@ public class AnonOrderTests {
 						.build()
 		);
 
-		// action: persist and retrieve order
-		Order dbOrder = orderService.findByIdNoLazy(Long.valueOf(mockMvc.perform(post("/api/anon/order")
+		String response = mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newAnonOrderDTO)))
-				.andReturn().getResponse().getContentAsString()));
+				.andReturn().getResponse().getContentAsString();
+
+		CreatedAnonOrderDTO createdAnonOrderDTO = objectMapper.readValue(response, CreatedAnonOrderDTO.class);
+
+		// action: persist and retrieve order
+		Order dbOrder = orderService.findByIdNoLazy(createdAnonOrderDTO.id());
 
 		// then expect/assert: returned data matches set data
 		assertAll("Data returned matches expected values",

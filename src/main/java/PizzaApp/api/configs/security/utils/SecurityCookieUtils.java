@@ -48,14 +48,14 @@ public final class SecurityCookieUtils {
 	public static void createAuthCookies(HttpServletResponse response, String accessToken, String refreshToken, Long userId) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("fight", accessToken,
-						60,
+						24 * 60 * 60,
 						true,
 						true) // NOTE - true for prod
 						.toString());
 
 		response.addHeader(HttpHeaders.SET_COOKIE,
 				bakeCookie("pseudo_fight", "exp_d",
-						60,
+						24 * 60 * 60,
 						false,
 						true) // NOTE - true for prod
 						.toString());

@@ -37,7 +37,7 @@ public class SecurityTokenUtils {
 		Jwt jwt = validate(refreshToken.getValue());
 
 		String accessToken = createToken(
-				Instant.now().plus(1, ChronoUnit.SECONDS),
+				Instant.now().plus(1, ChronoUnit.DAYS),
 				jwt.getClaim("sub"),
 				jwt.getClaim("userId"),
 				jwt.getClaim("roles"));

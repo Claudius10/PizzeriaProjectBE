@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order anonOrder = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
-				.withFormattedCreatedOn(LocalDateTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm - " +
+				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")))
 				.withAnonCustomer(
 						newAnonOrder.anonCustomerName(),
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order order = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
-				.withFormattedCreatedOn(LocalDateTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm - " +
+				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")))
 				.withUser(user)
 				.withAddress(address)
@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
 
 		if (pendingAddressUpdate || pendingOrderDetailsUpdate || pendingCartUpdate) {
 			order.setUpdatedOn(LocalDateTime.now());
-			order.setFormattedUpdatedOn(LocalDateTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm - " +
+			order.setFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
 					"dd/MM/yyyy")));
 		}
 

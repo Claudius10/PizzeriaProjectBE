@@ -30,7 +30,7 @@ public class ValidLoginHandler implements AuthenticationSuccessHandler {
 		User user = (User) authentication.getPrincipal();
 
 		String accessToken = securityTokenUtils.createToken(
-				Instant.now().plus(1, ChronoUnit.DAYS),
+				Instant.now().plus(1, ChronoUnit.SECONDS),
 				user.getUsername(),
 				user.getId(),
 				securityTokenUtils.parseAuthorities(user.getAuthorities()));

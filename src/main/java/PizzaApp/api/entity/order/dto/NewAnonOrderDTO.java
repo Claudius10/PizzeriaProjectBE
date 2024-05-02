@@ -4,20 +4,21 @@ import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.utils.globals.ValidationResponses;
+import PizzaApp.api.utils.globals.ValidationRules;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 
 public record NewAnonOrderDTO(
 
-		@Pattern(regexp = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$",
-				message = "Compruebe que el nombre y apellido(s) esté compuesto solo por un mínimo de 2 y un máximo de 50 letras")
+		@Pattern(regexp = ValidationRules.USER_NAME, message = ValidationResponses.USER_NAME)
 		String anonCustomerName,
 
-		@IntegerLength(min = 9, max = 9, message = "Compruebe que el número de teléfono tenga 9 dígitos")
+		@IntegerLength(min = 9, max = 9, message = ValidationResponses.ANON_CUSTOMER_NUMBER)
 		Integer anonCustomerContactNumber,
 
-		@Email(message = "Compruebe el email introducido. Ejemplo: jonas15@gmail.com")
+		@Email(message = ValidationResponses.USER_EMAIL)
 		String anonCustomerEmail,
 
 		@Valid

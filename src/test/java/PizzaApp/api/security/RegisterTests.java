@@ -1,7 +1,5 @@
 package PizzaApp.api.security;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

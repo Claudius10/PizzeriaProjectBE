@@ -1,12 +1,12 @@
 package PizzaApp.api.entity.order;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
-import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.address.Address;
+import PizzaApp.api.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity(name = "Order")
 @Table(name = "orders")

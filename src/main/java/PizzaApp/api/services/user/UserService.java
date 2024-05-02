@@ -5,7 +5,6 @@ import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.repos.user.projections.UserProjection;
 
-import java.util.Optional;
 import java.util.Set;
 
 public interface UserService {
@@ -17,8 +16,6 @@ public interface UserService {
 	boolean addAddress(Long userId, Address address);
 
 	void removeAddress(Long userId, Long addressId);
-
-	Optional<User> findById(Long userId);
 
 	User findReference(Long userId);
 
@@ -32,7 +29,7 @@ public interface UserService {
 
 	void updatePassword(String password, Long userId, String newPassword);
 
-	void updateDelete(String password, Long userId);
+	void deleteById(String password, Long userId);
 
 	// for internal use only
 

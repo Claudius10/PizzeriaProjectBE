@@ -1,11 +1,11 @@
 package PizzaApp.api.services.address;
 
+import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.repos.address.AddressRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import PizzaApp.api.entity.address.Address;
 
 import java.util.Optional;
 
@@ -25,8 +25,8 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Address findAddressById(Long addressId) {
-		return addressRepository.findAddressById(addressId);
+	public Address findUserAddressById(Long addressId) {
+		return addressRepository.findUserAddressById(addressId);
 	}
 
 	@Override

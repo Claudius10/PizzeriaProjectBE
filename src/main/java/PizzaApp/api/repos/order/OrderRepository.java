@@ -1,8 +1,10 @@
 package PizzaApp.api.repos.order;
 
 import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.repos.order.projections.*;
-import org.springframework.data.domain.*;
+import PizzaApp.api.repos.order.projections.CreatedOnOnly;
+import PizzaApp.api.repos.order.projections.OrderSummary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,7 +19,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			"join fetch cart.orderItems " +
 			"left join fetch order.user " +
 			"where order.id = :orderId")
-	Order findByIdNoLazy(Long orderId);
+	Order findUserOrderById(Long orderId);
 
 	Page<OrderSummary> findAllByUser_Id(Long userId, Pageable pageable);
 

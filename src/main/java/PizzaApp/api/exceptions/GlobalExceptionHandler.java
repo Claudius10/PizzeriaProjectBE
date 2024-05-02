@@ -1,6 +1,8 @@
 package PizzaApp.api.exceptions;
 
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,8 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
@@ -25,12 +25,11 @@ import java.util.List;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid
-			(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		List<String> errorMessages = new ArrayList<>();
+
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-			errorMessages.add("Error del atributo " + "'" + error.getField() + "' con input: '" + error.getRejectedValue() +
-					"'. Razón: " + error.getDefaultMessage());
+			errorMessages.add(String.format("Error: %s Valor introducido: %s", error.getDefaultMessage(), error.getRejectedValue()));
 		}
 
 		return ResponseEntity

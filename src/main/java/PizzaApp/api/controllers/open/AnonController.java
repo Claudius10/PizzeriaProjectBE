@@ -4,15 +4,19 @@ import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.order.dto.CreatedAnonOrderDTO;
 import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
+import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.services.user.UserService;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import PizzaApp.api.services.order.OrderService;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/anon")
@@ -37,7 +41,7 @@ public class AnonController {
 					.body(new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.BAD_REQUEST.value())
 							.withPath(request.getServletPath())
-							.withErrorMsg("Una cuenta ya existe con el correo electrónico introducido. Si no recuerda la contraseña, contacte con nosotros")
+							.withErrorMsg(ValidationResponses.ACCOUNT_WITH_EMAIL_EXISTS)
 							.build());
 		}
 	}

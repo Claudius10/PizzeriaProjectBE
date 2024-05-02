@@ -1,13 +1,8 @@
 package PizzaApp.api.services.order;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import java.util.Optional;
-
-import PizzaApp.api.entity.order.Order;
-import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.address.Address;
+import PizzaApp.api.entity.order.Cart;
+import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.entity.order.dto.*;
 import PizzaApp.api.entity.user.User;
@@ -15,9 +10,15 @@ import PizzaApp.api.repos.order.OrderRepository;
 import PizzaApp.api.repos.order.projections.OrderSummary;
 import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.user.UserService;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,11 +38,12 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderDTO findDTOById(Long orderId) {
-		return new OrderDTO(findByIdNoLazy(orderId));
+		return new OrderDTO(findUserOrderById(orderId));
 	}
 
 	@Override
 	public CreatedAnonOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder) {
+		Optional<Address> dbAddress = addressService.findByExample(newAnonOrder.address());
 
 		Cart cart = new Cart.Builder()
 				.withTotalQuantity(newAnonOrder.cart().getTotalQuantity())
@@ -58,13 +60,15 @@ public class OrderServiceImpl implements OrderService {
 						newAnonOrder.anonCustomerName(),
 						newAnonOrder.anonCustomerContactNumber(),
 						newAnonOrder.anonCustomerEmail())
-				.withAddress(newAnonOrder.address())
 				.withOrderDetails(newAnonOrder.orderDetails())
 				.withCart(cart)
 				.build();
 
-		Optional<Address> dbAddress = addressService.findByExample(newAnonOrder.address());
-		dbAddress.ifPresent(anonOrder::setAddress);
+		if (dbAddress.isPresent()) {
+			anonOrder.setAddress(dbAddress.get());
+		} else {
+			anonOrder.setAddress(newAnonOrder.address());
+		}
 
 		Order order = orderRepository.save(anonOrder);
 		return new CreatedAnonOrderDTO(
@@ -106,8 +110,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long updateUserOrder(UpdateUserOrderDTO updateUserOrder) {
-		Address address = addressService.findAddressById(updateUserOrder.getAddressId());
-		Order order = findByIdNoLazy(updateUserOrder.getOrderId());
+		Address address = addressService.findUserAddressById(updateUserOrder.getAddressId());
+		Order order = findUserOrderById(updateUserOrder.getOrderId());
 
 		boolean pendingAddressUpdate = !order.getAddress().contentEquals(address);
 		boolean pendingOrderDetailsUpdate = !order.getOrderDetails().contentEquals(updateUserOrder.getOrderDetails());
@@ -147,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long deleteUserOrderById(Long orderId) {
-		orderRepository.delete(findByIdNoLazy(orderId));
+		orderRepository.delete(findUserOrderById(orderId));
 		return orderId;
 	}
 
@@ -162,8 +166,8 @@ public class OrderServiceImpl implements OrderService {
 	// info - for internal use only
 
 	@Override
-	public Order findByIdNoLazy(Long orderId) {
-		return orderRepository.findByIdNoLazy(orderId);
+	public Order findUserOrderById(Long orderId) {
+		return orderRepository.findUserOrderById(orderId);
 	}
 
 	@Override

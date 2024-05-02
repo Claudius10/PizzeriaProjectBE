@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
 	@Query("from Address address where address.id = :addressId")
-	Address findAddressById(Long addressId);
+	Address findUserAddressById(Long addressId);
 }

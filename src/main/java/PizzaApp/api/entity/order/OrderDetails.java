@@ -1,7 +1,9 @@
 package PizzaApp.api.entity.order;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
+import PizzaApp.api.utils.globals.ValidationResponses;
+import PizzaApp.api.utils.globals.ValidationRules;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -15,32 +17,29 @@ public class OrderDetails {
 	@Id
 	private Long id;
 
-	@Column(name = "delivery_hour")
-	@NotBlank(message = "Hora de entrega: el valor no puede faltar. ")
+	@Column
+	@NotBlank(message = ValidationResponses.ORDER_DETAILS_DELIVERY_HOUR)
 	private String deliveryHour;
 
-	@Column(name = "payment_type")
-	@NotBlank(message = "Forma de pago: el valor no puede faltar. ")
+	@Column
+	@NotBlank(message = ValidationResponses.ORDER_DETAILS_PAYMENT)
 	private String paymentType;
 
-	@Column(name = "change_requested")
-	@DoubleLengthNullable(min = 0, max = 5, message = "Cambio de efectivo: mín 0, máx 5 digitos; ejemplo: 25.55 ")
+	@Column
+	@DoubleLengthNullable(min = 0, max = 5, message = ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED_LENGTH)
 	private Double changeRequested;
 
-	@Column(name = "payment_change")
+	@Column
 	private Double paymentChange;
 
-	@Column(name = "delivery_comment")
-	@Pattern(regexp = "^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ!¡¿?.,\s]{0,150}$", message = "Observación: máximo 150 valores. Solo letras (sin tildes), dígitos, !¡ ?¿ . , : ; se aceptan.")
+	@Column
+	@Pattern(regexp = ValidationRules.ORDER_DETAILS_COMMENT, message = ValidationResponses.ORDER_DETAILS_COMMENT)
 	private String deliveryComment;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
 	@JsonBackReference
 	private Order order;
-
-	public OrderDetails() {
-	}
 
 	private OrderDetails(Builder builder) {
 		this.id = builder.id;
@@ -50,6 +49,10 @@ public class OrderDetails {
 		this.paymentChange = builder.paymentChange;
 		this.deliveryComment = builder.deliveryComment;
 		this.order = null;
+	}
+
+	protected OrderDetails() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public static class Builder {

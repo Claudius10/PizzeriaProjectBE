@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 		User user = findByIdWithAddressList(userId);
 		Optional<Address> dbAddress = addressService.findByExample(address);
 
-		if (user.getAddressList().size() >= 3) {
+		if (user.getAddressList().size() == 3) {
 			return false;
 		}
 
@@ -79,18 +79,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void removeAddress(Long userId, Long addressId) {
-		User user = findReference(userId);
-		Optional<Address> addressToRemove =
-				user.getAddressList()
-						.stream()
-						.filter(address1 -> address1.getId().equals(addressId))
-						.findFirst();
-		addressToRemove.ifPresent(user::removeAddress);
-	}
 
-	@Override
-	public Optional<User> findById(Long userId) {
-		return userRepository.findById(userId);
 	}
 
 	@Override
@@ -125,7 +114,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateDelete(String password, Long userId) {
+	public void deleteById(String password, Long userId) {
 		userRepository.deleteById(userId);
 	}
 

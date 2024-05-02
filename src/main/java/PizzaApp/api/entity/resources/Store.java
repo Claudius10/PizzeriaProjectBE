@@ -1,42 +1,33 @@
 package PizzaApp.api.entity.resources;
 
 import PizzaApp.api.entity.address.Address;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "Store")
 @Table(name = "store")
 public class Store {
 
 	@Id
-	@Column(name = "id")
+	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name")
+	@Column
 	private String name;
 
 	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
-	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@Column(name = "phone_number")
-	private int phoneNumber;
+	@Column
+	private Integer phoneNumber;
 
-	@Column(name = "schedule")
+	@Column
 	private String schedule;
 
 	public Store() {
 	}
 
-	public Store(Long id, String name, Address address, int phoneNumber, String schedule) {
+	public Store(Long id, String name, Address address, Integer phoneNumber, String schedule) {
 		this.id = id;
 		this.name = name;
 		this.address = address;
@@ -68,11 +59,11 @@ public class Store {
 		this.address = address;
 	}
 
-	public int getPhoneNumber() {
+	public Integer getPhoneNumber() {
 		return phoneNumber;
 	}
 
-	public void setPhoneNumber(int phoneNumber) {
+	public void setPhoneNumber(Integer phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
 

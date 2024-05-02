@@ -12,5 +12,5 @@ public interface AddressService {
 
 	Address findReference(Long addressId);
 
-	Address findAddressById(Long addressId);
+	Address findUserAddressById(Long addressId);
 }

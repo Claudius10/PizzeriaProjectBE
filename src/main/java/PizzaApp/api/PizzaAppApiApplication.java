@@ -1,12 +1,7 @@
 package PizzaApp.api;
 
-import PizzaApp.api.entity.role.Role;
-import PizzaApp.api.services.role.RoleService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootApplication
 public class PizzaAppApiApplication {
@@ -15,6 +10,8 @@ public class PizzaAppApiApplication {
 		SpringApplication.run(PizzaAppApiApplication.class, args);
 	}
 
+/*
+	// NOTE - comment out when testing
 	@Bean
 	CommandLineRunner run(RoleService roleService, JdbcTemplate jdbcTemplate) {
 		return args -> {
@@ -26,5 +23,5 @@ public class PizzaAppApiApplication {
 				roleService.create("USER");
 			}
 		};
-	}
+	}*/
 }

@@ -1,13 +1,12 @@
 package PizzaApp.api.configs.hibernate;
 
-import java.util.List;
-
-import PizzaApp.api.entity.user.dto.PasswordDTO;
 import PizzaApp.api.entity.order.dto.OrderDTO;
+import PizzaApp.api.entity.user.dto.PasswordDTO;
+import io.hypersistence.utils.hibernate.type.util.ClassImportIntegrator;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.jpa.boot.spi.IntegratorProvider;
 
-import io.hypersistence.utils.hibernate.type.util.ClassImportIntegrator;
+import java.util.List;
 
 // Utility that makes possible using the simple Java class name when creating queries for DTO's
 

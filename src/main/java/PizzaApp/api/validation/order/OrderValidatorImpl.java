@@ -1,13 +1,14 @@
 package PizzaApp.api.validation.order;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.repos.order.OrderRepository;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class OrderValidatorImpl implements OrderValidator {
@@ -21,7 +22,7 @@ public class OrderValidatorImpl implements OrderValidator {
 	@Override
 	public OrderValidationResult validate(Cart cart, OrderDetails orderDetails) {
 		if (isCartEmpty(cart)) {
-			return new OrderValidationResult("La cesta no puede ser vacía.");
+			return new OrderValidationResult(ValidationResponses.CART_IS_EMPTY);
 		}
 
 		if (!isProductListSizeValid(cart.getOrderItems().size())) {
@@ -33,7 +34,7 @@ public class OrderValidatorImpl implements OrderValidator {
 		}
 
 		if (!isChangeRequestedValid(orderDetails.getChangeRequested(), cart.getTotalCostOffers(), cart.getTotalCost())) {
-			return new OrderValidationResult("El valor del cambio de efectivo solicitado no puede ser menor o igual " + "que el total o total con ofertas.");
+			return new OrderValidationResult(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
 		}
 
 		orderDetails.setPaymentChange(calculatePaymentChange(orderDetails.getChangeRequested(), cart.getTotalCost(), cart.getTotalCostOffers()));

@@ -3,7 +3,7 @@ package PizzaApp.api.services.order;
 import PizzaApp.api.entity.order.Order;
 import PizzaApp.api.entity.order.dto.*;
 import PizzaApp.api.repos.order.projections.OrderSummary;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +23,7 @@ public interface OrderService {
 
 	// info - for internal use only
 
-	Order findByIdNoLazy(Long orderId);
+	Order findUserOrderById(Long orderId);
 
 	LocalDateTime findCreatedOnById(Long orderId);
 }

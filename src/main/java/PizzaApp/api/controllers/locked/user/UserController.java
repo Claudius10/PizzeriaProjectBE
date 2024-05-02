@@ -1,12 +1,12 @@
 package PizzaApp.api.controllers.locked.user;
 
 import PizzaApp.api.aop.annotations.ValidateUserId;
+import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.user.dto.*;
 import PizzaApp.api.repos.user.projections.UserProjection;
 import PizzaApp.api.services.user.UserService;
-import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -50,8 +50,7 @@ public class UserController {
 	@ValidateUserId
 	@PostMapping("/{userId}/address")
 	public ResponseEntity<?> createUserAddress(@PathVariable Long userId, @RequestBody @Valid Address address, HttpServletRequest request) {
-		boolean accepted = userService.addAddress(userId, address);
-		if (accepted) {
+		if (userService.addAddress(userId, address)) {
 			return ResponseEntity.status(HttpStatus.OK).build();
 		}
 
@@ -107,7 +106,7 @@ public class UserController {
 			 @Valid @RequestBody PasswordDTO passwordDTO,
 			 HttpServletRequest request,
 			 HttpServletResponse response) {
-		userService.updateDelete(passwordDTO.password(), userId);
+		userService.deleteById(passwordDTO.password(), userId);
 		SecurityCookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}

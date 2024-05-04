@@ -85,6 +85,7 @@
         </dependency>
 
         <!-- MySQL -->
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -92,6 +93,7 @@
         </dependency>
 
         <!-- Jackson -->
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate6</artifactId>
@@ -99,6 +101,7 @@
         </dependency>
 
         <!-- HB -->
+
         <dependency>
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-63</artifactId>

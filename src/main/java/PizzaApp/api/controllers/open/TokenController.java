@@ -2,12 +2,12 @@ package PizzaApp.api.controllers.open;
 
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.utils.globals.SecurityResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,17 +25,6 @@ public class TokenController {
 
 	@PostMapping("/refresh")
 	public ResponseEntity<?> refreshTokens(HttpServletResponse response, HttpServletRequest request) {
-		Cookie userIdCookie = WebUtils.getCookie(request, "id");
-
-		if (userIdCookie == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-					new ApiErrorDTO.Builder()
-							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-							.withPath(request.getServletPath())
-							.withErrorMsg("Access denied: unable to verify user identity")
-							.build());
-		}
-
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
 
 		if (refreshToken == null) {
@@ -43,18 +32,7 @@ public class TokenController {
 					new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 							.withPath(request.getServletPath())
-							.withErrorMsg("Access denied: no refresh token present")
-							.build());
-		}
-
-		Jwt validatedRefreshToken = securityTokenUtils.validate(refreshToken.getValue());
-
-		if (!userIdCookie.getValue().matches(validatedRefreshToken.getClaimAsString("userId"))) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-					new ApiErrorDTO.Builder()
-							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-							.withPath(request.getServletPath())
-							.withErrorMsg("Access denied: fraudulent request")
+							.withErrorMsg(SecurityResponses.MISSING_TOKEN)
 							.build());
 		}
 

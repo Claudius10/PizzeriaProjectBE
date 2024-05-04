@@ -59,4 +59,7 @@ public final class ValidationResponses {
 	// Cart
 
 	public static final String CART_IS_EMPTY = "La cesta no debe estar vacía.";
+
+	private ValidationResponses() {
+	}
 }

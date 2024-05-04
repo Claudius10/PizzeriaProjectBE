@@ -102,7 +102,8 @@ public class SecurityConfig {
 			auth.requestMatchers("/api/anon/**").permitAll();
 			auth.requestMatchers("/api/token/**").permitAll();
 			auth.requestMatchers("/api/user/**").hasAnyRole("USER");
-			auth.requestMatchers("/api/tests/**").hasRole("USER");
+			auth.requestMatchers("/api/tests/security/admin").hasRole("ADMIN");
+			auth.requestMatchers("/api/tests/security/**").hasRole("USER");
 			auth.anyRequest().authenticated();
 		});
 

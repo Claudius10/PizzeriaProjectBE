@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/tests")
-public class TestJwtTokensController {
+@RequestMapping("/api/tests/security")
+public class SecurityControllerForTests {
 
-	public TestJwtTokensController() {
+	public SecurityControllerForTests() {
 	}
 
 	@GetMapping()
@@ -21,6 +21,11 @@ public class TestJwtTokensController {
 
 	@PostMapping()
 	public ResponseEntity<?> testPostEndpoint() {
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@GetMapping("/admin")
+	public ResponseEntity<?> adminTestEndPoint() {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

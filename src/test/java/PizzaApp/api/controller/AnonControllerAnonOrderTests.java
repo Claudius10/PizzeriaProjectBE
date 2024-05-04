@@ -1,7 +1,6 @@
 package PizzaApp.api.controller;
 
 import PizzaApp.api.entity.address.Address;
-import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
@@ -27,13 +26,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
-public class AnonControllerTests {
+public class AnonControllerAnonOrderTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -91,6 +89,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("anonCustomerName");
@@ -119,6 +118,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("anonCustomerContactNumber");
@@ -147,6 +147,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("anonCustomerEmail");
@@ -175,6 +176,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.street");
@@ -203,6 +205,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.streetNr");
@@ -231,6 +234,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.floor");
@@ -259,6 +263,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.deliveryHour");
@@ -287,6 +292,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.paymentType");
@@ -315,6 +321,7 @@ public class AnonControllerTests {
 								null,
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							String response = result.getResponse().getContentAsString();
 							ApiErrorDTO apiError = objectMapper.readValue(response, ApiErrorDTO.class);
 							assertThat(apiError.errorMsg()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
@@ -342,6 +349,7 @@ public class AnonControllerTests {
 								"%$·%·$",
 								false))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.deliveryComment");
@@ -370,141 +378,12 @@ public class AnonControllerTests {
 								null,
 								true))))
 				.andExpect(result -> {
+							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							String response = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 							ApiErrorDTO apiError = objectMapper.readValue(response, ApiErrorDTO.class);
 							assertThat(apiError.errorMsg()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 						}
 				);
-	}
-
-	@Test
-	public void givenRegisterPostApiCall_whenAllOk_thenRegister() throws Exception {
-		// Assert
-
-		mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerStub(
-								"UserToRegister",
-								"emailRegister@gmail.com",
-								"emailRegister@gmail.com",
-								"Password1",
-								"Password1")
-						)))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	public void givenRegisterPostApiCall_whenInvalidUserName_thenThrowException() throws Exception {
-		// Assert
-
-		mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerStub(
-								"UserToRegi·%$ster",
-								"emailRegister@gmail.com",
-								"emailRegister@gmail.com",
-								"Password",
-								"Password")
-						)))
-				.andExpect(result -> {
-							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("name");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_NAME);
-						}
-				);
-	}
-
-	@Test
-	public void givenRegisterPostApiCall_whenNonMatchingEmail_thenThrowException() throws Exception {
-		// Assert
-
-		mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerStub(
-								"UserToRegister",
-								"emailRegiste2@gmail.com",
-								"emailRegister@gmail.com",
-								"Password1",
-								"Password1")
-						)))
-				.andExpect(result -> {
-							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_EMAIL_MATCHING);
-						}
-				);
-	}
-
-	@Test
-	public void givenRegisterPostApiCall_whenInvalidEmail_thenThrowException() throws Exception {
-		// Assert
-
-		mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerStub(
-								"UserToRegister",
-								"emailRegister$·%·$$gmail.com",
-								"emailRegister$·%·$$gmail.com",
-								"Password",
-								"Password")
-						)))
-				.andExpect(result -> {
-							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_EMAIL);
-						}
-				);
-	}
-
-	@Test
-	public void givenRegisterPostApiCall_whenNonMatchingPassword_thenThrowException() throws Exception {
-		// Assert
-
-		mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerStub(
-								"UserToRegister",
-								"emailRegister@gmail.com",
-								"emailRegister@gmail.com",
-								"Password1",
-								"Password13")
-						)))
-				.andExpect(result -> {
-							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("password");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_PASSWORD_MATCHING);
-						}
-				);
-	}
-
-	@Test
-	public void givenRegisterPostApiCall_whenInvalidPassword_thenThrowException() throws Exception {
-		// Assert
-
-		mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerStub(
-								"UserToRegister",
-								"emailRegister@gmail.com",
-								"emailRegister@gmail.com",
-								"Password",
-								"Password")
-						)))
-				.andExpect(result -> {
-							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
-							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("password");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_PASSWORD);
-						}
-				);
-	}
-
-	public RegisterDTO registerStub(String name, String email, String matchingEmail, String password, String matchingPassword) {
-		return new RegisterDTO(name, email, matchingEmail, password, matchingPassword);
 	}
 
 	public NewAnonOrderDTO anonOrderStub(String customerName, int customerNumber, String customerEmail, String street,

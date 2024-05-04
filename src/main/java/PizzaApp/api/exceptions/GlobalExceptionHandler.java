@@ -1,6 +1,7 @@
 package PizzaApp.api.exceptions;
 
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.utils.globals.SecurityResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
@@ -73,7 +74,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		String errorMsg;
 		if (ex instanceof BadCredentialsException) {
-			errorMsg = "Email o contraseña incorrecta";
+			errorMsg = SecurityResponses.BAD_CREDENTIALS;
 		} else {
 			errorMsg = ex.getMessage();
 		}

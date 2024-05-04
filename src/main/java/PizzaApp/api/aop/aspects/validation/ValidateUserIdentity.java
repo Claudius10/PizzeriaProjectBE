@@ -1,6 +1,7 @@
 package PizzaApp.api.aop.aspects.validation;
 
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.utils.globals.SecurityResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -28,7 +29,7 @@ public class ValidateUserIdentity {
 					new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 							.withPath(request.getServletPath())
-							.withErrorMsg("Access denied: unable to verify user identity")
+							.withErrorMsg(SecurityResponses.USER_ID_MISSING)
 							.build());
 		}
 
@@ -41,7 +42,7 @@ public class ValidateUserIdentity {
 					new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
 							.withPath(request.getServletPath())
-							.withErrorMsg("Access denied: fraudulent request")
+							.withErrorMsg(SecurityResponses.FRAUDULENT_TOKEN)
 							.build());
 		}
 

@@ -9,4 +9,7 @@ public final class ValidationRules {
 	public static final String ORDER_DETAILS_COMMENT = "^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ!¡¿?.,\s]{0,150}$";
 
 	public static final String USER_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
+
+	private ValidationRules() {
+	}
 }

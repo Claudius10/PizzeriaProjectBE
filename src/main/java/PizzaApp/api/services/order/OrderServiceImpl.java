@@ -85,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long createUserOrder(NewUserOrderDTO newUserOrder) {
-		User user = userService.findReference(newUserOrder.userId());
+		User user = userService.findUserReference(newUserOrder.userId());
 		Address address = addressService.findReference(newUserOrder.addressId());
 
 		Cart cart = new Cart.Builder()

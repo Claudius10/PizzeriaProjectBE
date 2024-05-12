@@ -3,38 +3,38 @@ package PizzaApp.api.services.user;
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.user.User;
-import PizzaApp.api.repos.user.projections.UserProjection;
+import PizzaApp.api.entity.user.dto.UserDTO;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface UserService {
 
-	Long create(RegisterDTO registerDTO);
+	Long createUser(RegisterDTO registerDTO);
 
-	Set<Address> findAddressListById(Long userId);
+	Set<Address> findUserAddressListById(Long userId);
 
-	boolean addAddress(Long userId, Address address);
+	String addUserAddress(Long userId, Address address);
 
-	void removeAddress(Long userId, Long addressId);
+	String removeUserAddress(Long userId, Long addressId);
 
-	User findReference(Long userId);
+	User findUserReference(Long userId);
 
-	UserProjection findDTOById(Long userId);
+	Optional<UserDTO> findUserDTOById(Long userId);
 
-	void updateName(String password, Long userId, String name);
+	void updateUserName(String password, Long userId, String name);
 
-	void updateEmail(String password, Long userId, String email);
+	void updateUserEmail(String password, Long userId, String email);
 
 	void updateUserContactNumber(String password, Long userId, Integer contactNumber);
 
-	void updatePassword(String password, Long userId, String newPassword);
+	void updateUserPassword(String password, Long userId, String newPassword);
 
-	void deleteById(String password, Long userId);
+	void deleteUserById(String password, Long userId);
 
 	// for internal use only
 
-	User findByEmail(String userEmail);
+	User findUserByEmail(String userEmail);
 
-	User findByIdWithAddressList(Long userId);
+	Optional<User> findUserByIdWithAddressList(Long userId);
 }
-

@@ -2,7 +2,7 @@ package PizzaApp.api.utils.globals;
 
 public final class ValidationRules {
 
-	public static final String ADDRESS_STRING_FIELD = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ-]{2,25}$";
+	public static final String ADDRESS_STRING_FIELD = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ-]{1,25}$";
 
 	public static final String USER_NAME = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$";
 

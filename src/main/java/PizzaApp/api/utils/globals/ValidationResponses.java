@@ -23,6 +23,11 @@ public final class ValidationResponses {
 	public static final String ACCOUNT_WITH_EMAIL_EXISTS = "Ya existe una cuenta con el correo electrónico introducido. Si no " +
 			"recuerda la contraseña, contacte con nosotros.";
 
+	public static final String MAX_ADDRESS_SIZE = "La cantidad máxima de domicilios por usuario no debe exceder de tres " +
+			"domicilios.";
+
+	public static final String ADDRESS_NOT_FOUND = "El domicilio a eliminar no existe en la base de datos.";
+
 	// ADDRESS
 
 	public static final String ADDRESS_STREET = "La dirección no debe incluir símbolos especiales y su longitud debe " +

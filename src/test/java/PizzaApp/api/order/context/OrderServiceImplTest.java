@@ -34,7 +34,7 @@ public class OrderServiceImplTest {
 	}
 
 	public Long createOrderTestSubjects(NewUserOrderDTO newUserOrder, LocalDateTime createdOn) {
-		User user = userService.findReference(newUserOrder.userId());
+		User user = userService.findUserReference(newUserOrder.userId());
 		Address address = addressService.findReference(newUserOrder.addressId());
 
 		Cart cart = new Cart.Builder()

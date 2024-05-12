@@ -10,6 +10,8 @@ public final class SecurityResponses {
 
 	public final static String BAD_CREDENTIALS = "El correo eléctronico o la contraseña introducida es incorrecta.";
 
+	public final static String USER_NOT_FOUND = "El usuario con id %s no existe.";
+
 	private SecurityResponses() {
 	}
 }

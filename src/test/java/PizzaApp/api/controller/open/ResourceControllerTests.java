@@ -1,4 +1,4 @@
-package PizzaApp.api.controller;
+package PizzaApp.api.controller.open;
 
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.resources.Offer;
@@ -17,6 +17,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
+@DirtiesContext
 public class ResourceControllerTests {
 
 	@Autowired
@@ -59,21 +61,39 @@ public class ResourceControllerTests {
 
 	@Test
 	public void givenGetProductApiCall_thenReturnResource() throws Exception {
+		// Act
+
+		// get api call to find product list
 		String response = mockMvc.perform(get("/api/resource/product?type=pizza")).andReturn().getResponse().getContentAsString();
+
+		// Assert
+
 		List<Product> productList = Arrays.asList(objectMapper.readValue(response, Product[].class));
 		assertThat(productList.size()).isEqualTo(1);
 	}
 
 	@Test
 	public void givenGetStoresApiCall_thenReturnResource() throws Exception {
+		// Act
+
+		// get api call to find store list
 		String response = mockMvc.perform(get("/api/resource/store")).andReturn().getResponse().getContentAsString();
+
+		// Assert
+
 		List<Store> storeList = Arrays.asList(objectMapper.readValue(response, Store[].class));
 		assertThat(storeList.size()).isEqualTo(1);
 	}
 
 	@Test
 	public void givenGetOffersApiCall_thenReturnResource() throws Exception {
+		// Act
+
+		// get api call to find offer list
 		String response = mockMvc.perform(get("/api/resource/offer")).andReturn().getResponse().getContentAsString();
+
+		// Assert
+
 		List<Offer> offerList = Arrays.asList(objectMapper.readValue(response, Offer[].class));
 		assertThat(offerList.size()).isEqualTo(1);
 	}

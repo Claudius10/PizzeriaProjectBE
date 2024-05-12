@@ -1,4 +1,4 @@
-package PizzaApp.api.controller;
+package PizzaApp.api.controller.open;
 
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
@@ -20,7 +20,6 @@ import java.util.Objects;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -38,9 +37,13 @@ public class TokenControllerTests {
 
 	@Test
 	public void givenPostApiCall_whenRefreshTokenIsMissing_thenReturnUnauthorized() throws Exception {
-		// Act & Assert
+		// Act
 
+		// post api call to refresh tokens
 		mockMvc.perform(post("/api/token/refresh").with(csrf()))
+
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(401);
 							String response = result.getResponse().getContentAsString();
@@ -54,6 +57,7 @@ public class TokenControllerTests {
 	public void givenPostApiCall_whenRefreshTokenIsOk_thenReturnRefreshedTokens() throws Exception {
 		// Arrange
 
+		// create refresh token
 		String validRefreshToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
 				"TokenTestRequestLogout@gmail.com",
 				1L,
@@ -61,6 +65,7 @@ public class TokenControllerTests {
 
 		// Act
 
+		// post api call to refresh tokens
 		MockHttpServletResponse response = mockMvc.perform(post("/api/token/refresh").with(csrf())
 						.cookie(SecurityCookieUtils.makeCookie("me", validRefreshToken, 60, true, false)))
 				.andReturn().getResponse();

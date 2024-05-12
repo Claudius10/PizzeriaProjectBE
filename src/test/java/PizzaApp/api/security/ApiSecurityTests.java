@@ -35,11 +35,13 @@ public class ApiSecurityTests {
 	public void givenLogoutApiCall_whenCredentialsArePresent_thenEraseCredentials() throws Exception {
 		// Arrange
 
+		// create access token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(30, ChronoUnit.SECONDS),
 				"TokenTestRequestLogout@gmail.com",
 				1L,
 				"USER");
 
+		// create refresh token
 		String validRefreshToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
 				"TokenTestRequestLogout@gmail.com",
 				1L,
@@ -47,6 +49,7 @@ public class ApiSecurityTests {
 
 		// Act
 
+		// post api call to log-out
 		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/logout")
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.cookie(SecurityCookieUtils.makeCookie("me", validRefreshToken, 60, true, false))
@@ -71,15 +74,20 @@ public class ApiSecurityTests {
 	public void givenCsrfProtectedApiCall_whenNoCsrfToken_thenReturnUnauthorized() throws Exception {
 		// Arrange
 
+		// create access token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(30, ChronoUnit.SECONDS),
 				"TokenTestAccessProtectedResourceWithNoCsrfToken@gmail.com",
 				0L,
 				"USER");
 
-		// Act & Assert
+		// Act
 
+		// post api call to check csrf protection
 		mockMvc.perform(post("/api/tests/security")
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
+
+				// Assert
+
 				.andExpect(status().isUnauthorized());
 	}
 
@@ -87,16 +95,21 @@ public class ApiSecurityTests {
 	public void givenCsrfProtectedApiCall_whenCsrfTokenOk_thenReturnOk() throws Exception {
 		// Arrange
 
+		// create access token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(30, ChronoUnit.SECONDS),
 				"TokenTestAccessProtectedResourceWithCsrfToken@gmail.com",
 				0L,
 				"USER");
 
-		// Act & Assert
+		// Act
 
+		// post api call to check csrf protection
 		mockMvc.perform(post("/api/tests/security")
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false))
 						.with(csrf()))
+
+				// Assert
+
 				.andExpect(status().isOk());
 	}
 
@@ -104,15 +117,20 @@ public class ApiSecurityTests {
 	public void givenApiCallToResource_whenValidAccessTokenAndRole_thenReturnOk() throws Exception {
 		// Arrange
 
+		// create access token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(30, ChronoUnit.SECONDS),
 				"TokenTestAccessProtectedResourceWithValidTokenAndRole@gmail.com",
 				0L,
 				"USER");
 
-		// Act & Assert
+		// Act
 
+		// post api call to check csrf protection
 		mockMvc.perform(get("/api/tests/security")
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
+
+				// Assert
+
 				.andExpect(status().isOk());
 	}
 
@@ -120,22 +138,32 @@ public class ApiSecurityTests {
 	public void givenApiCallToResource_whenValidAccessTokenAndInvalidRole_thenReturnUnauthorized() throws Exception {
 		// Arrange
 
+		// create access token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(30, ChronoUnit.SECONDS),
 				"TokenTestAccessProtectedResourceWithValidTokenAndRole@gmail.com",
 				0L,
 				"USER");
 
-		// Act & Assert
+		// Act
 
+		// post api call to check csrf protection
 		mockMvc.perform(get("/api/tests/security/admin")
 						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 30, true, false)))
+
+				// Assert
+
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void givenApiCallToResource_whenNoToken_thenReturnUnauthorized() throws Exception {
-		// Act & Assert
+		// Act
 
-		mockMvc.perform(get("/api/tests/security")).andExpect(status().isUnauthorized());
+		// get api call to check security
+		mockMvc.perform(get("/api/tests/security"))
+
+				// Assert
+
+				.andExpect(status().isUnauthorized());
 	}
 }

@@ -1,4 +1,4 @@
-package PizzaApp.api.controller;
+package PizzaApp.api.controller.open;
 
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
+@DirtiesContext
 public class AnonControllerRegisterTests {
 
 	@Autowired
@@ -56,6 +58,7 @@ public class AnonControllerRegisterTests {
 	public void givenRegisterApiCall_thenRegisterUser() throws Exception {
 		// Act
 
+		// post api call to register new user in database
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
@@ -77,6 +80,7 @@ public class AnonControllerRegisterTests {
 	public void givenRegisterApiCall_whenAccountWithEmailAlreadyExists_thenDontAllowRegister() throws Exception {
 		// Arrange
 
+		// post api call to register new user in database
 		createUserTestSubject(new RegisterDTO(
 				"RegisterTest",
 				"registerAnExistingUser@gmail.com",
@@ -86,6 +90,7 @@ public class AnonControllerRegisterTests {
 
 		// Act
 
+		// post api call to register new user in database
 		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/register").with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
@@ -105,8 +110,9 @@ public class AnonControllerRegisterTests {
 
 	@Test
 	public void givenRegisterPostApiCall_whenInvalidUserName_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to register new user in database
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
@@ -116,6 +122,8 @@ public class AnonControllerRegisterTests {
 								"Password1",
 								"Password1")
 						)))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -128,8 +136,9 @@ public class AnonControllerRegisterTests {
 
 	@Test
 	public void givenRegisterPostApiCall_whenNonMatchingEmail_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to register new user in database
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
@@ -140,6 +149,8 @@ public class AnonControllerRegisterTests {
 								"Password1")
 
 						)))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -152,8 +163,9 @@ public class AnonControllerRegisterTests {
 
 	@Test
 	public void givenRegisterPostApiCall_whenInvalidEmail_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to register new user in database
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
@@ -163,6 +175,8 @@ public class AnonControllerRegisterTests {
 								"Password1",
 								"Password1")
 						)))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -175,8 +189,9 @@ public class AnonControllerRegisterTests {
 
 	@Test
 	public void givenRegisterPostApiCall_whenNonMatchingPassword_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to register new user in database
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
@@ -186,6 +201,8 @@ public class AnonControllerRegisterTests {
 								"Password1",
 								"Password12")
 						)))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -198,8 +215,9 @@ public class AnonControllerRegisterTests {
 
 	@Test
 	public void givenRegisterPostApiCall_whenInvalidPassword_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to register new user in database
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
@@ -209,6 +227,8 @@ public class AnonControllerRegisterTests {
 								"Password",
 								"Password")
 						)))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();

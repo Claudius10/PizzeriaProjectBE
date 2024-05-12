@@ -4,10 +4,12 @@ import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.role.Role;
 import PizzaApp.api.entity.user.User;
+import PizzaApp.api.entity.user.dto.UserDTO;
 import PizzaApp.api.repos.user.UserRepository;
-import PizzaApp.api.repos.user.projections.UserProjection;
 import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.role.RoleService;
+import PizzaApp.api.utils.globals.SecurityResponses;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Long create(RegisterDTO registerDTO) {
+	public Long createUser(RegisterDTO registerDTO) {
 		Role userRole = roleService.findByName("USER");
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 
@@ -55,50 +57,74 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Set<Address> findAddressListById(Long userId) {
-		return userRepository.findAddressListById(userId);
+	public Set<Address> findUserAddressListById(Long userId) {
+		return userRepository.findUserAddressListById(userId);
 	}
 
 	@Override
-	public boolean addAddress(Long userId, Address address) {
-		User user = findByIdWithAddressList(userId);
+	public String addUserAddress(Long userId, Address address) {
+		Optional<User> dbUser = findUserByIdWithAddressList(userId);
 		Optional<Address> dbAddress = addressService.findByExample(address);
 
-		if (user.getAddressList().size() == 3) {
-			return false;
+		if (dbUser.isPresent()) {
+			User user = dbUser.get();
+
+			if (user.getAddressList().size() == 3) {
+				return ValidationResponses.MAX_ADDRESS_SIZE;
+			}
+
+			if (dbAddress.isPresent()) {
+				user.addAddress(dbAddress.get());
+			} else {
+				user.addAddress(address);
+			}
+
+			return null;
 		}
 
-		if (dbAddress.isPresent()) {
-			user.addAddress(dbAddress.get());
-		} else {
-			user.addAddress(address);
-		}
-
-		return true;
+		return String.format(SecurityResponses.USER_NOT_FOUND, userId);
 	}
 
 	@Override
-	public void removeAddress(Long userId, Long addressId) {
+	public String removeUserAddress(Long userId, Long addressId) {
+		Optional<User> dbUser = findUserByIdWithAddressList(userId);
 
+		if (dbUser.isPresent()) {
+			User user = dbUser.get();
+
+			Optional<Address> dbAddress = user.getAddressList()
+					.stream()
+					.filter(address1 -> address1.getId().equals(addressId))
+					.findFirst();
+
+			if (dbAddress.isEmpty()) {
+				return ValidationResponses.ADDRESS_NOT_FOUND;
+			}
+
+			user.removeAddress(dbAddress.get());
+			return null;
+		}
+
+		return String.format(SecurityResponses.USER_NOT_FOUND, userId);
 	}
 
 	@Override
-	public UserProjection findDTOById(Long userId) {
+	public Optional<UserDTO> findUserDTOById(Long userId) {
 		return userRepository.findUserById(userId);
 	}
 
 	@Override
-	public User findReference(Long userId) {
+	public User findUserReference(Long userId) {
 		return userRepository.getReferenceById(userId);
 	}
 
 	@Override
-	public void updateName(String password, Long userId, String name) {
+	public void updateUserName(String password, Long userId, String name) {
 		userRepository.updateUserName(userId, name);
 	}
 
 	@Override
-	public void updateEmail(String password, Long userId, String email) {
+	public void updateUserEmail(String password, Long userId, String email) {
 		userRepository.updateUserEmail(userId, email);
 	}
 
@@ -108,21 +134,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updatePassword(String password, Long userId, String newPassword) {
+	public void updateUserPassword(String password, Long userId, String newPassword) {
 		String encodedPassword = bCryptEncoder.encode(newPassword);
 		userRepository.updateUserPassword(userId, encodedPassword);
 	}
 
 	@Override
-	public void deleteById(String password, Long userId) {
+	public void deleteUserById(String password, Long userId) {
 		userRepository.deleteById(userId);
 	}
 
 	// for internal use only
 
 	@Override
-	public User findByEmail(String userEmail) {
-		Optional<User> user = userRepository.findByEmailWithRoles(userEmail);
+	public User findUserByEmail(String userEmail) {
+		Optional<User> user = userRepository.findUserByEmailWithRoles(userEmail);
 		if (user.isPresent()) {
 			return user.get();
 		} else {
@@ -131,7 +157,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User findByIdWithAddressList(Long userId) {
-		return userRepository.findByIdWithAddressList(userId);
+	public Optional<User> findUserByIdWithAddressList(Long userId) {
+		return userRepository.findUserByIdWithAddressList(userId);
 	}
 }

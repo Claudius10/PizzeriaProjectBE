@@ -139,8 +139,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestCreateOrder@gmail.com",
 				"OrderTestCreateOrder@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -182,8 +182,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateAddress@gmail.com",
 				"OrderTestUpdateAddress@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -232,8 +232,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateOrderDetails@gmail.com",
 				"OrderTestUpdateOrderDetails@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -287,8 +287,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateOrderCart@gmail.com",
 				"OrderTestUpdateOrderCart@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -357,8 +357,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateOrderCartAndOrderDetails@gmail.com",
 				"OrderTestUpdateOrderCartAndOrderDetails@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -435,8 +435,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateOrderCartAfterTimeLimit@gmail.com",
 				"OrderTestUpdateOrderCartAfterTimeLimit@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -507,8 +507,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateOrderDataAfterTimeLimit@gmail.com",
 				"OrderTestUpdateOrderDataAfterTimeLimit@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -583,8 +583,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestDeleteOrderAfterTimeLimite@gmail.com",
 				"OrderTestDeleteOrderAfterTimeLimite@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -622,8 +622,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestDeleteOrder@gmail.com",
 				"OrderTestDeleteOrder@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -657,8 +657,8 @@ public class UserOrderTests {
 				"OrderTestsUser",
 				"OrderTestUpdateSetOrderUserIdToNull@gmail.com",
 				"OrderTestUpdateSetOrderUserIdToNull@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 

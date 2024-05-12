@@ -4,6 +4,7 @@ import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
+import PizzaApp.api.utils.globals.SecurityResponses;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -66,8 +67,8 @@ public class UserIdValidationTests {
 				"UserIdValidation",
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -83,7 +84,7 @@ public class UserIdValidationTests {
 				.andExpect(status().isUnauthorized()).andReturn().getResponse().getContentAsString();
 
 		ApiErrorDTO apiErrorDTO = objectMapper.readValue(response, ApiErrorDTO.class);
-		assertEquals("Access denied: fraudulent request", apiErrorDTO.errorMsg());
+		assertEquals(SecurityResponses.FRAUDULENT_TOKEN, apiErrorDTO.errorMsg());
 	}
 
 	@Test
@@ -94,8 +95,8 @@ public class UserIdValidationTests {
 				"UserIdValidation",
 				"UserIdValidationTestMissingUserIdCookie@gmail.com",
 				"UserIdValidationTestMissingUserIdCookie@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -110,7 +111,7 @@ public class UserIdValidationTests {
 				.andExpect(status().isUnauthorized()).andReturn().getResponse().getContentAsString();
 
 		ApiErrorDTO apiErrorDTO = objectMapper.readValue(response, ApiErrorDTO.class);
-		assertEquals("Access denied: unable to verify user identity", apiErrorDTO.errorMsg());
+		assertEquals(SecurityResponses.USER_ID_MISSING, apiErrorDTO.errorMsg());
 	}
 
 	@Test
@@ -121,8 +122,8 @@ public class UserIdValidationTests {
 				"UserIdValidation",
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 

@@ -1,4 +1,4 @@
-package PizzaApp.api.controller;
+package PizzaApp.api.controller.open;
 
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.error.ApiErrorDTO;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
+@DirtiesContext
 public class AnonControllerAnonOrderTests {
 
 	@Autowired
@@ -46,6 +48,7 @@ public class AnonControllerAnonOrderTests {
 	public void givenAnonOrderPostApiCall_whenAllOk_thenReturnOrder() throws Exception {
 		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -71,8 +74,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidCustomerName_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -88,6 +92,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -100,8 +106,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidCustomerNumber_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -117,6 +124,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -129,8 +138,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidCustomerEmail_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -146,6 +156,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -158,8 +170,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidAddressStreet_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -175,6 +188,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -187,8 +202,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidAddressStreetNumber_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -204,6 +220,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -216,8 +234,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidAddressFloor_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -233,6 +252,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -245,8 +266,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidDeliveryHour_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -262,6 +284,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -274,8 +298,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidPaymentType_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -291,6 +316,8 @@ public class AnonControllerAnonOrderTests {
 								null,
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -303,8 +330,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidChangeRequest_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -320,6 +348,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							String response = result.getResponse().getContentAsString();
@@ -331,8 +361,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenInvalidComment_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -348,6 +379,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								"%$·%·$",
 								false))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
@@ -360,8 +393,9 @@ public class AnonControllerAnonOrderTests {
 
 	@Test
 	public void givenAnonOrderPostApiCall_whenCartIsEmpty_thenThrowException() throws Exception {
-		// Assert
+		// Act
 
+		// post api call to create anon order
 		mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
@@ -377,6 +411,8 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								true))))
+				// Assert
+
 				.andExpect(result -> {
 							assertThat(result.getResponse().getStatus()).isEqualTo(400);
 							String response = result.getResponse().getContentAsString(StandardCharsets.UTF_8);

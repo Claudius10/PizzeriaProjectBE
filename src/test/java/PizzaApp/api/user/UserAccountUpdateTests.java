@@ -78,8 +78,8 @@ public class UserAccountUpdateTests {
 				"UserAccountUpdate",
 				"UserAccountPasswordUpdate@gmail.com",
 				"UserAccountPasswordUpdate@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 
@@ -89,9 +89,9 @@ public class UserAccountUpdateTests {
 				"USER");
 
 		PasswordChangeDTO passwordChangeDTO = new PasswordChangeDTO(
-				"password",
 				"Password1",
-				"Password1");
+				"Password2",
+				"Password2");
 
 		mockMvc.perform(put("/api/user/{userId}/password", testUserId)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +101,7 @@ public class UserAccountUpdateTests {
 						.with(csrf()))
 				.andExpect(status().isOk());
 
-		User user = userService.findByEmail("UserAccountPasswordUpdate@gmail.com");
+		User user = userService.findUserByEmail("UserAccountPasswordUpdate@gmail.com");
 
 		assertAll("assert password was successfully updated",
 				() -> assertTrue(passwordEncoder.matches(passwordChangeDTO.newPassword(), user.getPassword()))
@@ -117,8 +117,8 @@ public class UserAccountUpdateTests {
 				"UserAccountUpdate",
 				"UserAccountInvalidPasswordUpdate@gmail.com",
 				"UserAccountInvalidPasswordUpdate@gmail.com",
-				"password",
-				"password"));
+				"Password1",
+				"Password1"));
 
 		// create JWT token
 

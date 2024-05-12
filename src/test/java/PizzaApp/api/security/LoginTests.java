@@ -12,6 +12,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -22,13 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
+@DirtiesContext
 public class LoginTests {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@Autowired
-	private UserService userRepository;
+	private UserService userService;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -36,7 +38,7 @@ public class LoginTests {
 	@BeforeAll
 	void setUp() {
 		roleRepository.save(new Role("USER"));
-		userRepository.create(new RegisterDTO(
+		userService.createUser(new RegisterDTO(
 				"tester",
 				"test@gmail.com",
 				"test@gmail.com",
@@ -46,29 +48,53 @@ public class LoginTests {
 
 	@Test
 	public void givenLoginApiCall_whenValidCredentials_thenReturnOk() throws Exception {
+		// Act
+
+		// post api call to log in
 		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=password")
 						.with(csrf()))
+
+				// Assert
+
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void givenLoginApiCall_whenInvalidCredentials_thenReturnUnauthorized() throws Exception {
+		// Act
+
+		// post api call to log in
 		mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword")
 						.with(csrf()))
+
+				// Assert
+
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void givenLoginApiCall_whenInvalidPassword_thenReturnUnauthorized() throws Exception {
+		// Act
+
+		// post api call to log in
 		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=wrong_password")
 						.with(csrf()))
+
+				// Assert
+
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void givenLoginApiCall_whenInvalidUsername_thenReturnUnauthorized() throws Exception {
+		// Act
+
+		// post api call to log in
 		mockMvc.perform(post("/api/auth/login?username=nottest@gmail.com&password=password")
 						.with(csrf()))
+
+				// Assert
+
 				.andExpect(status().isUnauthorized());
 	}
 }

@@ -70,7 +70,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
-	protected ResponseEntity<ApiErrorDTO> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+	protected ResponseEntity<?> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
 
 		String errorMsg;
 		if (ex instanceof BadCredentialsException) {
@@ -79,12 +79,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			errorMsg = ex.getMessage();
 		}
 
-		return ResponseEntity
-				.status(HttpStatus.UNAUTHORIZED)
-				.body(new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(errorMsg)
-						.build());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMsg);
 	}
 }

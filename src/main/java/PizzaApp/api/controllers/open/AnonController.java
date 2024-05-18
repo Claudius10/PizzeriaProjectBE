@@ -41,7 +41,7 @@ public class AnonController {
 					.body(new ApiErrorDTO.Builder()
 							.withStatusCode(HttpStatus.BAD_REQUEST.value())
 							.withPath(request.getServletPath())
-							.withErrorMsg(ValidationResponses.ACCOUNT_WITH_EMAIL_EXISTS)
+							.withErrorMsg(ValidationResponses.EMAIL_ALREADY_EXISTS)
 							.build());
 		}
 	}

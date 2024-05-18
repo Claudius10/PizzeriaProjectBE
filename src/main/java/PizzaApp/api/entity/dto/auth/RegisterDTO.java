@@ -8,23 +8,23 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 @FieldMatch.List({
-		@FieldMatch(first = "email", second = "matchingEmail", message = ValidationResponses.USER_EMAIL_MATCHING),
-		@FieldMatch(first = "password", second = "matchingPassword", message = ValidationResponses.USER_PASSWORD_MATCHING)})
+		@FieldMatch(first = "email", second = "matchingEmail", message = ValidationResponses.EMAIL_NO_MATCH),
+		@FieldMatch(first = "password", second = "matchingPassword", message = ValidationResponses.PASSWORD_NO_MATCH)})
 public record RegisterDTO(
-		@Pattern(regexp = ValidationRules.USER_NAME, message = ValidationResponses.USER_NAME)
+		@Pattern(regexp = ValidationRules.USER_NAME, message = ValidationResponses.NAME_INVALID)
 		String name,
 
-		@Email(message = ValidationResponses.USER_EMAIL)
-		@NotBlank(message = ValidationResponses.USER_EMAIL)
+		@Email(message = ValidationResponses.EMAIL_INVALID)
+		@NotBlank(message = ValidationResponses.EMAIL_MISSING)
 		String email,
 
-		@Email(message = ValidationResponses.USER_EMAIL)
-		@NotBlank(message = ValidationResponses.USER_EMAIL)
+		@Email(message = ValidationResponses.EMAIL_INVALID)
+		@NotBlank(message = ValidationResponses.EMAIL_MISSING)
 		String matchingEmail,
 
-		@Pattern(regexp = ValidationRules.USER_PASSWORD, message = ValidationResponses.USER_PASSWORD)
+		@Pattern(regexp = ValidationRules.USER_PASSWORD, message = ValidationResponses.PASSWORD_INVALID)
 		String password,
 
-		@Pattern(regexp = ValidationRules.USER_PASSWORD, message = ValidationResponses.USER_PASSWORD)
+		@Pattern(regexp = ValidationRules.USER_PASSWORD, message = ValidationResponses.PASSWORD_INVALID)
 		String matchingPassword) {
 }

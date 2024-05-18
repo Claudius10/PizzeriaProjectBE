@@ -10,6 +10,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,7 +46,7 @@ public class TokenControllerTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(401);
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 							String response = result.getResponse().getContentAsString();
 							ApiErrorDTO apiError = objectMapper.readValue(response, ApiErrorDTO.class);
 							assertThat(apiError.errorMsg()).isEqualTo(SecurityResponses.MISSING_TOKEN);
@@ -72,7 +73,7 @@ public class TokenControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
 		assertThat(Objects.requireNonNull(response.getCookie("fight")).getMaxAge()).isEqualTo(86400);
 		assertThat(Objects.requireNonNull(response.getCookie("me")).getMaxAge()).isEqualTo(604800);

@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class ValidateUserAccountUpdate {
 
-	final private AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 
 	public ValidateUserAccountUpdate(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
 	}
 
-	@Before(value = "PizzaApp.api.aop.pointcuts.UserPointCuts.isUserAccountUpdate() && args(password, ..)", argNames =
-			"password")
+	@Before(value = "(PizzaApp.api.aop.pointcuts.UserPointCuts.userAccountUpdate() || PizzaApp.api.aop.pointcuts.UserPointCuts" +
+			".userAccountDelete()) && args(password, ..)", argNames = "password")
 	public void verifyPassword(String password) {
 		SecurityContext context = SecurityContextHolder.getContext();
 		Authentication authentication = context.getAuthentication();

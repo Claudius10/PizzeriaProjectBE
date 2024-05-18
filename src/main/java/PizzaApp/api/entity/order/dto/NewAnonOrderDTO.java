@@ -12,13 +12,13 @@ import jakarta.validation.constraints.Pattern;
 
 public record NewAnonOrderDTO(
 
-		@Pattern(regexp = ValidationRules.USER_NAME, message = ValidationResponses.USER_NAME)
+		@Pattern(regexp = ValidationRules.USER_NAME, message = ValidationResponses.NAME_INVALID)
 		String anonCustomerName,
 
-		@IntegerLength(min = 9, max = 9, message = ValidationResponses.ANON_CUSTOMER_NUMBER)
+		@IntegerLength(min = 9, max = 9, message = ValidationResponses.NUMBER_INVALID)
 		Integer anonCustomerContactNumber,
 
-		@Email(message = ValidationResponses.USER_EMAIL)
+		@Email(message = ValidationResponses.EMAIL_INVALID)
 		String anonCustomerEmail,
 
 		@Valid

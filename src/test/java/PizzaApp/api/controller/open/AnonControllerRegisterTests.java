@@ -13,6 +13,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
@@ -104,8 +105,8 @@ public class AnonControllerRegisterTests {
 		// Assert
 
 		ApiErrorDTO error = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), ApiErrorDTO.class);
-		assertThat(error.statusCode()).isEqualTo(400);
-		assertThat(error.errorMsg()).isEqualTo(ValidationResponses.ACCOUNT_WITH_EMAIL_EXISTS);
+		assertThat(error.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(error.errorMsg()).isEqualTo(ValidationResponses.EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -125,11 +126,11 @@ public class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(400);
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("name");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_NAME);
+							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.NAME_INVALID);
 						}
 				);
 	}
@@ -152,11 +153,11 @@ public class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(400);
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_EMAIL_MATCHING);
+							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.EMAIL_NO_MATCH);
 						}
 				);
 	}
@@ -178,11 +179,11 @@ public class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(400);
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_EMAIL);
+							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.EMAIL_INVALID);
 						}
 				);
 	}
@@ -204,11 +205,11 @@ public class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(400);
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("password");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_PASSWORD_MATCHING);
+							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.PASSWORD_NO_MATCH);
 						}
 				);
 	}
@@ -230,11 +231,11 @@ public class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(400);
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("password");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.USER_PASSWORD);
+							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.PASSWORD_INVALID);
 						}
 				);
 	}

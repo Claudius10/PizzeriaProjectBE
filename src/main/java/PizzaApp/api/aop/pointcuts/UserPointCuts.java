@@ -7,11 +7,19 @@ import org.aspectj.lang.annotation.Pointcut;
 public class UserPointCuts {
 
 	/**
-	 * A isUserAccountUpdate is the execution of any method defined on
+	 * A userAccountUpdate is the execution of any method defined on
 	 * the UserService interface that begins with "update...".
 	 */
 	@Pointcut("execution(* PizzaApp.api.services.user.UserService.update*(..))")
-	public void isUserAccountUpdate() {
+	public void userAccountUpdate() {
+	}
+
+	/**
+	 * A userAccountDelete is the execution of any method defined on
+	 * the UserService interface that begins with "delete...".
+	 */
+	@Pointcut("execution(* PizzaApp.api.services.user.UserService.delete*(..))")
+	public void userAccountDelete() {
 	}
 
 	/**

@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
 			User user = dbUser.get();
 
 			if (user.getAddressList().size() == 3) {
-				return ValidationResponses.MAX_ADDRESS_SIZE;
+				return ValidationResponses.ADDRESS_MAX_SIZE;
 			}
 
 			if (dbAddress.isPresent()) {
@@ -120,7 +120,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserName(String password, Long userId, String name) {
-		userRepository.updateUserName(userId, name);
+		Optional<User> dbUser = userRepository.findById(userId);
+		dbUser.ifPresent(user -> user.setName(name));
 	}
 
 	@Override

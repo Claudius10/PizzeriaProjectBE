@@ -43,5 +43,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("select user from User user left join fetch user.addressList where user.id = :userId")
 	Optional<User> findUserByIdWithAddressList(Long userId);
 
+	@Query("select user from User user join fetch user.roles where user.email = :email")
 	User findUserByEmail(String email);
 }

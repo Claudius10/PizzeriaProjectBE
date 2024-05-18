@@ -64,8 +64,8 @@ public class UserController {
 		String userNotFound = String.format(SecurityResponses.USER_NOT_FOUND, userId);
 
 		if (result != null) {
-			if (result.equals(ValidationResponses.MAX_ADDRESS_SIZE)) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationResponses.MAX_ADDRESS_SIZE);
+			if (result.equals(ValidationResponses.ADDRESS_MAX_SIZE)) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ValidationResponses.ADDRESS_MAX_SIZE);
 			}
 
 			if (result.equals(userNotFound)) {

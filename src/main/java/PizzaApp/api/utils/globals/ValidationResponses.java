@@ -2,33 +2,32 @@ package PizzaApp.api.utils.globals;
 
 public final class ValidationResponses {
 
-	// USER
-
-	public static final String USER_NAME = "El nombre y apellido(s) debe tener una longitud entre 2-50 letras." +
+	public static final String NAME_INVALID = "El nombre y apellido(s) debe tener una longitud entre 2-50 letras." +
 			" Incluye tildes. No incluye símbolos especiales.";
 
-	public static final String USER_EMAIL = "El correo electrónico debe ajustarse al ejemplo: marcopolo2@yahoo" +
-			".es";
+	public static final String EMAIL_INVALID = "Formato inválido de correo electrónico. Ejemplo válido: marcopolo22@gmail.com";
 
-	public static final String USER_PASSWORD = "La contraseña debe tener una longitud mínima de 8 valores " +
-			"alfanuméricos, incluir una letra mayúscula y un número.";
+	public static final String EMAIL_MISSING = "El correo electrónico no puede faltar.";
 
-	public static final String USER_EMAIL_MATCHING = "El correo electrónico debe coincidir.";
+	public static final String EMAIL_NO_MATCH = "El correo electrónico debe coincidir.";
 
-	public static final String USER_PASSWORD_MATCHING = "La contraseña debe coincidir.";
-
-	public static final String ANON_CUSTOMER_NUMBER = "El teléfono de contacto debe tener una longitud fija de 9 " +
-			"dígitos.";
-
-	public static final String ACCOUNT_WITH_EMAIL_EXISTS = "Ya existe una cuenta con el correo electrónico introducido. Si no " +
+	public static final String EMAIL_ALREADY_EXISTS = "Ya existe una cuenta con el correo electrónico introducido. Si no " +
 			"recuerda la contraseña, contacte con nosotros.";
 
-	public static final String MAX_ADDRESS_SIZE = "La cantidad máxima de domicilios por usuario no debe exceder de tres " +
+	public static final String PASSWORD_INVALID = "La contraseña debe tener una longitud mínima de 8 valores " +
+			"alfanuméricos, incluir una letra mayúscula y un número.";
+
+	public static final String PASSWORD_MISSING = "La contraseña no puede faltar.";
+
+	public static final String PASSWORD_NO_MATCH = "La contraseña debe coincidir.";
+
+	public static final String NUMBER_INVALID = "El teléfono de contacto debe tener una longitud fija de 9 " +
+			"dígitos.";
+
+	public static final String ADDRESS_MAX_SIZE = "La cantidad máxima de domicilios por usuario no debe exceder de tres " +
 			"domicilios.";
 
 	public static final String ADDRESS_NOT_FOUND = "El domicilio a eliminar no existe en la base de datos.";
-
-	// ADDRESS
 
 	public static final String ADDRESS_STREET = "La dirección no debe incluir símbolos especiales y su longitud debe " +
 			"tener entre 2-25 letras.";
@@ -47,8 +46,6 @@ public final class ValidationResponses {
 	public static final String ADDRESS_DOOR = "La puerta no debe incluir símbolos especiales y su longitud debe tener " +
 			"un máximo de 25 letras.";
 
-	// ORDER DETAILS
-
 	public static final String ORDER_DETAILS_DELIVERY_HOUR = "La hora de entrega no puede faltar.";
 
 	public static final String ORDER_DETAILS_PAYMENT = "La forma de pago no puede faltar.";
@@ -60,8 +57,6 @@ public final class ValidationResponses {
 
 	public static final String ORDER_DETAILS_COMMENT = "El campo 'Observaciones al repartidor' debe tener una longitud máxima " +
 			"de 150 valores alfanuméricos. Incluye tildes e y los símbolos !¡ ?¿ . , : ;";
-
-	// Cart
 
 	public static final String CART_IS_EMPTY = "La cesta no debe estar vacía.";
 

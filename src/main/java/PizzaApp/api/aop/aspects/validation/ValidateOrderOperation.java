@@ -1,6 +1,5 @@
 package PizzaApp.api.aop.aspects.validation;
 
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
 import PizzaApp.api.entity.order.dto.NewUserOrderDTO;
 import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
@@ -32,12 +31,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-				new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(result.getMessage())
-						.build());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
 	}
 
 	@Around(value = "execution(* PizzaApp.api.controllers.locked.user.UserOrdersController.createUserOrder(..)) && args(order, request)", argNames = "pjp,order,request")
@@ -48,12 +42,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-				new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(result.getMessage())
-						.build());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
 	}
 
 	@Around(value = "execution(* PizzaApp.api.controllers.locked.user.UserOrdersController.updateUserOrder(..)) && args(order, request)", argNames = "pjp,order,request")
@@ -69,12 +58,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-				new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(result.getMessage())
-						.build());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
 	}
 
 	@Around(value = "execution(* PizzaApp.api.controllers.locked.user.UserOrdersController.deleteUserOrderById(..)) && args(orderId,request)", argNames = "pjp,orderId,request")
@@ -85,11 +69,6 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-				new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(result.getMessage())
-						.build());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
 	}
 }

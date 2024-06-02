@@ -13,26 +13,27 @@ import java.util.Objects;
 public class Address {
 
 	@Id
-	@Column(name = "id")
+	@Column()
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "street", nullable = false)
+	@Column(nullable = false)
+
 	private String street;
 
-	@Column(name = "street_nr", nullable = false)
+	@Column(nullable = false)
 	private Integer streetNr;
 
-	@Column(name = "gate")
+	@Column
 	private String gate;
 
-	@Column(name = "staircase")
+	@Column
 	private String staircase;
 
-	@Column(name = "floor")
+	@Column
 	private String floor;
 
-	@Column(name = "door")
+	@Column
 	private String door;
 
 	public Address() {

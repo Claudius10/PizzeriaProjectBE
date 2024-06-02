@@ -6,10 +6,11 @@ import PizzaApp.api.repos.order.projections.OrderSummary;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface OrderService {
 
-	OrderDTO findDTOById(Long orderId);
+	Optional<OrderDTO> findDTOById(Long orderId);
 
 	CreatedAnonOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder);
 
@@ -23,7 +24,7 @@ public interface OrderService {
 
 	// info - for internal use only
 
-	Order findUserOrderById(Long orderId);
+	Optional<Order> findUserOrderById(Long orderId);
 
 	LocalDateTime findCreatedOnById(Long orderId);
 }

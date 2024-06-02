@@ -1,6 +1,7 @@
 package PizzaApp.api.services.user;
 
 import PizzaApp.api.repos.user.UserRepository;
+import PizzaApp.api.utils.globals.SecurityResponses;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +21,7 @@ public class UserAuthenticationService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return userRepository.findUserByEmailWithRoles(username)
-				.orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found"));
+				.orElseThrow(() -> new UsernameNotFoundException(String.format(SecurityResponses.USER_EMAIL_NOT_FOUND,
+						username)));
 	}
 }

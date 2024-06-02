@@ -12,6 +12,8 @@ public final class SecurityResponses {
 
 	public final static String USER_NOT_FOUND = "El usuario con id %s no existe.";
 
+	public final static String USER_EMAIL_NOT_FOUND = "El usuario con correo electrónico %s no existe.";
+
 	private SecurityResponses() {
 	}
 }

@@ -122,9 +122,8 @@ public class UserControllerTests {
 
 		// Assert
 
-		ApiErrorDTO error = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), ApiErrorDTO.class);
-		assertThat(error.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(error.errorMsg()).isEqualTo(SecurityResponses.USER_ID_MISSING);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.USER_ID_MISSING);
 	}
 
 	@Test
@@ -222,7 +221,7 @@ public class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 		assertThat(response.getContentAsString()).isEqualTo(String.format(SecurityResponses.USER_NOT_FOUND, 1));
 	}
 
@@ -463,7 +462,7 @@ public class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 		assertThat(response.getContentAsString()).isEqualTo(String.format(SecurityResponses.USER_NOT_FOUND, 1L));
 	}
 

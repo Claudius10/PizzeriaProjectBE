@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -19,7 +21,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			"join fetch cart.orderItems " +
 			"left join fetch order.user " +
 			"where order.id = :orderId")
-	Order findUserOrderById(Long orderId);
+	Optional<Order> findUserOrderById(Long orderId);
 
 	Page<OrderSummary> findAllByUser_Id(Long userId, Pageable pageable);
 

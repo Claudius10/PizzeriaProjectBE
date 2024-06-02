@@ -25,6 +25,7 @@ public class Store {
 	private String schedule;
 
 	public Store() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public Store(Long id, String name, Address address, Integer phoneNumber, String schedule) {

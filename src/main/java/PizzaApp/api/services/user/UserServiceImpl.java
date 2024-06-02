@@ -57,55 +57,69 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Set<Address> findUserAddressListById(Long userId) {
-		return userRepository.findUserAddressListById(userId);
-	}
-
-	@Override
 	public String addUserAddress(Long userId, Address address) {
-		Optional<User> dbUser = findUserByIdWithAddressList(userId);
+		User user = returnUserOrThrow(userId);
 		Optional<Address> dbAddress = addressService.findByExample(address);
 
-		if (dbUser.isPresent()) {
-			User user = dbUser.get();
-
-			if (user.getAddressList().size() == 3) {
-				return ValidationResponses.ADDRESS_MAX_SIZE;
-			}
-
-			if (dbAddress.isPresent()) {
-				user.addAddress(dbAddress.get());
-			} else {
-				user.addAddress(address);
-			}
-
-			return null;
+		if (user.getAddressList().size() == 3) {
+			return ValidationResponses.ADDRESS_MAX_SIZE;
 		}
 
-		return String.format(SecurityResponses.USER_NOT_FOUND, userId);
+		if (dbAddress.isPresent()) {
+			user.addAddress(dbAddress.get());
+		} else {
+			user.addAddress(address);
+		}
+
+		return null;
 	}
 
 	@Override
 	public String removeUserAddress(Long userId, Long addressId) {
-		Optional<User> dbUser = findUserByIdWithAddressList(userId);
+		User user = returnUserOrThrow(userId);
 
-		if (dbUser.isPresent()) {
-			User user = dbUser.get();
+		Optional<Address> dbAddress = user.getAddressList()
+				.stream()
+				.filter(address1 -> address1.getId().equals(addressId))
+				.findFirst();
 
-			Optional<Address> dbAddress = user.getAddressList()
-					.stream()
-					.filter(address1 -> address1.getId().equals(addressId))
-					.findFirst();
-
-			if (dbAddress.isEmpty()) {
-				return ValidationResponses.ADDRESS_NOT_FOUND;
-			}
-
-			user.removeAddress(dbAddress.get());
-			return null;
+		if (dbAddress.isEmpty()) {
+			return ValidationResponses.ADDRESS_NOT_FOUND;
 		}
 
-		return String.format(SecurityResponses.USER_NOT_FOUND, userId);
+		user.removeAddress(dbAddress.get());
+		return null;
+	}
+
+	@Override
+	public void updateUserName(String password, Long userId, String name) {
+		User user = returnUserOrThrow(userId);
+		user.setName(name);
+	}
+
+	@Override
+	public void updateUserEmail(String password, Long userId, String email) {
+		User user = returnUserOrThrow(userId);
+		user.setEmail(email);
+	}
+
+	@Override
+	public void updateUserContactNumber(String password, Long userId, Integer contactNumber) {
+		User user = returnUserOrThrow(userId);
+		user.setContactNumber(contactNumber);
+	}
+
+	@Override
+	public void updateUserPassword(String password, Long userId, String newPassword) {
+		String encodedPassword = bCryptEncoder.encode(newPassword);
+		User user = returnUserOrThrow(userId);
+		user.setPassword(encodedPassword);
+	}
+
+	@Override
+	public void deleteUserById(String password, Long userId) {
+		User user = returnUserOrThrow(userId);
+		userRepository.deleteById(user.getId());
 	}
 
 	@Override
@@ -119,33 +133,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUserName(String password, Long userId, String name) {
-		Optional<User> dbUser = userRepository.findById(userId);
-		dbUser.ifPresent(user -> user.setName(name));
-	}
-
-	@Override
-	public void updateUserEmail(String password, Long userId, String email) {
-		userRepository.updateUserEmail(userId, email);
-	}
-
-	@Override
-	public void updateUserContactNumber(String password, Long userId, Integer contactNumber) {
-		userRepository.updateUserContactNumber(userId, contactNumber);
-	}
-
-	@Override
-	public void updateUserPassword(String password, Long userId, String newPassword) {
-		String encodedPassword = bCryptEncoder.encode(newPassword);
-		userRepository.updateUserPassword(userId, encodedPassword);
-	}
-
-	@Override
-	public void deleteUserById(String password, Long userId) {
-		userRepository.deleteById(userId);
+	public Set<Address> findUserAddressListById(Long userId) {
+		return userRepository.findUserAddressListById(userId);
 	}
 
 	// for internal use only
+
+	public User returnUserOrThrow(Long userId) {
+		Optional<User> dbUser = userRepository.findById(userId);
+		if (dbUser.isEmpty()) {
+			throw new UsernameNotFoundException(String.format(SecurityResponses.USER_NOT_FOUND, userId));
+		} else {
+			return dbUser.get();
+		}
+	}
+
+	@Override
+	public boolean existsById(Long userId) {
+		return userRepository.existsById(userId);
+	}
 
 	@Override
 	public User findUserByEmail(String userEmail) {
@@ -153,7 +159,7 @@ public class UserServiceImpl implements UserService {
 		if (user.isPresent()) {
 			return user.get();
 		} else {
-			throw new UsernameNotFoundException("User with email " + userEmail + " not found.");
+			throw new UsernameNotFoundException(String.format(SecurityResponses.USER_EMAIL_NOT_FOUND, userEmail));
 		}
 	}
 

@@ -41,6 +41,7 @@ public class Product {
 	}
 
 	public Product() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public Long getId() {

@@ -1,7 +1,6 @@
 package PizzaApp.api.controllers.open;
 
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,12 +27,7 @@ public class TokenController {
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
 
 		if (refreshToken == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-					new ApiErrorDTO.Builder()
-							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-							.withPath(request.getServletPath())
-							.withErrorMsg(SecurityResponses.MISSING_TOKEN)
-							.build());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SecurityResponses.MISSING_TOKEN);
 		}
 
 		securityTokenUtils.refreshTokens(response, refreshToken);

@@ -51,7 +51,7 @@ public class OrderDetails {
 		this.order = null;
 	}
 
-	protected OrderDetails() {
+	public OrderDetails() {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 

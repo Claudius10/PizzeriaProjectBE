@@ -34,6 +34,8 @@ public interface UserService {
 
 	// for internal use only
 
+	boolean existsById(Long userId);
+
 	User findUserByEmail(String userEmail);
 
 	Optional<User> findUserByIdWithAddressList(Long userId);

@@ -1,9 +1,10 @@
 package PizzaApp.api.exceptions;
 
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.utils.globals.SecurityResponses;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,51 +27,35 @@ import java.util.List;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+																  HttpStatusCode status, WebRequest request) {
 		List<String> errorMessages = new ArrayList<>();
 
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			errorMessages.add(String.format("Error: %s Valor introducido: %s", error.getDefaultMessage(), error.getRejectedValue()));
 		}
 
-		return ResponseEntity
-				.status(status)
-				.body(new ApiErrorDTO.Builder()
-						.withStatusCode(status.value())
-						.withPath(request.getDescription(false))
-						.withErrorMsg(String.valueOf(errorMessages))
-						.build());
+		return ResponseEntity.badRequest().body(String.valueOf(errorMessages));
 	}
 
 	@ExceptionHandler({ConstraintViolationException.class})
-	protected ResponseEntity<ApiErrorDTO> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(ex.getMessage())
-						.build());
+	protected ResponseEntity<String> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
+		return ResponseEntity.badRequest().body(ex.getMessage());
+
 	}
 
 	@ExceptionHandler({SQLIntegrityConstraintViolationException.class})
-	protected ResponseEntity<ApiErrorDTO> handleDuplicateDatabaseEntry(HttpServletRequest request, SQLIntegrityConstraintViolationException ex) {
+	protected ResponseEntity<String> handleDuplicateDatabaseEntry(HttpServletRequest request, SQLIntegrityConstraintViolationException ex) {
 		String message = ex.getMessage();
 		if (ex.getErrorCode() == 1062) {
 			message = String.valueOf(ex.getErrorCode());
 		}
 
-		return ResponseEntity
-				.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiErrorDTO.Builder()
-						.withStatusCode(HttpStatus.BAD_REQUEST.value())
-						.withPath(request.getServletPath())
-						.withErrorMsg(message)
-						.build());
+		return ResponseEntity.badRequest().body((message));
 	}
 
 	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
-	protected ResponseEntity<?> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+	protected ResponseEntity<String> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
 
 		String errorMsg;
 		if (ex instanceof BadCredentialsException) {
@@ -80,5 +65,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMsg);
+	}
+
+	@ExceptionHandler({DataIntegrityViolationException.class})
+	protected ResponseEntity<String> handleDataAccessExceptions(HttpServletRequest request, RuntimeException ex) {
+		return ResponseEntity.badRequest().body(ValidationResponses.EMAIL_ALREADY_EXISTS);
 	}
 }

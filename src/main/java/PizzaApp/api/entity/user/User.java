@@ -42,6 +42,7 @@ public class User implements UserDetails {
 	private Set<Role> roles;
 
 	public User() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public void addAddress(Address address) {

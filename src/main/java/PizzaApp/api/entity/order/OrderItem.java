@@ -1,7 +1,11 @@
 package PizzaApp.api.entity.order;
 
+import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
+import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;
 
@@ -11,22 +15,27 @@ public class OrderItem {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column
 	private Long id;
 
-	@Column(name = "product_type")
+	@Column
+	@NotBlank(message = ValidationResponses.ITEM_TYPE_MISSING)
 	private String productType;
 
-	@Column(name = "name")
+	@Column
+	@NotBlank(message = ValidationResponses.ITEM_NAME_MISSING)
 	private String name;
 
-	@Column(name = "format")
+	@Column
+	@NotBlank(message = ValidationResponses.ITEM_FORMAT_MISSING)
 	private String format;
 
-	@Column(name = "quantity")
+	@Column
+	@IntegerLength(min = 1, max = 2, message = ValidationResponses.ITEM_MAX_QUANTITY)
 	private Integer quantity;
 
-	@Column(name = "price")
+	@Column
+	@DoubleLengthNullable(min = 1, max = 5, message = ValidationResponses.ITEM_MAX_PRICE)
 	private Double price;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +43,7 @@ public class OrderItem {
 	private Cart cart;
 
 	public OrderItem() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	private OrderItem(Builder builder) {

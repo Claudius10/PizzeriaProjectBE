@@ -11,13 +11,14 @@ public class Role implements GrantedAuthority {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column
 	private Long id;
 
-	@Column(name = "name", unique = true)
+	@Column(unique = true)
 	private String name;
 
 	public Role() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public Role(String name) {

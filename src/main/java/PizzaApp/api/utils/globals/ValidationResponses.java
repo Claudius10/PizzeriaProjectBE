@@ -50,8 +50,8 @@ public final class ValidationResponses {
 
 	public static final String ORDER_DETAILS_PAYMENT = "La forma de pago no puede faltar.";
 
-	public static final String ORDER_DETAILS_CHANGE_REQUESTED_LENGTH = "El cambio solicitado es inválido. Ejemplo " +
-			"válido: 25.55.";
+	public static final String ORDER_DETAILS_CHANGE_REQUESTED_LENGTH = "El cambio solicitado es inválido. Ejemplo válido: 25.55";
+
 	public static final String ORDER_DETAILS_CHANGE_REQUESTED = "El valor del cambio de efectivo solicitado no puede " +
 			"ser menor o igual que el total o total con ofertas.";
 
@@ -59,6 +59,24 @@ public final class ValidationResponses {
 			"de 150 valores alfanuméricos. Incluye tildes e y los símbolos !¡ ?¿ . , : ;";
 
 	public static final String CART_IS_EMPTY = "La cesta no debe estar vacía.";
+
+	public static final String CART_COST_INVALID = "El formato del coste de la cesta es inválido. Ejemplo válido: 255.55";
+
+	public static final String CART_QUANTITY_INVALID = "La cantidad de artículos de la cesta supera el límite permitido.";
+
+	public static final String ITEM_TYPE_MISSING = "El tipo del artículo no puede faltar.";
+
+	public static final String ITEM_NAME_MISSING = "El nombre del artículo no puede faltar.";
+
+	public static final String ITEM_FORMAT_MISSING = "El formato del artículo no puede faltar.";
+
+	public static final String ITEM_MAX_QUANTITY = "La cantidad máxima por artículo no puede superar los 2 dígitos.";
+
+	public static final String ITEM_MAX_PRICE = "Formato del precio válido: 12.55€, 10, 11.5.";
+
+	public static final String UPDATE_USER_ORDER_ERROR = "El pedido con id %s o la dirección con id %s no se puede encontrar.";
+
+	public static final String ORDER_NOT_FOUND = "El pedido con id %s no se puede encontrar.";
 
 	private ValidationResponses() {
 	}

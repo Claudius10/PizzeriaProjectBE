@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
@@ -334,7 +335,7 @@ public class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -349,15 +350,14 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								false))))
-				// Assert
+				.andReturn()
+				.getResponse();
 
-				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-							String response = result.getResponse().getContentAsString();
-							ApiErrorDTO apiError = objectMapper.readValue(response, ApiErrorDTO.class);
-							assertThat(apiError.errorMsg()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
-						}
-				);
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
 	}
 
 	@Test
@@ -397,7 +397,7 @@ public class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -412,15 +412,13 @@ public class AnonControllerAnonOrderTests {
 								"Cash",
 								null,
 								true))))
-				// Assert
+				.andReturn()
+				.getResponse();
 
-				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-							String response = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-							ApiErrorDTO apiError = objectMapper.readValue(response, ApiErrorDTO.class);
-							assertThat(apiError.errorMsg()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
-						}
-				);
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
 	public NewAnonOrderDTO anonOrderStub(String customerName, int customerNumber, String customerEmail, String street,

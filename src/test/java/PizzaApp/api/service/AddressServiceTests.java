@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext
 public class AddressServiceTests {
 
 	@Autowired
@@ -73,9 +75,9 @@ public class AddressServiceTests {
 		// Act
 
 		Long addressId = addressService.create(testAddress);
-		Address address = addressService.findUserAddressById(addressId);
+		Optional<Address> address = addressService.findAddressById(addressId);
 
 		// Assert
-		assertThat(address.getId()).isEqualTo(addressId);
+		assertThat(address.get().getId()).isEqualTo(addressId);
 	}
 }

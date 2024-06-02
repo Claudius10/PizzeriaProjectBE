@@ -2,7 +2,6 @@ package PizzaApp.api.controller.open;
 
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -41,17 +40,12 @@ public class TokenControllerTests {
 		// Act
 
 		// post api call to refresh tokens
-		mockMvc.perform(post("/api/token/refresh").with(csrf()))
+		MockHttpServletResponse response = mockMvc.perform(post("/api/token/refresh").with(csrf())).andReturn().getResponse();
 
-				// Assert
+		// Assert
 
-				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-							String response = result.getResponse().getContentAsString();
-							ApiErrorDTO apiError = objectMapper.readValue(response, ApiErrorDTO.class);
-							assertThat(apiError.errorMsg()).isEqualTo(SecurityResponses.MISSING_TOKEN);
-						}
-				);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.MISSING_TOKEN);
 	}
 
 	@Test

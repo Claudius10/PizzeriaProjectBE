@@ -1,6 +1,5 @@
 package PizzaApp.api.aop.aspects.validation;
 
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,12 +27,7 @@ public class ValidateUserIdentity {
 		Cookie userIdCookie = WebUtils.getCookie(request, "id");
 
 		if (userIdCookie == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-					new ApiErrorDTO.Builder()
-							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-							.withPath(request.getServletPath())
-							.withErrorMsg(SecurityResponses.USER_ID_MISSING)
-							.build());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SecurityResponses.USER_ID_MISSING);
 		}
 
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -41,12 +35,7 @@ public class ValidateUserIdentity {
 		Jwt validatedAccessToken = (Jwt) authentication.getPrincipal();
 
 		if (!userIdCookie.getValue().matches(validatedAccessToken.getClaimAsString("userId"))) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-					new ApiErrorDTO.Builder()
-							.withStatusCode(HttpStatus.UNAUTHORIZED.value())
-							.withPath(request.getServletPath())
-							.withErrorMsg(SecurityResponses.FRAUDULENT_TOKEN)
-							.build());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SecurityResponses.FRAUDULENT_TOKEN);
 		}
 
 		return pjp.proceed();

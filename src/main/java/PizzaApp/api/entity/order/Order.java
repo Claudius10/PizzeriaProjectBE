@@ -13,29 +13,29 @@ import java.util.Objects;
 public class Order {
 
 	@Id
-	@Column(name = "id")
+	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "created_on")
+	@Column
 	private LocalDateTime createdOn;
 
-	@Column(name = "updated_on")
+	@Column
 	private LocalDateTime updatedOn;
 
-	@Column(name = "formatted_created_on")
+	@Column
 	private String formattedCreatedOn;
 
-	@Column(name = "formatted_updated_on")
+	@Column
 	private String formattedUpdatedOn;
 
-	@Column(name = "anon_customer_name")
+	@Column
 	private String anonCustomerName;
 
-	@Column(name = "anon_customer_number")
+	@Column
 	private Integer anonCustomerContactNumber;
 
-	@Column(name = "anon_customer_email")
+	@Column
 	private String anonCustomerEmail;
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH},
@@ -57,6 +57,7 @@ public class Order {
 	private User user;
 
 	public Order() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public void setOrderDetails(OrderDetails orderDetails) {
@@ -171,9 +172,10 @@ public class Order {
 
 	public static class Builder {
 
-		private final Order order = new Order();
+		private final Order order;
 
 		public Builder() {
+			order = new Order();
 		}
 
 		public Builder withId(long id) {

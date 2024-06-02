@@ -6,12 +6,16 @@ import PizzaApp.api.entity.order.dto.OrderDTO;
 import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
 import PizzaApp.api.repos.order.projections.OrderSummary;
 import PizzaApp.api.services.order.OrderService;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user/orders")
@@ -27,34 +31,53 @@ public class UserOrdersController {
 	@ValidateUserId
 	@GetMapping("/{orderId}")
 	public ResponseEntity<OrderDTO> findUserOrderDTO(@PathVariable Long orderId, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.findDTOById(orderId));
+		Optional<OrderDTO> order = orderService.findDTOById(orderId);
+		return order
+				.map(orderDTO -> ResponseEntity.ok().body(orderDTO))
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@ValidateUserId
 	@PostMapping()
-	public ResponseEntity<Long> createUserOrder(@RequestBody NewUserOrderDTO order, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.createUserOrder(order));
+	public ResponseEntity<Long> createUserOrder(@RequestBody @Valid NewUserOrderDTO order, HttpServletRequest request) {
+		return ResponseEntity.ok().body(orderService.createUserOrder(order));
 	}
 
 	@ValidateUserId
 	@PutMapping()
-	public ResponseEntity<Long> updateUserOrder(@RequestBody UpdateUserOrderDTO order, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.updateUserOrder(order));
+	public ResponseEntity<String> updateUserOrder(@RequestBody UpdateUserOrderDTO order, HttpServletRequest request) {
+		Long result = orderService.updateUserOrder(order);
+
+		if (result == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format(
+					ValidationResponses.UPDATE_USER_ORDER_ERROR, order.getOrderId(), order.getAddressId()));
+		}
+
+		return ResponseEntity.ok().body(String.valueOf(result));
 	}
 
 	@ValidateUserId
 	@DeleteMapping(path = "/{orderId}")
-	public ResponseEntity<Long> deleteUserOrderById(@PathVariable Long orderId, HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.deleteUserOrderById(orderId));
+	public ResponseEntity<String> deleteUserOrderById(@PathVariable Long orderId, HttpServletRequest request) {
+		Long result = orderService.deleteUserOrderById(orderId);
+
+		if (result == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format(ValidationResponses.ORDER_NOT_FOUND, orderId));
+		}
+
+		return ResponseEntity.ok().body(String.valueOf(result));
 	}
 
 	@ValidateUserId
 	@GetMapping(params = {"pageNumber", "pageSize", "userId"})
-	public ResponseEntity<Page<OrderSummary>> findUserOrdersSummary
-			(@RequestParam Long userId,
-			 @RequestParam Integer pageSize,
-			 @RequestParam Integer pageNumber,
-			 HttpServletRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(orderService.findUserOrderSummary(userId, pageSize, pageNumber));
+	public ResponseEntity<Page<OrderSummary>> findUserOrdersSummary(@RequestParam Long userId, @RequestParam Integer pageSize,
+																	@RequestParam Integer pageNumber, HttpServletRequest request) {
+		Page<OrderSummary> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
+
+		if (orderSummaryPage == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		return ResponseEntity.ok().body(orderSummaryPage);
 	}
 }

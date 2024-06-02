@@ -1,5 +1,8 @@
 package PizzaApp.api.entity.order;
 
+import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
+import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -15,13 +18,16 @@ public class Cart {
 	@Id
 	private Long id;
 
-	@Column(name = "total_quantity")
+	@Column
+	@IntegerLength(min = 1, max = 2, message = ValidationResponses.CART_QUANTITY_INVALID)
 	private Integer totalQuantity;
 
-	@Column(name = "total_cost")
+	@Column
+	@DoubleLengthNullable(min = 1, max = 6, message = ValidationResponses.CART_COST_INVALID)
 	private Double totalCost;
 
-	@Column(name = "total_cost_offers")
+	@Column
+	@DoubleLengthNullable(min = 0, max = 6, message = ValidationResponses.CART_COST_INVALID)
 	private Double totalCostOffers;
 
 	// INFO to remember about the Cart/OrderItem association:
@@ -42,13 +48,15 @@ public class Cart {
 	private Order order;
 
 	public Cart() {
+		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
 	public static class Builder {
 
-		private final Cart cart = new Cart();
+		private final Cart cart;
 
 		public Builder() {
+			this.cart = new Cart();
 		}
 
 		public Builder withId(Long id) {

@@ -1,7 +1,6 @@
 package PizzaApp.api.controller.open;
 
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.role.Role;
 import PizzaApp.api.repos.role.RoleRepository;
 import PizzaApp.api.repos.user.UserRepository;
@@ -21,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,9 +102,9 @@ public class AnonControllerRegisterTests {
 
 		// Assert
 
-		ApiErrorDTO error = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), ApiErrorDTO.class);
-		assertThat(error.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(error.errorMsg()).isEqualTo(ValidationResponses.EMAIL_ALREADY_EXISTS);
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test

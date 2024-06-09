@@ -3,6 +3,7 @@ package PizzaApp.api.aop.aspects.validation;
 import PizzaApp.api.entity.order.dto.NewAnonOrderDTO;
 import PizzaApp.api.entity.order.dto.NewUserOrderDTO;
 import PizzaApp.api.entity.order.dto.UpdateUserOrderDTO;
+import PizzaApp.api.utils.globals.ValidationResponses;
 import PizzaApp.api.validation.order.OrderValidationResult;
 import PizzaApp.api.validation.order.OrderValidator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,6 +70,12 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
+		String message = result.getMessage();
+
+		if (message.equals(ValidationResponses.ORDER_DELETE_TIME_ERROR)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+		}
 	}
 }

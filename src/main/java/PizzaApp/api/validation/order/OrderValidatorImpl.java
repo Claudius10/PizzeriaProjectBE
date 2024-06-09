@@ -3,7 +3,7 @@ package PizzaApp.api.validation.order;
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
-import PizzaApp.api.repos.order.OrderRepository;
+import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +13,10 @@ import java.util.List;
 @Component
 public class OrderValidatorImpl implements OrderValidator {
 
-	private final OrderRepository orderRepository;
+	private final OrderService orderService;
 
-	public OrderValidatorImpl(OrderRepository orderRepository) {
-		this.orderRepository = orderRepository;
+	public OrderValidatorImpl(OrderService orderService) {
+		this.orderService = orderService;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class OrderValidatorImpl implements OrderValidator {
 	@Override
 	public OrderValidationResult validateUpdate(Cart cart, OrderDetails orderDetails, LocalDateTime createdOn) {
 		if (!isOrderDataUpdateTimeLimitValid(createdOn)) {
-			return new OrderValidationResult("El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.");
+			return new OrderValidationResult(ValidationResponses.ORDER_UPDATE_TIME_ERROR);
 		}
 
 		if (!isCartUpdateTimeLimitValid(createdOn)) {
@@ -58,9 +58,16 @@ public class OrderValidatorImpl implements OrderValidator {
 	}
 
 	public OrderValidationResult validateDelete(Long orderId) {
-		if (LocalDateTime.now().isAfter(orderRepository.findCreatedOnById(orderId).createdOn().plusMinutes(20))) {
-			return new OrderValidationResult("El tiempo límite para anular el pedido (20 minutos) ha finalizado.");
+		LocalDateTime createdOn = orderService.findCreatedOnById(orderId);
+
+		if (createdOn == null) {
+			return new OrderValidationResult(String.format(ValidationResponses.ORDER_NOT_FOUND, orderId));
 		}
+
+		if (LocalDateTime.now().isAfter(createdOn.plusMinutes(20))) {
+			return new OrderValidationResult(ValidationResponses.ORDER_DELETE_TIME_ERROR);
+		}
+
 		return new OrderValidationResult();
 	}
 

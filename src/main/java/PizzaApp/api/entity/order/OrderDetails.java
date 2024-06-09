@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.order;
 
-import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
+import PizzaApp.api.exceptions.constraints.annotation.DoubleLengthNullable;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import PizzaApp.api.utils.globals.ValidationRules;
 import com.fasterxml.jackson.annotation.JsonBackReference;

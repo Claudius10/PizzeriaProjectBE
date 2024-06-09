@@ -27,5 +27,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	// internal use only
 
-	CreatedOnOnly findCreatedOnById(Long orderId);
+	Optional<CreatedOnOnly> findCreatedOnById(Long orderId);
 }

@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.address;
 
-import PizzaApp.api.exceptions.constraints.ValidAddress;
+import PizzaApp.api.exceptions.constraints.annotation.ValidAddress;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 

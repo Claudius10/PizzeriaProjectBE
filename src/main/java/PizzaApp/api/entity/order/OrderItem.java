@@ -1,7 +1,7 @@
 package PizzaApp.api.entity.order;
 
-import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.exceptions.constraints.annotation.DoubleLength;
+import PizzaApp.api.exceptions.constraints.annotation.IntegerLength;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -35,7 +35,7 @@ public class OrderItem {
 	private Integer quantity;
 
 	@Column
-	@DoubleLengthNullable(min = 1, max = 5, message = ValidationResponses.ITEM_MAX_PRICE)
+	@DoubleLength(min = 1, max = 5, message = ValidationResponses.ITEM_MAX_PRICE)
 	private Double price;
 
 	@ManyToOne(fetch = FetchType.LAZY)

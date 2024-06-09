@@ -1,7 +1,6 @@
 package PizzaApp.api.order;
 
-import PizzaApp.api.repos.order.OrderRepository;
-import PizzaApp.api.repos.order.projections.CreatedOnOnly;
+import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.validation.order.OrderValidationResult;
 import PizzaApp.api.validation.order.OrderValidatorImpl;
 import org.junit.jupiter.api.Test;
@@ -19,14 +18,14 @@ import static org.mockito.Mockito.*;
 public class OrderDeleteValidationTest {
 
 	@Mock
-	private OrderRepository orderRepository;
+	private OrderService orderService;
 
 	@InjectMocks
 	private OrderValidatorImpl orderValidator;
 
 	@Test
 	public void givenOrderDeleteRequest_whenDeleteWindowPassed_thenReturnInvalidResult() {
-		when(orderRepository.findCreatedOnById(1L)).thenReturn(new CreatedOnOnly(LocalDateTime.now().minusMinutes(20)));
+		when(orderService.findCreatedOnById(1L)).thenReturn(LocalDateTime.now().minusMinutes(20));
 
 		OrderValidationResult isDeleteRequestValid = orderValidator.validateDelete(1L);
 
@@ -35,12 +34,12 @@ public class OrderDeleteValidationTest {
 			assertEquals("El tiempo límite para anular el pedido (20 minutos) ha finalizado.", isDeleteRequestValid.getMessage());
 		});
 
-		verify(orderRepository, times(1)).findCreatedOnById(1L);
+		verify(orderService, times(1)).findCreatedOnById(1L);
 	}
 
 	@Test
 	public void givenOrderDeleteRequest_whenDeleteWindowDidNotPass_thenReturnValidResult() {
-		when(orderRepository.findCreatedOnById(1L)).thenReturn(new CreatedOnOnly(LocalDateTime.now().minusMinutes(10)));
+		when(orderService.findCreatedOnById(1L)).thenReturn(LocalDateTime.now().minusMinutes(10));
 
 		OrderValidationResult isDeleteRequestValid = orderValidator.validateDelete(1L);
 
@@ -49,8 +48,6 @@ public class OrderDeleteValidationTest {
 			assertNull(isDeleteRequestValid.getMessage());
 		});
 
-		verify(orderRepository, times(1)).findCreatedOnById(1L);
+		verify(orderService, times(1)).findCreatedOnById(1L);
 	}
 }
-
-

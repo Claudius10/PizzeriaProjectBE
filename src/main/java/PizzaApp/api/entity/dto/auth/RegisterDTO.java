@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.dto.auth;
 
-import PizzaApp.api.exceptions.constraints.FieldMatch;
+import PizzaApp.api.exceptions.constraints.annotation.FieldMatch;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import PizzaApp.api.utils.globals.ValidationRules;
 import jakarta.validation.constraints.Email;

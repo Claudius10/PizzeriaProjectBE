@@ -32,11 +32,9 @@ public interface UserService {
 
 	void deleteUserById(String password, Long userId);
 
+	User findUserOrThrow(Long userId);
+
 	// for internal use only
 
 	boolean existsById(Long userId);
-
-	User findUserByEmail(String userEmail);
-
-	Optional<User> findUserByIdWithAddressList(Long userId);
 }

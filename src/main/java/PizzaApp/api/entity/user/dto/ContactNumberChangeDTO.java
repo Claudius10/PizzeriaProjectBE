@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.user.dto;
 
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.exceptions.constraints.annotation.IntegerLength;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.validation.constraints.NotBlank;
 

@@ -7,6 +7,7 @@ import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.entity.order.dto.*;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.repos.order.OrderRepository;
+import PizzaApp.api.repos.order.projections.CreatedOnOnly;
 import PizzaApp.api.repos.order.projections.OrderSummary;
 import PizzaApp.api.services.address.AddressService;
 import PizzaApp.api.services.user.UserService;
@@ -88,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long createUserOrder(NewUserOrderDTO newUserOrder) {
-		User user = userService.findUserReference(newUserOrder.userId());
+		User user = userService.findUserOrThrow(newUserOrder.userId());
 		Address address = addressService.findReference(newUserOrder.addressId());
 
 		Cart cart = new Cart.Builder()
@@ -122,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
 
 			boolean pendingAddressUpdate = !order.getAddress().contentEquals(address);
 			boolean pendingOrderDetailsUpdate = !order.getOrderDetails().contentEquals(updateUserOrder.getOrderDetails());
-			boolean pendingCartUpdate = !order.getCart().contentEquals(updateUserOrder.getCart()) && updateUserOrder.getCart() != null;
+			boolean pendingCartUpdate = updateUserOrder.getCart() != null && !order.getCart().contentEquals(updateUserOrder.getCart());
 
 			if (pendingAddressUpdate) {
 				order.setAddress(address);
@@ -192,6 +193,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public LocalDateTime findCreatedOnById(Long orderId) {
-		return orderRepository.findCreatedOnById(orderId).createdOn();
+		Optional<CreatedOnOnly> createdOn = orderRepository.findCreatedOnById(orderId);
+		return createdOn.map(CreatedOnOnly::createdOn).orElse(null);
 	}
 }

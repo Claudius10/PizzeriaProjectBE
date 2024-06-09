@@ -62,7 +62,8 @@ public final class ValidationResponses {
 
 	public static final String CART_COST_INVALID = "El formato del coste de la cesta es inválido. Ejemplo válido: 255.55";
 
-	public static final String CART_QUANTITY_INVALID = "La cantidad de artículos de la cesta supera el límite permitido.";
+	public static final String CART_QUANTITY_INVALID = "La cantidad de artículos de la cesta supera el límite permitido o es " +
+			"cero.";
 
 	public static final String ITEM_TYPE_MISSING = "El tipo del artículo no puede faltar.";
 
@@ -77,6 +78,10 @@ public final class ValidationResponses {
 	public static final String UPDATE_USER_ORDER_ERROR = "El pedido con id %s o la dirección con id %s no se puede encontrar.";
 
 	public static final String ORDER_NOT_FOUND = "El pedido con id %s no se puede encontrar.";
+
+	public static final String ORDER_UPDATE_TIME_ERROR = "El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.";
+
+	public static final String ORDER_DELETE_TIME_ERROR = "El tiempo límite para anular el pedido (20 minutos) ha finalizado.";
 
 	private ValidationResponses() {
 	}

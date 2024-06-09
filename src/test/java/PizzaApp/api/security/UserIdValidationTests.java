@@ -3,7 +3,6 @@ package PizzaApp.api.security;
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;

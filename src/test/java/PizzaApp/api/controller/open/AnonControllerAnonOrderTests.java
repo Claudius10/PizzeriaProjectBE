@@ -1,7 +1,6 @@
 package PizzaApp.api.controller.open;
 
 import PizzaApp.api.entity.address.Address;
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
 import PizzaApp.api.entity.order.OrderItem;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,7 +1,8 @@
 package PizzaApp.api.entity.order;
 
-import PizzaApp.api.exceptions.constraints.DoubleLengthNullable;
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.exceptions.constraints.annotation.DoubleLength;
+import PizzaApp.api.exceptions.constraints.annotation.DoubleLengthNullable;
+import PizzaApp.api.exceptions.constraints.annotation.IntegerLength;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -23,7 +24,7 @@ public class Cart {
 	private Integer totalQuantity;
 
 	@Column
-	@DoubleLengthNullable(min = 1, max = 6, message = ValidationResponses.CART_COST_INVALID)
+	@DoubleLength(min = 1, max = 6, message = ValidationResponses.CART_COST_INVALID)
 	private Double totalCost;
 
 	@Column

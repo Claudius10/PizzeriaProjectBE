@@ -1,29 +1,26 @@
 package PizzaApp.api.exceptions.constraints;
 
+import PizzaApp.api.exceptions.constraints.annotation.DoubleLength;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class DoubleLengthValidator implements ConstraintValidator<DoubleLengthNullable, Double> {
+public class DoubleLengthValidator implements ConstraintValidator<DoubleLength, Double> {
 
 	private double min, max;
 
 	@Override
-	public void initialize(DoubleLengthNullable doubleLength) {
+	public void initialize(DoubleLength doubleLength) {
 		this.min = doubleLength.min();
 		this.max = doubleLength.max();
 	}
 
 	@Override
 	public boolean isValid(Double value, ConstraintValidatorContext context) {
-		// validate whatever the double field value is between min and max
-		if (value != null) {
-			int length = String.valueOf(value.doubleValue()).length();
-			return (length >= min && length <= max);
-		} else {
-
-			// return true if value is null
-			return true;
+		if (value == null) {
+			return false;
 		}
-	}
 
+		int length = String.valueOf(value.doubleValue()).length();
+		return (length >= min && length <= max);
+	}
 }

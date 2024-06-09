@@ -1,28 +1,24 @@
-package PizzaApp.api.exceptions.constraints;
+package PizzaApp.api.exceptions.constraints.annotation;
 
+import PizzaApp.api.exceptions.constraints.DoubleLengthValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-/**
- * Null values are not considered valid.
- *
- * @author Claudiu Catalin
- */
-
-@Documented
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = IntegerLengthValidator.class)
-public @interface IntegerLength {
+@Constraint(validatedBy = DoubleLengthValidator.class)
+@Documented
+public @interface DoubleLength {
+
 	String message() default "Valor numérico no aceptado";
 
 	Class<?>[] groups() default {};
 
 	Class<? extends Payload>[] payload() default {};
 
-	int min();
+	double min();
 
-	int max();
+	double max();
 }

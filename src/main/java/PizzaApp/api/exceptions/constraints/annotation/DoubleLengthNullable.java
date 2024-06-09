@@ -1,5 +1,6 @@
-package PizzaApp.api.exceptions.constraints;
+package PizzaApp.api.exceptions.constraints.annotation;
 
+import PizzaApp.api.exceptions.constraints.DoubleLengthNullableValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -14,7 +15,7 @@ import java.lang.annotation.*;
 
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = DoubleLengthValidator.class)
+@Constraint(validatedBy = DoubleLengthNullableValidator.class)
 @Documented
 public @interface DoubleLengthNullable {
 	String message() default "Valor numérico no aceptado";

@@ -4,7 +4,6 @@ import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.dto.auth.RegisterDTO;
-import PizzaApp.api.entity.dto.error.ApiErrorDTO;
 import PizzaApp.api.entity.role.Role;
 import PizzaApp.api.entity.user.User;
 import PizzaApp.api.entity.user.dto.*;
@@ -14,7 +13,7 @@ import PizzaApp.api.repos.user.UserRepository;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +72,7 @@ public class UserControllerTests {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@BeforeEach
+	@AfterEach
 	public void cleanUp() {
 		userRepository.deleteAll();
 		addressRepository.deleteAll();
@@ -814,6 +813,11 @@ public class UserControllerTests {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester@gmail.com");
 		assertThat(user.isEmpty()).isTrue();
+	}
+
+	@Test
+	public void givenDeleteUserApiCall_whenUserHasOrders_thenDeleteUserAndUserIdFromOrders() {
+
 	}
 
 	public Long createUserTestSubject() throws Exception {

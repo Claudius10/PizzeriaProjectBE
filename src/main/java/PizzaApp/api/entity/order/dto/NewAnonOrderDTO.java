@@ -3,7 +3,7 @@ package PizzaApp.api.entity.order.dto;
 import PizzaApp.api.entity.address.Address;
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
-import PizzaApp.api.exceptions.constraints.IntegerLength;
+import PizzaApp.api.exceptions.constraints.annotation.IntegerLength;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import PizzaApp.api.utils.globals.ValidationRules;
 import jakarta.validation.Valid;

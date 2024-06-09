@@ -1,6 +1,6 @@
 package PizzaApp.api.entity.user.dto;
 
-import PizzaApp.api.exceptions.constraints.FieldMatch;
+import PizzaApp.api.exceptions.constraints.annotation.FieldMatch;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

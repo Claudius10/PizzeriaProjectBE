@@ -38,13 +38,13 @@ public class UserOrdersController {
 	}
 
 	@ValidateUserId
-	@PostMapping()
+	@PostMapping
 	public ResponseEntity<Long> createUserOrder(@RequestBody @Valid NewUserOrderDTO order, HttpServletRequest request) {
 		return ResponseEntity.ok().body(orderService.createUserOrder(order));
 	}
 
 	@ValidateUserId
-	@PutMapping()
+	@PutMapping
 	public ResponseEntity<String> updateUserOrder(@RequestBody UpdateUserOrderDTO order, HttpServletRequest request) {
 		Long result = orderService.updateUserOrder(order);
 
@@ -74,7 +74,7 @@ public class UserOrdersController {
 																	@RequestParam Integer pageNumber, HttpServletRequest request) {
 		Page<OrderSummary> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
 
-		if (orderSummaryPage == null) {
+		if (!orderSummaryPage.hasContent()) {
 			return ResponseEntity.notFound().build();
 		}
 

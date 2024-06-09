@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String addUserAddress(Long userId, Address address) {
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 		Optional<Address> dbAddress = addressService.findByExample(address);
 
 		if (user.getAddressList().size() == 3) {
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String removeUserAddress(Long userId, Long addressId) {
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 
 		Optional<Address> dbAddress = user.getAddressList()
 				.stream()
@@ -93,32 +93,32 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateUserName(String password, Long userId, String name) {
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 		user.setName(name);
 	}
 
 	@Override
 	public void updateUserEmail(String password, Long userId, String email) {
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 		user.setEmail(email);
 	}
 
 	@Override
 	public void updateUserContactNumber(String password, Long userId, Integer contactNumber) {
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 		user.setContactNumber(contactNumber);
 	}
 
 	@Override
 	public void updateUserPassword(String password, Long userId, String newPassword) {
 		String encodedPassword = bCryptEncoder.encode(newPassword);
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 		user.setPassword(encodedPassword);
 	}
 
 	@Override
 	public void deleteUserById(String password, Long userId) {
-		User user = returnUserOrThrow(userId);
+		User user = findUserOrThrow(userId);
 		userRepository.deleteById(user.getId());
 	}
 
@@ -139,7 +139,8 @@ public class UserServiceImpl implements UserService {
 
 	// for internal use only
 
-	public User returnUserOrThrow(Long userId) {
+	@Override
+	public User findUserOrThrow(Long userId) {
 		Optional<User> dbUser = userRepository.findById(userId);
 		if (dbUser.isEmpty()) {
 			throw new UsernameNotFoundException(String.format(SecurityResponses.USER_NOT_FOUND, userId));
@@ -151,20 +152,5 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean existsById(Long userId) {
 		return userRepository.existsById(userId);
-	}
-
-	@Override
-	public User findUserByEmail(String userEmail) {
-		Optional<User> user = userRepository.findUserByEmailWithRoles(userEmail);
-		if (user.isPresent()) {
-			return user.get();
-		} else {
-			throw new UsernameNotFoundException(String.format(SecurityResponses.USER_EMAIL_NOT_FOUND, userEmail));
-		}
-	}
-
-	@Override
-	public Optional<User> findUserByIdWithAddressList(Long userId) {
-		return userRepository.findUserByIdWithAddressList(userId);
 	}
 }

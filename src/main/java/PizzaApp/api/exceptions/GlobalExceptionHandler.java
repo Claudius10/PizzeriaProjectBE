@@ -3,6 +3,7 @@ package PizzaApp.api.exceptions;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -39,9 +41,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler({ConstraintViolationException.class})
-	protected ResponseEntity<String> handleEntityFieldExceptions(HttpServletRequest request, RuntimeException ex) {
-		return ResponseEntity.badRequest().body(ex.getMessage());
+	protected ResponseEntity<String> handleEntityFieldExceptions(HttpServletRequest request, ConstraintViolationException ex) {
 
+		Set<ConstraintViolation<?>> violationSet = ex.getConstraintViolations();
+		List<String> errorMessages = new ArrayList<>();
+
+		for (ConstraintViolation<?> violation : violationSet) {
+			errorMessages.add(violation.getMessage());
+		}
+
+		return ResponseEntity.badRequest().body(String.valueOf(errorMessages));
 	}
 
 	@ExceptionHandler({SQLIntegrityConstraintViolationException.class})
@@ -69,6 +78,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler({DataIntegrityViolationException.class})
 	protected ResponseEntity<String> handleDataAccessExceptions(HttpServletRequest request, RuntimeException ex) {
+		// TODO - test whatever returning static message in all cases is a good idea
 		return ResponseEntity.badRequest().body(ValidationResponses.EMAIL_ALREADY_EXISTS);
 	}
 }

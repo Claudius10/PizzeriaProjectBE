@@ -20,7 +20,7 @@ public class Cart {
 	private Long id;
 
 	@Column
-	@IntegerLength(min = 1, max = 2, message = ValidationResponses.CART_QUANTITY_INVALID)
+	@IntegerLength(min = 1, max = 2, message = ValidationResponses.CART_MAX_PRODUCTS_QUANTITY_ERROR)
 	private Integer totalQuantity;
 
 	@Column

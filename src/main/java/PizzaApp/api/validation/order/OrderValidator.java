@@ -17,10 +17,6 @@ public interface OrderValidator {
 
 	boolean isCartEmpty(Cart cart);
 
-	boolean isProductListSizeValid(int orderItemListSize);
-
-	boolean isProductsQuantityValid(List<OrderItem> items);
-
 	boolean isChangeRequestedValid(Double changeRequested, Double totalCostAfterOffers, Double totalCost);
 
 	boolean isCartUpdateTimeLimitValid(LocalDateTime createdOn);

@@ -42,6 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler({ConstraintViolationException.class})
 	protected ResponseEntity<String> handleEntityFieldExceptions(HttpServletRequest request, ConstraintViolationException ex) {
+		// Todo - test
 
 		Set<ConstraintViolation<?>> violationSet = ex.getConstraintViolations();
 		List<String> errorMessages = new ArrayList<>();
@@ -55,6 +56,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler({SQLIntegrityConstraintViolationException.class})
 	protected ResponseEntity<String> handleDuplicateDatabaseEntry(HttpServletRequest request, SQLIntegrityConstraintViolationException ex) {
+		// Todo - test
 		String message = ex.getMessage();
 		if (ex.getErrorCode() == 1062) {
 			message = String.valueOf(ex.getErrorCode());

@@ -31,7 +31,7 @@ public class OrderItem {
 	private String format;
 
 	@Column
-	@IntegerLength(min = 1, max = 2, message = ValidationResponses.ITEM_MAX_QUANTITY)
+	@IntegerLength(min = 1, max = 2, message = ValidationResponses.ORDER_ITEM_MAX_QUANTITY_ERROR)
 	private Integer quantity;
 
 	@Column

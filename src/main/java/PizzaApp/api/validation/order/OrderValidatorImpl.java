@@ -25,14 +25,6 @@ public class OrderValidatorImpl implements OrderValidator {
 			return new OrderValidationResult(ValidationResponses.CART_IS_EMPTY);
 		}
 
-		if (!isProductListSizeValid(cart.getOrderItems().size())) {
-			return new OrderValidationResult("Se ha superado el límite de artículos por pedido (20). Contacte con " + "nosotros si desea realizar el pedido.");
-		}
-
-		if (!isProductsQuantityValid(cart.getOrderItems())) {
-			return new OrderValidationResult("Se ha superado el límite de unidades por artículo (20). Contacte con " + "nosotros si desea realizar el pedido.");
-		}
-
 		if (!isChangeRequestedValid(orderDetails.getChangeRequested(), cart.getTotalCostOffers(), cart.getTotalCost())) {
 			return new OrderValidationResult(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
 		}
@@ -74,21 +66,6 @@ public class OrderValidatorImpl implements OrderValidator {
 	@Override
 	public boolean isCartEmpty(Cart cart) {
 		return cart != null && cart.getOrderItems().isEmpty() && cart.getTotalQuantity() == 0;
-	}
-
-	@Override
-	public boolean isProductListSizeValid(int orderItemListSize) {
-		return orderItemListSize <= 20;
-	}
-
-	@Override
-	public boolean isProductsQuantityValid(List<OrderItem> items) {
-		for (OrderItem item : items) {
-			if (item.getQuantity() > 20) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	// changeRequested > totalCostAfterOffers || changeRequested > totalCost

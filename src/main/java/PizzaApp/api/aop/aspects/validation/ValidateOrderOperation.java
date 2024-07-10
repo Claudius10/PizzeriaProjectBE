@@ -43,6 +43,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
+		// TODO - test
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
 	}
 

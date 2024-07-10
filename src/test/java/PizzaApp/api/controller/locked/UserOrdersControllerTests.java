@@ -452,6 +452,122 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
+	public void givenOrderUpdate_whenOrderNotFound_thenReturnBadRequestWithMessage() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		Long userId = createUserTestSubject();
+
+		// create address in database
+		Long addressId = createAddressTestSubject("Test", 1);
+
+		// create JWT token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+				"Tester@gmail.com",
+				userId,
+				"USER");
+
+		// create user order
+		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
+
+		// create UserOrderUpdate DTO
+		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
+				9879789L,
+				userId,
+				addressId,
+				order.getCreatedOn(),
+				order.getOrderDetails(),
+				new Cart.Builder()
+						.withOrderItems(List.of(new OrderItem.Builder()
+								.withQuantity(1)
+								.withProductType("Pizza")
+								.withFormat("Mediana")
+								.withWithName("Carbonara")
+								.withPrice(14.75)
+								.build()))
+						.withId(order.getId())
+						.withTotalQuantity(1)
+						.withTotalCost(14.75)
+						.build());
+
+		// Act
+
+		// put api call to update order
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(orderUpdate))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
+						.with(csrf()))
+				.andReturn()
+				.getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.UPDATE_USER_ORDER_ERROR,
+				9879789, addressId));
+	}
+
+	@Test
+	public void givenOrderUpdate_whenAddressNotFound_thenReturnBadRequestWithMessage() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		Long userId = createUserTestSubject();
+
+		// create address in database
+		Long addressId = createAddressTestSubject("Test", 1);
+
+		// create JWT token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+				"Tester@gmail.com",
+				userId,
+				"USER");
+
+		// create user order
+		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
+
+		// create UserOrderUpdate DTO
+		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
+				order.getId(),
+				userId,
+				878678L,
+				order.getCreatedOn(),
+				order.getOrderDetails(),
+				new Cart.Builder()
+						.withOrderItems(List.of(new OrderItem.Builder()
+								.withQuantity(1)
+								.withProductType("Pizza")
+								.withFormat("Mediana")
+								.withWithName("Carbonara")
+								.withPrice(14.75)
+								.build()))
+						.withId(order.getId())
+						.withTotalQuantity(1)
+						.withTotalCost(14.75)
+						.build());
+
+		// Act
+
+		// put api call to update order
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(orderUpdate))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
+						.with(csrf()))
+				.andReturn()
+				.getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.UPDATE_USER_ORDER_ERROR,
+				order.getId(), 878678));
+	}
+
+	@Test
 	public void givenOrderDelete_whenWithinTimeLimit_thenReturnDeletedOrderId() throws Exception {
 		// Arrange
 
@@ -539,7 +655,7 @@ public class UserOrdersControllerTests {
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/orders/{orderId}", 99)
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/orders/{orderId}", 995678)
 						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
 						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
 						.with(csrf()))
@@ -549,7 +665,7 @@ public class UserOrdersControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.ORDER_NOT_FOUND, 99));
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.ORDER_NOT_FOUND, 995678));
 	}
 
 	@Test

@@ -62,16 +62,11 @@ public final class ValidationResponses {
 
 	public static final String CART_COST_INVALID = "El formato del coste de la cesta es inválido. Ejemplo válido: 255.55";
 
-	public static final String CART_QUANTITY_INVALID = "La cantidad de artículos de la cesta supera el límite permitido o es " +
-			"cero.";
-
 	public static final String ITEM_TYPE_MISSING = "El tipo del artículo no puede faltar.";
 
 	public static final String ITEM_NAME_MISSING = "El nombre del artículo no puede faltar.";
 
 	public static final String ITEM_FORMAT_MISSING = "El formato del artículo no puede faltar.";
-
-	public static final String ITEM_MAX_QUANTITY = "La cantidad máxima por artículo no puede superar los 2 dígitos.";
 
 	public static final String ITEM_MAX_PRICE = "Formato del precio válido: 12.55€, 10, 11.5.";
 
@@ -82,6 +77,13 @@ public final class ValidationResponses {
 	public static final String ORDER_UPDATE_TIME_ERROR = "El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.";
 
 	public static final String ORDER_DELETE_TIME_ERROR = "El tiempo límite para anular el pedido (20 minutos) ha finalizado.";
+
+	public static final String CART_MAX_PRODUCTS_QUANTITY_ERROR = "Se ha superado el límite de artículos por pedido (20). " +
+			"Contacte con " +
+			"nosotros si desea realizar el pedido.";
+
+	public static final String ORDER_ITEM_MAX_QUANTITY_ERROR = "Se ha superado el límite de unidades por artículo (20). " +
+			"Contacte con nosotros si desea realizar el pedido.";
 
 	private ValidationResponses() {
 	}

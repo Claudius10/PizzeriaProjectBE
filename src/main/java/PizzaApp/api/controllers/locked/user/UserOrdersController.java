@@ -45,7 +45,7 @@ public class UserOrdersController {
 
 	@ValidateUserId
 	@PutMapping
-	public ResponseEntity<String> updateUserOrder(@RequestBody UpdateUserOrderDTO order, HttpServletRequest request) {
+	public ResponseEntity<String> updateUserOrder(@RequestBody @Valid UpdateUserOrderDTO order, HttpServletRequest request) {
 		Long result = orderService.updateUserOrder(order);
 
 		if (result == null) {
@@ -59,13 +59,7 @@ public class UserOrdersController {
 	@ValidateUserId
 	@DeleteMapping(path = "/{orderId}")
 	public ResponseEntity<String> deleteUserOrderById(@PathVariable Long orderId, HttpServletRequest request) {
-		Long result = orderService.deleteUserOrderById(orderId);
-
-		if (result == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format(ValidationResponses.ORDER_NOT_FOUND, orderId));
-		}
-
-		return ResponseEntity.ok().body(String.valueOf(result));
+		return ResponseEntity.ok().body(String.valueOf(orderService.deleteUserOrderById(orderId)));
 	}
 
 	@ValidateUserId

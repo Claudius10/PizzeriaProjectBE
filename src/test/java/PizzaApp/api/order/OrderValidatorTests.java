@@ -92,34 +92,6 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenIsProductsQuantityValidMethod_whenExceedingProductQuantity_thenReturnFalse() {
-		List<OrderItem> items = new ArrayList<>();
-		items.add(new OrderItem.Builder()
-				.withPrice(5D)
-				.withWithName("Chocolate dreams")
-				.withProductType("Ice cream")
-				.withQuantity(300)
-				.withFormat("500g")
-				.build());
-		boolean isProductsQuantityValid = orderValidator.isProductsQuantityValid(items);
-		assertFalse(isProductsQuantityValid);
-	}
-
-	@Test
-	public void givenIsProductsQuantityValidMethod_whenNotExceedingProductQuantity_thenReturnTrue() {
-		List<OrderItem> items = new ArrayList<>();
-		items.add(new OrderItem.Builder()
-				.withPrice(5D)
-				.withWithName("Chocolate dreams")
-				.withProductType("Ice cream")
-				.withQuantity(20)
-				.withFormat("500g")
-				.build());
-		boolean isProductsQuantityValid = orderValidator.isProductsQuantityValid(items);
-		assertTrue(isProductsQuantityValid);
-	}
-
-	@Test
 	public void givenIsChangeRequestedValidMethod_whenRequestedChangeIsNotValid_thenReturnFalse() {
 		// changeRequested > totalCostAfterOffers || changeRequested > totalCost
 		double changeRequested = 10;
@@ -165,42 +137,6 @@ public class OrderValidatorTests {
 		double totalCostAfterOffers = 13.3;
 		Double output = orderValidator.calculatePaymentChange(null, totalCost, totalCostAfterOffers);
 		assertNull(output);
-	}
-
-	@Test
-	public void givenIsProductListSizeValidMethod_whenNotExceedingListSizeLimit_thenReturnTrue() {
-		List<OrderItem> items = new ArrayList<>();
-		items.add(new OrderItem.Builder()
-				.withPrice(5D)
-				.withWithName("Chocolate dreams")
-				.withProductType("Ice cream")
-				.withQuantity(20)
-				.withFormat("500g")
-				.build());
-		boolean isProductsListSizeValid = orderValidator.isProductListSizeValid(items.size());
-		assertTrue(isProductsListSizeValid);
-	}
-
-	@Test
-	public void givenIsProductListSizeValidMethod_whenExceedingListSizeLimit_thenReturnFalse() {
-		List<OrderItem> items = new ArrayList<>();
-
-		for (int i = 0; i < 21; i++) {
-			OrderItem item = new OrderItem.Builder()
-					.withPrice(5D)
-					.withWithName("Chocolate dreams")
-					.withProductType("Ice cream")
-					.withQuantity(1)
-					.withFormat("500g")
-					.build();
-			items.add(item);
-		}
-
-		boolean isProductsListSizeValid = orderValidator.isProductListSizeValid(items.size());
-		assertAll(() -> {
-			assertEquals(21, items.size());
-			assertFalse(isProductsListSizeValid);
-		});
 	}
 
 	@Test

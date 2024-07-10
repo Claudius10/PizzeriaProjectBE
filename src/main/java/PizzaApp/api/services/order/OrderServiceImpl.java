@@ -114,6 +114,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long updateUserOrder(UpdateUserOrderDTO updateUserOrder) {
+		Long id = null;
 		Optional<Address> dbAddress = addressService.findAddressById(updateUserOrder.getAddressId());
 		Optional<Order> dbOrder = findUserOrderById(updateUserOrder.getOrderId());
 
@@ -154,22 +155,23 @@ public class OrderServiceImpl implements OrderService {
 						"dd/MM/yyyy")));
 			}
 
-			return order.getId();
-		} else {
-			return null;
+			id = order.getId();
 		}
+
+		return id;
 	}
 
 	@Override
 	public Long deleteUserOrderById(Long orderId) {
+		Long id = null;
 		Optional<Order> dbOrder = findUserOrderById(orderId);
 
 		if (dbOrder.isPresent()) {
 			orderRepository.delete(dbOrder.get());
-			return orderId;
+			id = orderId;
 		}
 
-		return null;
+		return id;
 	}
 
 	@Override

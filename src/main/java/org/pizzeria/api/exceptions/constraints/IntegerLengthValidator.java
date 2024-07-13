@@ -6,7 +6,9 @@ import org.pizzeria.api.exceptions.constraints.annotation.IntegerLength;
 
 public class IntegerLengthValidator implements ConstraintValidator<IntegerLength, Integer> {
 
-	private int min, max;
+	private int min;
+
+	private int max;
 
 	@Override
 	public void initialize(IntegerLength integerLength) {

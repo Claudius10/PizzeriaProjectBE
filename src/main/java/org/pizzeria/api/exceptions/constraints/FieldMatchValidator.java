@@ -8,7 +8,9 @@ import org.springframework.beans.BeanWrapperImpl;
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
 
 	private String firstFieldName;
+
 	private String secondFieldName;
+
 	private String message;
 
 	@Override

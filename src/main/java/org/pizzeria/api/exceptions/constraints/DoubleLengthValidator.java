@@ -6,7 +6,9 @@ import org.pizzeria.api.exceptions.constraints.annotation.DoubleLength;
 
 public class DoubleLengthValidator implements ConstraintValidator<DoubleLength, Double> {
 
-	private double min, max;
+	private double min;
+
+	private double max;
 
 	@Override
 	public void initialize(DoubleLength doubleLength) {

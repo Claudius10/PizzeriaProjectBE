@@ -58,21 +58,19 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String addUserAddress(Long userId, Address address) {
-		String result = null;
 		User user = findUserOrThrow(userId);
-		Optional<Address> dbAddress = addressService.findByExample(address);
-
 		if (user.getAddressList().size() == 3) {
-			result = ValidationResponses.ADDRESS_MAX_SIZE;
+			return ValidationResponses.ADDRESS_MAX_SIZE;
 		}
 
+		Optional<Address> dbAddress = addressService.findByExample(address);
 		if (dbAddress.isPresent()) {
 			user.addAddress(dbAddress.get());
 		} else {
 			user.addAddress(address);
 		}
 
-		return result;
+		return null;
 	}
 
 	@Override

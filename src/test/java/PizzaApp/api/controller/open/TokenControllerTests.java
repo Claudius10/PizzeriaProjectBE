@@ -3,7 +3,6 @@ package PizzaApp.api.controller.open;
 import PizzaApp.api.configs.security.utils.SecurityCookieUtils;
 import PizzaApp.api.configs.security.utils.SecurityTokenUtils;
 import PizzaApp.api.utils.globals.SecurityResponses;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +23,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
-public class TokenControllerTests {
+class TokenControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
 	private SecurityTokenUtils securityTokenUtils;
 
 	@Test
-	public void givenPostApiCall_whenRefreshTokenIsMissing_thenReturnUnauthorized() throws Exception {
+	void givenPostApiCall_whenRefreshTokenIsMissing_thenReturnUnauthorized() throws Exception {
 		// Act
 
 		// post api call to refresh tokens
@@ -49,7 +45,7 @@ public class TokenControllerTests {
 	}
 
 	@Test
-	public void givenPostApiCall_whenRefreshTokenIsOk_thenReturnRefreshedTokens() throws Exception {
+	void givenPostApiCall_whenRefreshTokenIsOk_thenReturnRefreshedTokens() throws Exception {
 		// Arrange
 
 		// create refresh token

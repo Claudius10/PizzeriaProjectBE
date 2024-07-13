@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,11 +24,11 @@ public class TokenController {
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshTokens(HttpServletResponse response, HttpServletRequest request) {
+	public ResponseEntity<HttpStatus> refreshTokens(HttpServletResponse response, HttpServletRequest request) {
 		Cookie refreshToken = WebUtils.getCookie(request, "me");
 
 		if (refreshToken == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SecurityResponses.MISSING_TOKEN);
+			throw new AccessDeniedException(SecurityResponses.MISSING_TOKEN);
 		}
 
 		securityTokenUtils.refreshTokens(response, refreshToken);

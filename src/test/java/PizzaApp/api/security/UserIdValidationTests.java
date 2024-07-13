@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class UserIdValidationTests {
+class UserIdValidationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -58,7 +58,7 @@ public class UserIdValidationTests {
 
 	// test for ValidateUserIdentity aspect
 	@Test
-	public void givenAccessToProtectedResource_whenNonMatchingUserIdCookieAndJwtUserIdClaim_thenReturnUnauthorized() throws Exception {
+	void givenAccessToProtectedResource_whenNonMatchingUserIdCookieAndJwtUserIdClaim_thenReturnUnauthorized() throws Exception {
 
 		// Arrange
 
@@ -96,7 +96,7 @@ public class UserIdValidationTests {
 	}
 
 	@Test
-	public void givenAccessToProtectedResource_whenMissingUserIdCookie_thenReturnUnauthorized() throws Exception {
+	void givenAccessToProtectedResource_whenMissingUserIdCookie_thenReturnUnauthorized() throws Exception {
 
 		// Arrange
 
@@ -131,7 +131,7 @@ public class UserIdValidationTests {
 	}
 
 	@Test
-	public void givenAccessToProtectedResource_whenAllOk_thenReturnOk() throws Exception {
+	void givenAccessToProtectedResource_whenAllOk_thenReturnOk() throws Exception {
 
 		// Arrange
 
@@ -165,7 +165,7 @@ public class UserIdValidationTests {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	public Long createUserTestSubject(RegisterDTO registerDTO) throws Exception {
+	Long createUserTestSubject(RegisterDTO registerDTO) throws Exception {
 		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))

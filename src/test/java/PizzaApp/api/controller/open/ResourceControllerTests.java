@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class ResourceControllerTests {
+class ResourceControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -52,7 +52,7 @@ public class ResourceControllerTests {
 	private StoreService storeService;
 
 	@BeforeAll
-	public void data() {
+	void data() {
 		productRepository.save(new Product(null, "pizza", null, "", "", 1D, ""));
 		offerRepository.save(new Offer());
 		addressRepository.save(new Address.Builder().withStreet("Street").withStreetNr(5).build());
@@ -60,7 +60,7 @@ public class ResourceControllerTests {
 	}
 
 	@Test
-	public void givenGetProductApiCall_thenReturnResource() throws Exception {
+	void givenGetProductApiCall_thenReturnResource() throws Exception {
 		// Act
 
 		// get api call to find product list
@@ -69,11 +69,11 @@ public class ResourceControllerTests {
 		// Assert
 
 		List<Product> productList = Arrays.asList(objectMapper.readValue(response, Product[].class));
-		assertThat(productList.size()).isEqualTo(1);
+		assertThat(productList).hasSize(1);
 	}
 
 	@Test
-	public void givenGetStoresApiCall_thenReturnResource() throws Exception {
+	void givenGetStoresApiCall_thenReturnResource() throws Exception {
 		// Act
 
 		// get api call to find store list
@@ -82,11 +82,11 @@ public class ResourceControllerTests {
 		// Assert
 
 		List<Store> storeList = Arrays.asList(objectMapper.readValue(response, Store[].class));
-		assertThat(storeList.size()).isEqualTo(1);
+		assertThat(storeList).hasSize(1);
 	}
 
 	@Test
-	public void givenGetOffersApiCall_thenReturnResource() throws Exception {
+	void givenGetOffersApiCall_thenReturnResource() throws Exception {
 		// Act
 
 		// get api call to find offer list
@@ -95,6 +95,6 @@ public class ResourceControllerTests {
 		// Assert
 
 		List<Offer> offerList = Arrays.asList(objectMapper.readValue(response, Offer[].class));
-		assertThat(offerList.size()).isEqualTo(1);
+		assertThat(offerList).hasSize(1);
 	}
 }

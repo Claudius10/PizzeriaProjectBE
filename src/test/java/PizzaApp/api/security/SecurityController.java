@@ -9,23 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tests/security")
-public class SecurityControllerForTests {
-
-	public SecurityControllerForTests() {
-	}
+class SecurityController {
 
 	@GetMapping()
-	public ResponseEntity<?> testGetEndpoint() {
+	ResponseEntity<?> testGetEndpoint() {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping()
-	public ResponseEntity<?> testPostEndpoint() {
+	ResponseEntity<?> testPostEndpoint() {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@GetMapping("/admin")
-	public ResponseEntity<?> adminTestEndPoint() {
+	ResponseEntity<?> adminTestEndPoint() {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

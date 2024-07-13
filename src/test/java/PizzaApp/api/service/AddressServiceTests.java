@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
-public class AddressServiceTests {
+class AddressServiceTests {
 
 	@Autowired
 	private AddressRepository addressRepository;
@@ -28,7 +28,7 @@ public class AddressServiceTests {
 	private AddressService addressService;
 
 	@Test
-	public void givenAddress_thenCreateAddress() {
+	void givenAddress_thenCreateAddress() {
 		// Arrange
 
 		Address testAddress = new Address.Builder()
@@ -46,7 +46,7 @@ public class AddressServiceTests {
 	}
 
 	@Test
-	public void givenAddress_whenExample_thenFindAddress() {
+	void givenAddress_whenExample_thenFindAddress() {
 		// Arrange
 
 		Address testAddress = new Address.Builder()
@@ -64,7 +64,7 @@ public class AddressServiceTests {
 	}
 
 	@Test
-	public void givenAddressId_thenFindAddressById() {
+	void givenAddressId_thenFindAddressById() {
 		// Arrange
 
 		Address testAddress = new Address.Builder()

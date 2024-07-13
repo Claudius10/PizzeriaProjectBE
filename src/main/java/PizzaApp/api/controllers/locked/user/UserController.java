@@ -80,37 +80,37 @@ public class UserController {
 	}
 
 	@PutMapping("/{userId}/name")
-	public ResponseEntity<?> updateName(@PathVariable Long userId, @Valid @RequestBody NameChangeDTO nameChangeDTO) {
+	public ResponseEntity<HttpStatus> updateName(@PathVariable Long userId, @Valid @RequestBody NameChangeDTO nameChangeDTO) {
 		userService.updateUserName(nameChangeDTO.password(), userId, nameChangeDTO.name());
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/{userId}/email")
-	public ResponseEntity<?> updateEmail(@PathVariable Long userId, @Valid @RequestBody EmailChangeDTO emailChangeDTO,
-										 HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<HttpStatus> updateEmail(@PathVariable Long userId, @Valid @RequestBody EmailChangeDTO emailChangeDTO,
+												  HttpServletRequest request, HttpServletResponse response) {
 		userService.updateUserEmail(emailChangeDTO.password(), userId, emailChangeDTO.email());
 		SecurityCookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/{userId}/contact_number")
-	public ResponseEntity<?> updateContactNumber(@PathVariable Long userId,
-												 @Valid @RequestBody ContactNumberChangeDTO contactNumberChangeDTO) {
+	public ResponseEntity<HttpStatus> updateContactNumber(@PathVariable Long userId,
+														  @Valid @RequestBody ContactNumberChangeDTO contactNumberChangeDTO) {
 		userService.updateUserContactNumber(contactNumberChangeDTO.password(), userId, contactNumberChangeDTO.contactNumber());
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{userId}/password")
-	public ResponseEntity<?> updatePassword(@PathVariable Long userId, @Valid @RequestBody PasswordChangeDTO passwordChangeDTO,
-											HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<HttpStatus> updatePassword(@PathVariable Long userId, @Valid @RequestBody PasswordChangeDTO passwordChangeDTO,
+													 HttpServletRequest request, HttpServletResponse response) {
 		userService.updateUserPassword(passwordChangeDTO.currentPassword(), userId, passwordChangeDTO.newPassword());
 		SecurityCookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@DeleteMapping("/{userId}")
-	public ResponseEntity<?> deleteUser(@PathVariable Long userId, @Valid @RequestBody PasswordDTO passwordDTO,
-										HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long userId, @Valid @RequestBody PasswordDTO passwordDTO,
+												 HttpServletRequest request, HttpServletResponse response) {
 		userService.deleteUserById(passwordDTO.password(), userId);
 		SecurityCookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.status(HttpStatus.OK).build();

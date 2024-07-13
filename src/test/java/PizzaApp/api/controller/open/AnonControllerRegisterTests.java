@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class AnonControllerRegisterTests {
+class AnonControllerRegisterTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -48,13 +48,13 @@ public class AnonControllerRegisterTests {
 	private RoleRepository roleRepository;
 
 	@BeforeAll
-	public void setUp() {
+	void setUp() {
 		roleRepository.save(new Role("USER"));
 	}
 
 	@Test
 	@Order(1)
-	public void givenRegisterApiCall_thenRegisterUser() throws Exception {
+	void givenRegisterApiCall_thenRegisterUser() throws Exception {
 		// Act
 
 		// post api call to register new user in database
@@ -76,7 +76,7 @@ public class AnonControllerRegisterTests {
 	}
 
 	@Test
-	public void givenRegisterApiCall_whenAccountWithEmailAlreadyExists_thenDontAllowRegister() throws Exception {
+	void givenRegisterApiCall_whenAccountWithEmailAlreadyExists_thenDontAllowRegister() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -108,7 +108,7 @@ public class AnonControllerRegisterTests {
 	}
 
 	@Test
-	public void givenRegisterPostApiCall_whenInvalidUserName_thenThrowException() throws Exception {
+	void givenRegisterPostApiCall_whenInvalidUserName_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to register new user in database
@@ -134,7 +134,7 @@ public class AnonControllerRegisterTests {
 	}
 
 	@Test
-	public void givenRegisterPostApiCall_whenNonMatchingEmail_thenThrowException() throws Exception {
+	void givenRegisterPostApiCall_whenNonMatchingEmail_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to register new user in database
@@ -161,7 +161,7 @@ public class AnonControllerRegisterTests {
 	}
 
 	@Test
-	public void givenRegisterPostApiCall_whenInvalidEmail_thenThrowException() throws Exception {
+	void givenRegisterPostApiCall_whenInvalidEmail_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to register new user in database
@@ -187,7 +187,7 @@ public class AnonControllerRegisterTests {
 	}
 
 	@Test
-	public void givenRegisterPostApiCall_whenNonMatchingPassword_thenThrowException() throws Exception {
+	void givenRegisterPostApiCall_whenNonMatchingPassword_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to register new user in database
@@ -213,7 +213,7 @@ public class AnonControllerRegisterTests {
 	}
 
 	@Test
-	public void givenRegisterPostApiCall_whenInvalidPassword_thenThrowException() throws Exception {
+	void givenRegisterPostApiCall_whenInvalidPassword_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to register new user in database
@@ -238,7 +238,7 @@ public class AnonControllerRegisterTests {
 				);
 	}
 
-	public void createUserTestSubject(RegisterDTO registerDTO) throws Exception {
+	void createUserTestSubject(RegisterDTO registerDTO) throws Exception {
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))

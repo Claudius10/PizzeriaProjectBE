@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class UserOrdersControllerTests {
+class UserOrdersControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -70,7 +70,7 @@ public class UserOrdersControllerTests {
 	private OrderRepository orderRepository;
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		orderRepository.deleteAll();
 		userRepository.deleteAll();
 		addressRepository.deleteAll();
@@ -78,7 +78,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenPostApiCallToCreateOrder_thenCreateOrder() throws Exception {
+	void givenPostApiCallToCreateOrder_thenCreateOrder() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -126,7 +126,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenPostApiCallToCreateOrder_whenCartIsEmpty_thenCreateOrder() throws Exception {
+	void givenPostApiCallToCreateOrder_whenCartIsEmpty_thenCreateOrder() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -161,7 +161,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenGetApiCallToFindOrder_thenReturnOrder() throws Exception {
+	void givenGetApiCallToFindOrder_thenReturnOrder() throws Exception {
 
 		// Arrange
 
@@ -225,7 +225,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenGetApiCallToFindOrder_whenOrderNotFound_thenReturnNotFound() throws Exception {
+	void givenGetApiCallToFindOrder_whenOrderNotFound_thenReturnNotFound() throws Exception {
 
 		// Arrange
 
@@ -252,7 +252,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderUpdate_whenNewAddress_thenReturnOrderWithUpdatedAddress() throws Exception {
+	void givenOrderUpdate_whenNewAddress_thenReturnOrderWithUpdatedAddress() throws Exception {
 
 		// Arrange
 
@@ -304,7 +304,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderUpdate_whenNewOrderDetails_thenReturnOrderWithUpdatedOrderDetails() throws Exception {
+	void givenOrderUpdate_whenNewOrderDetails_thenReturnOrderWithUpdatedOrderDetails() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -353,11 +353,11 @@ public class UserOrdersControllerTests {
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(updatedOrder.getOrderDetails().contentEquals(orderUpdate.getOrderDetails())).isEqualTo(true);
+		assertThat(updatedOrder.getOrderDetails().contentEquals(orderUpdate.getOrderDetails())).isTrue();
 	}
 
 	@Test
-	public void givenOrderUpdate_whenNewCart_thenReturnOrderWithUpdatedCart() throws Exception {
+	void givenOrderUpdate_whenNewCart_thenReturnOrderWithUpdatedCart() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -413,11 +413,11 @@ public class UserOrdersControllerTests {
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(updatedOrder.getCart().contentEquals(orderUpdate.getCart())).isEqualTo(true);
+		assertThat(updatedOrder.getCart().contentEquals(orderUpdate.getCart())).isTrue();
 	}
 
 	@Test
-	public void givenOrderUpdate_whenNewCartAndCartUpdateTimeLimitPassed_thenReturnOrderWithOriginalCart() throws Exception {
+	void givenOrderUpdate_whenNewCartAndCartUpdateTimeLimitPassed_thenReturnOrderWithOriginalCart() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -474,11 +474,11 @@ public class UserOrdersControllerTests {
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(updatedOrder.getCart().contentEquals(order.getCart())).isEqualTo(true);
+		assertThat(updatedOrder.getCart().contentEquals(order.getCart())).isTrue();
 	}
 
 	@Test
-	public void givenOrderUpdate_whenOrderUpdateTimeLimitPassed_thenReturnBadRequestWithMessage() throws Exception {
+	void givenOrderUpdate_whenOrderUpdateTimeLimitPassed_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -536,7 +536,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderUpdate_whenOrderNotFound_thenReturnBadRequestWithMessage() throws Exception {
+	void givenOrderUpdate_whenOrderNotFound_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -594,7 +594,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderUpdate_whenAddressNotFound_thenReturnBadRequestWithMessage() throws Exception {
+	void givenOrderUpdate_whenAddressNotFound_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -652,7 +652,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderDelete_whenWithinTimeLimit_thenReturnDeletedOrderId() throws Exception {
+	void givenOrderDelete_whenWithinTimeLimit_thenReturnDeletedOrderId() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -688,7 +688,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderDelete_whenTimeLimitPassed_thenReturnBadRequestWithMessage() throws Exception {
+	void givenOrderDelete_whenTimeLimitPassed_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -724,7 +724,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenOrderDelete_whenOrderNotFound_thenReturnNotFound() throws Exception {
+	void givenOrderDelete_whenOrderNotFound_thenReturnNotFound() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -753,7 +753,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenGetUserOrderSummary_thenReturnUserOrderSummary() throws Exception {
+	void givenGetUserOrderSummary_thenReturnUserOrderSummary() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -791,7 +791,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenGetUserOrderSummary_whenNoOrders_thenReturnNotFound() throws Exception {
+	void givenGetUserOrderSummary_whenNoOrders_thenReturnNotFound() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -822,7 +822,7 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
-	public void givenGetUserOrderSummary_whenUserNotFound_thenHandleException() throws Exception {
+	void givenGetUserOrderSummary_whenUserNotFound_thenHandleException() throws Exception {
 		// Arrange
 
 		// create JWT token
@@ -850,7 +850,7 @@ public class UserOrdersControllerTests {
 		assertThat(response.getContentAsString()).isEqualTo(String.format(SecurityResponses.USER_NOT_FOUND, 0));
 	}
 
-	public OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {
+	OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {
 		String response = mockMvc.perform(get("/api/user/orders/{orderId}", orderId)
 				.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
 				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
@@ -858,7 +858,7 @@ public class UserOrdersControllerTests {
 		return objectMapper.readValue(response, OrderDTO.class);
 	}
 
-	public OrderDTO createUserOrderTestSubject(int minutesInThePast, long userId, long addressId, String validAccessToken) throws Exception {
+	OrderDTO createUserOrderTestSubject(int minutesInThePast, long userId, long addressId, String validAccessToken) throws Exception {
 		Cart cart = new Cart.Builder()
 				.withOrderItems(List.of(new OrderItem.Builder()
 						.withWithName("Pepperoni")
@@ -891,7 +891,7 @@ public class UserOrdersControllerTests {
 		return findOrder(orderId, userId, validAccessToken);
 	}
 
-	public Long createUserTestSubject() throws Exception {
+	Long createUserTestSubject() throws Exception {
 		if (roleRepository.findByName("USER") == null) {
 			roleRepository.save(new Role("USER"));
 		}
@@ -908,7 +908,7 @@ public class UserOrdersControllerTests {
 				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
 	}
 
-	public Long createAddressTestSubject(String streetName, int streetNumber) {
+	Long createAddressTestSubject(String streetName, int streetNumber) {
 		return addressRepository.save(
 						new Address.Builder()
 								.withStreet(streetName)

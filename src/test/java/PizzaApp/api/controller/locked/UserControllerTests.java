@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class UserControllerTests {
+class UserControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -73,14 +73,14 @@ public class UserControllerTests {
 	private PasswordEncoder passwordEncoder;
 
 	@AfterEach
-	public void cleanUp() {
+	void cleanUp() {
 		userRepository.deleteAll();
 		addressRepository.deleteAll();
 		roleRepository.deleteAll();
 	}
 
 	@Test
-	public void givenFindUserGetApiCall_whenUserNotFound_thenReturnNotFound() throws Exception {
+	void givenFindUserGetApiCall_whenUserNotFound_thenReturnNotFound() throws Exception {
 		// Arrange
 
 		// create access token
@@ -103,7 +103,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenFindUserGetApiCall_whenNoUserIdCookie_thenReturnUnauthorized() throws Exception {
+	void givenFindUserGetApiCall_whenNoUserIdCookie_thenReturnUnauthorized() throws Exception {
 		// Arrange
 
 		// create access token
@@ -126,7 +126,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenFindUserGetApiCall_whenUserFound_thenReturnUser() throws Exception {
+	void givenFindUserGetApiCall_whenUserFound_thenReturnUser() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -153,7 +153,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenCreateAddressPostApiCall_thenReturnOkStatus() throws Exception {
+	void givenCreateAddressPostApiCall_thenReturnOkStatus() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -189,11 +189,11 @@ public class UserControllerTests {
 		assertThat(addressRepository.count()).isEqualTo(1);
 
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
-		assertThat(userAddressList.size()).isEqualTo(1);
+		assertThat(userAddressList).hasSize(1);
 	}
 
 	@Test
-	public void givenCreateAddressPostApiCall_whenUserNotFound_thenReturnNotFoundStatus() throws Exception {
+	void givenCreateAddressPostApiCall_whenUserNotFound_thenReturnNotFoundStatus() throws Exception {
 		// Arrange
 
 		// create access token
@@ -225,7 +225,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenCreateAddressPostApiCall_whenMaxAddressSize_thenReturnBadRequestStatus() throws Exception {
+	void givenCreateAddressPostApiCall_whenMaxAddressSize_thenReturnBadRequestStatus() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -288,13 +288,13 @@ public class UserControllerTests {
 		assertThat(addressRepository.count()).isEqualTo(3);
 
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
-		assertThat(userAddressList.size()).isEqualTo(3);
+		assertThat(userAddressList).hasSize(3);
 
 		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ADDRESS_MAX_SIZE);
 	}
 
 	@Test
-	public void givenUserAddressListGetApiCall_thenReturnUserAddressList() throws Exception {
+	void givenUserAddressListGetApiCall_thenReturnUserAddressList() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -332,11 +332,11 @@ public class UserControllerTests {
 		assertThat(addressRepository.count()).isEqualTo(1);
 
 		Set<Address> userAddressList = Set.of(objectMapper.readValue(response.getContentAsString(), Address[].class));
-		assertThat(userAddressList.size()).isEqualTo(1);
+		assertThat(userAddressList).hasSize(1);
 	}
 
 	@Test
-	public void givenUserAddressListGetApiCall_whenNotFound_thenReturnNotFoundStatus() throws Exception {
+	void givenUserAddressListGetApiCall_whenNotFound_thenReturnNotFoundStatus() throws Exception {
 		// Arrange
 
 		// create access token
@@ -359,7 +359,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenDeleteUserAddressApiCall_thenDeleteUserAddress() throws Exception {
+	void givenDeleteUserAddressApiCall_thenDeleteUserAddress() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -386,7 +386,7 @@ public class UserControllerTests {
 
 		// confirm address was added
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
-		assertThat(userAddressList.size()).isEqualTo(1);
+		assertThat(userAddressList).hasSize(1);
 
 		// find created address
 		ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues().withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
@@ -405,11 +405,11 @@ public class UserControllerTests {
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		Set<Address> userAddressListAfterDelete = userRepository.findUserAddressListById(userId);
-		assertThat(userAddressListAfterDelete.size()).isEqualTo(0);
+		assertThat(userAddressListAfterDelete).isEmpty();
 	}
 
 	@Test
-	public void givenDeleteUserAddressApiCall_whenUserAddressNotFound_thenReturnNotFound() throws Exception {
+	void givenDeleteUserAddressApiCall_whenUserAddressNotFound_thenReturnNotFound() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -436,7 +436,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenDeleteUserAddressApiCall_whenUserNotFound_thenReturnNotFound() throws Exception {
+	void givenDeleteUserAddressApiCall_whenUserNotFound_thenReturnNotFound() throws Exception {
 		// Arrange
 
 		// create access token
@@ -460,7 +460,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenNameUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
+	void givenNameUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -497,7 +497,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenNameUpdatePutApiCall_thenUpdateName() throws Exception {
+	void givenNameUpdatePutApiCall_thenUpdateName() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -530,7 +530,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenEmailUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
+	void givenEmailUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -567,7 +567,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenEmailUpdatePutApiCall_thenUpdateEmail() throws Exception {
+	void givenEmailUpdatePutApiCall_thenUpdateEmail() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -600,7 +600,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenEmailUpdatePutApiCall_whenEmailAlreadyExists_thenThrowError() throws Exception {
+	void givenEmailUpdatePutApiCall_whenEmailAlreadyExists_thenThrowError() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -633,7 +633,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenContactNumberUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
+	void givenContactNumberUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -670,7 +670,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenContactNumberUpdatePutApiCall_thenUpdateContactNumber() throws Exception {
+	void givenContactNumberUpdatePutApiCall_thenUpdateContactNumber() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -703,7 +703,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenContactNumberUpdatePutApiCall_whenNumberAlreadyExists_thenThrowError() throws Exception {
+	void givenContactNumberUpdatePutApiCall_whenNumberAlreadyExists_thenThrowError() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -750,7 +750,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenUpdatePasswordPutApiCall_whenInvalidCurrentPassword_thenThrowBadCredentialsException() throws Exception {
+	void givenUpdatePasswordPutApiCall_whenInvalidCurrentPassword_thenThrowBadCredentialsException() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -786,7 +786,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenUpdatePasswordPutApiCall_thenUpdateUserPassword() throws Exception {
+	void givenUpdatePasswordPutApiCall_thenUpdateUserPassword() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -823,7 +823,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenDeleteUserApiCall_whenInvalidCurrentPassword_thenThrowBadCredentialsException() throws Exception {
+	void givenDeleteUserApiCall_whenInvalidCurrentPassword_thenThrowBadCredentialsException() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -856,7 +856,7 @@ public class UserControllerTests {
 	}
 
 	@Test
-	public void givenDeleteUserApiCall_thenDeleteUser() throws Exception {
+	void givenDeleteUserApiCall_thenDeleteUser() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -886,15 +886,15 @@ public class UserControllerTests {
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester@gmail.com");
-		assertThat(user.isEmpty()).isTrue();
+		assertThat(user).isEmpty();
 	}
 
 	@Test
-	public void givenDeleteUserApiCall_whenUserHasOrders_thenDeleteUserAndUserIdFromOrders() {
+	void givenDeleteUserApiCall_whenUserHasOrders_thenDeleteUserAndUserIdFromOrders() {
 
 	}
 
-	public Long createUserTestSubject(String email) throws Exception {
+	Long createUserTestSubject(String email) throws Exception {
 		if (roleRepository.findByName("USER") == null) {
 			roleRepository.save(new Role("USER"));
 		}

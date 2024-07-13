@@ -14,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @DirtiesContext
-public class AddressRepositoryTests {
+class AddressRepositoryTests {
 
 	@Autowired
 	private AddressRepository addressRepository;
 
 	@Test
-	public void givenAddress_thenCreateAddress() {
+	void givenAddress_thenCreateAddress() {
 		// Arrange
 
 		Address testAddress = new Address.Builder()

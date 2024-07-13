@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class OrderDeleteValidationTest {
+class OrderDeleteValidationTest {
 
 	@Mock
 	private OrderService orderService;
@@ -24,7 +24,7 @@ public class OrderDeleteValidationTest {
 	private OrderValidatorImpl orderValidator;
 
 	@Test
-	public void givenOrderDeleteRequest_whenDeleteWindowPassed_thenReturnInvalidResult() {
+	void givenOrderDeleteRequest_whenDeleteWindowPassed_thenReturnInvalidResult() {
 		when(orderService.findCreatedOnById(1L)).thenReturn(LocalDateTime.now().minusMinutes(20));
 
 		OrderValidationResult isDeleteRequestValid = orderValidator.validateDelete(1L);
@@ -38,7 +38,7 @@ public class OrderDeleteValidationTest {
 	}
 
 	@Test
-	public void givenOrderDeleteRequest_whenDeleteWindowDidNotPass_thenReturnValidResult() {
+	void givenOrderDeleteRequest_whenDeleteWindowDidNotPass_thenReturnValidResult() {
 		when(orderService.findCreatedOnById(1L)).thenReturn(LocalDateTime.now().minusMinutes(10));
 
 		OrderValidationResult isDeleteRequestValid = orderValidator.validateDelete(1L);

@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
-public class ApiSecurityTests {
+class ApiSecurityTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -32,7 +32,7 @@ public class ApiSecurityTests {
 	private SecurityTokenUtils securityTokenUtils;
 
 	@Test
-	public void givenLogoutApiCall_whenCredentialsArePresent_thenEraseCredentials() throws Exception {
+	void givenLogoutApiCall_whenCredentialsArePresent_thenEraseCredentials() throws Exception {
 		// Arrange
 
 		// create access token
@@ -61,17 +61,17 @@ public class ApiSecurityTests {
 
 		assertThat(response.getStatus()).isEqualTo(200);
 
-		assertThat(Objects.requireNonNull(response.getCookie("fight")).getMaxAge()).isEqualTo(0);
-		assertThat(Objects.requireNonNull(response.getCookie("me")).getMaxAge()).isEqualTo(0);
-		assertThat(Objects.requireNonNull(response.getCookie("id")).getMaxAge()).isEqualTo(0);
+		assertThat(Objects.requireNonNull(response.getCookie("fight")).getMaxAge()).isZero();
+		assertThat(Objects.requireNonNull(response.getCookie("me")).getMaxAge()).isZero();
+		assertThat(Objects.requireNonNull(response.getCookie("id")).getMaxAge()).isZero();
 
-		assertThat(Objects.requireNonNull(response.getCookie("fight")).getValue()).isEqualTo("");
-		assertThat(Objects.requireNonNull(response.getCookie("me")).getValue()).isEqualTo("");
-		assertThat(Objects.requireNonNull(response.getCookie("id")).getValue()).isEqualTo("");
+		assertThat(Objects.requireNonNull(response.getCookie("fight")).getValue()).isEmpty();
+		assertThat(Objects.requireNonNull(response.getCookie("me")).getValue()).isEmpty();
+		assertThat(Objects.requireNonNull(response.getCookie("id")).getValue()).isEmpty();
 	}
 
 	@Test
-	public void givenCsrfProtectedApiCall_whenNoCsrfToken_thenReturnUnauthorized() throws Exception {
+	void givenCsrfProtectedApiCall_whenNoCsrfToken_thenReturnUnauthorized() throws Exception {
 		// Arrange
 
 		// create access token
@@ -92,7 +92,7 @@ public class ApiSecurityTests {
 	}
 
 	@Test
-	public void givenCsrfProtectedApiCall_whenCsrfTokenOk_thenReturnOk() throws Exception {
+	void givenCsrfProtectedApiCall_whenCsrfTokenOk_thenReturnOk() throws Exception {
 		// Arrange
 
 		// create access token
@@ -114,7 +114,7 @@ public class ApiSecurityTests {
 	}
 
 	@Test
-	public void givenApiCallToResource_whenValidAccessTokenAndRole_thenReturnOk() throws Exception {
+	void givenApiCallToResource_whenValidAccessTokenAndRole_thenReturnOk() throws Exception {
 		// Arrange
 
 		// create access token
@@ -135,7 +135,7 @@ public class ApiSecurityTests {
 	}
 
 	@Test
-	public void givenApiCallToResource_whenValidAccessTokenAndInvalidRole_thenReturnUnauthorized() throws Exception {
+	void givenApiCallToResource_whenValidAccessTokenAndInvalidRole_thenReturnUnauthorized() throws Exception {
 		// Arrange
 
 		// create access token
@@ -156,7 +156,7 @@ public class ApiSecurityTests {
 	}
 
 	@Test
-	public void givenApiCallToResource_whenNoToken_thenReturnUnauthorized() throws Exception {
+	void givenApiCallToResource_whenNoToken_thenReturnUnauthorized() throws Exception {
 		// Act
 
 		// get api call to check security

@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class AnonControllerAnonOrderTests {
+class AnonControllerAnonOrderTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -45,7 +45,7 @@ public class AnonControllerAnonOrderTests {
 	private OrderRepository orderRepository;
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenAllOk_thenReturnOrder() throws Exception {
+	void givenAnonOrderPostApiCall_whenAllOk_thenReturnOrder() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -73,7 +73,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidCustomerName_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidCustomerName_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -105,7 +105,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidCustomerNumber_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidCustomerNumber_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -137,7 +137,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidCustomerEmail_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidCustomerEmail_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -169,7 +169,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidAddressStreet_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidAddressStreet_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -201,7 +201,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidAddressStreetNumber_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidAddressStreetNumber_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -233,7 +233,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidAddressFloor_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidAddressFloor_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -265,7 +265,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidDeliveryHour_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidDeliveryHour_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -297,7 +297,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidPaymentType_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidPaymentType_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -329,7 +329,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidChangeRequest_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidChangeRequest_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -359,7 +359,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenInvalidComment_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenInvalidComment_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -391,7 +391,7 @@ public class AnonControllerAnonOrderTests {
 	}
 
 	@Test
-	public void givenAnonOrderPostApiCall_whenCartIsEmpty_thenThrowException() throws Exception {
+	void givenAnonOrderPostApiCall_whenCartIsEmpty_thenThrowException() throws Exception {
 		// Act
 
 		// post api call to create anon order
@@ -419,10 +419,10 @@ public class AnonControllerAnonOrderTests {
 		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
-	public NewAnonOrderDTO anonOrderStub(String customerName, int customerNumber, String customerEmail, String street,
-										 int streetNumber, String floor, String door, Double changeRequested,
-										 String deliveryHour, String paymentType, String comment,
-										 boolean emptyCart) {
+	NewAnonOrderDTO anonOrderStub(String customerName, int customerNumber, String customerEmail, String street,
+								  int streetNumber, String floor, String door, Double changeRequested,
+								  String deliveryHour, String paymentType, String comment,
+								  boolean emptyCart) {
 		Cart cartStub = new Cart.Builder()
 				.withOrderItems(List.of(new OrderItem.Builder()
 						.withProductType("pizza")

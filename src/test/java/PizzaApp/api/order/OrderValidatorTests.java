@@ -55,19 +55,19 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 @SpringJUnitConfig
-public class OrderValidatorTests {
+class OrderValidatorTests {
 
 	OrderValidatorImpl orderValidator = new OrderValidatorImpl(null);
 
 	@Test
-	public void givenIsCartEmptyMethod_whenValidatingEmptyCart_thenReturnTrue() {
+	void givenIsCartEmptyMethod_whenValidatingEmptyCart_thenReturnTrue() {
 		Cart cart = new Cart.Builder().withEmptyItemList().build();
 		boolean isCartEmpty = orderValidator.isCartEmpty(cart);
 		assertTrue(isCartEmpty);
 	}
 
 	@Test
-	public void givenIsCartEmptyMethod_whenValidatingNonEmptyCart_thenReturnFalse() {
+	void givenIsCartEmptyMethod_whenValidatingNonEmptyCart_thenReturnFalse() {
 		Cart cart = new Cart.Builder().withOrderItems
 						(Collections.singletonList(new OrderItem.Builder()
 								.withPrice(5D)
@@ -84,13 +84,13 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenIsCartEmptyMethod_whenValidatingNullCart_thenReturnTrue() {
+	void givenIsCartEmptyMethod_whenValidatingNullCart_thenReturnTrue() {
 		boolean isCartEmpty = orderValidator.isCartEmpty(null);
 		assertTrue(isCartEmpty);
 	}
 
 	@Test
-	public void givenIsChangeRequestedValidMethod_whenRequestedChangeIsNotValid_thenReturnFalse() {
+	void givenIsChangeRequestedValidMethod_whenRequestedChangeIsNotValid_thenReturnFalse() {
 		// changeRequested > totalCostAfterOffers || changeRequested > totalCost
 		double changeRequested = 10;
 		double totalCost = 20;
@@ -100,7 +100,7 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenIsChangeRequestedValidMethod_whenRequestedChangeIsValid_thenReturnTrue() {
+	void givenIsChangeRequestedValidMethod_whenRequestedChangeIsValid_thenReturnTrue() {
 		// changeRequested > totalCostAfterOffers || changeRequested > totalCost
 		double changeRequested = 20;
 		double totalCost = 20;
@@ -110,7 +110,7 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenCalculatePaymentChangeMethod_whenRequestedChangeWithNoOffers_thenReturnCorrectValue() {
+	void givenCalculatePaymentChangeMethod_whenRequestedChangeWithNoOffers_thenReturnCorrectValue() {
 		double changeRequested = 20;
 		double totalCost = 10;
 		double totalCostAfterOffers = 0;
@@ -120,7 +120,7 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenCalculatePaymentChangeMethod_whenRequestedChangeWithOffers_thenReturnCorrectValue() {
+	void givenCalculatePaymentChangeMethod_whenRequestedChangeWithOffers_thenReturnCorrectValue() {
 		double changeRequested = 20;
 		double totalCost = 20;
 		double totalCostAfterOffers = 13.3;
@@ -130,7 +130,7 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenCalculatePaymentChangeMethod_whenNotRequestedChange_thenReturnNull() {
+	void givenCalculatePaymentChangeMethod_whenNotRequestedChange_thenReturnNull() {
 		double totalCost = 20;
 		double totalCostAfterOffers = 13.3;
 		Double output = orderValidator.calculatePaymentChange(null, totalCost, totalCostAfterOffers);
@@ -138,25 +138,25 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenIsCartUpdateTimeLimitValidMethod_whenCartUpdateWindowPassed_thenReturnFalse() {
+	void givenIsCartUpdateTimeLimitValidMethod_whenCartUpdateWindowPassed_thenReturnFalse() {
 		boolean isCartUpdateValid = orderValidator.isCartUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(11));
 		assertFalse(isCartUpdateValid);
 	}
 
 	@Test
-	public void givenIsCartUpdateTimeLimitValidMethod_whenCartUpdateWindowIsValid_thenReturnTrue() {
+	void givenIsCartUpdateTimeLimitValidMethod_whenCartUpdateWindowIsValid_thenReturnTrue() {
 		boolean isCartUpdateValid = orderValidator.isCartUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(9));
 		assertTrue(isCartUpdateValid);
 	}
 
 	@Test
-	public void givenIsOrderDataUpdateTimeLimitValidMethod_whenOrderUpdateWindowPassed_thenReturnFalse() {
+	void givenIsOrderDataUpdateTimeLimitValidMethod_whenOrderUpdateWindowPassed_thenReturnFalse() {
 		boolean isOrderDataUpdateTimeLimitValid = orderValidator.isOrderDataUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(16));
 		assertFalse(isOrderDataUpdateTimeLimitValid);
 	}
 
 	@Test
-	public void givenIsOrderDataUpdateTimeLimitValidMethod_whenOrderUpdateWindowIsValid_thenReturnTrue() {
+	void givenIsOrderDataUpdateTimeLimitValidMethod_whenOrderUpdateWindowIsValid_thenReturnTrue() {
 		boolean isOrderDataUpdateTimeLimitValid = orderValidator.isOrderDataUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(14));
 		assertTrue(isOrderDataUpdateTimeLimitValid);
 	}

@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
-public class LoginTests {
+class LoginTests {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -47,7 +47,7 @@ public class LoginTests {
 	}
 
 	@Test
-	public void givenLoginApiCall_whenValidCredentials_thenReturnOk() throws Exception {
+	void givenLoginApiCall_whenValidCredentials_thenReturnOk() throws Exception {
 		// Act
 
 		// post api call to log in
@@ -60,7 +60,7 @@ public class LoginTests {
 	}
 
 	@Test
-	public void givenLoginApiCall_whenInvalidCredentials_thenReturnUnauthorized() throws Exception {
+	void givenLoginApiCall_whenInvalidCredentials_thenReturnUnauthorized() throws Exception {
 		// Act
 
 		// post api call to log in
@@ -73,7 +73,7 @@ public class LoginTests {
 	}
 
 	@Test
-	public void givenLoginApiCall_whenInvalidPassword_thenReturnUnauthorized() throws Exception {
+	void givenLoginApiCall_whenInvalidPassword_thenReturnUnauthorized() throws Exception {
 		// Act
 
 		// post api call to log in
@@ -86,7 +86,7 @@ public class LoginTests {
 	}
 
 	@Test
-	public void givenLoginApiCall_whenInvalidUsername_thenReturnUnauthorized() throws Exception {
+	void givenLoginApiCall_whenInvalidUsername_thenReturnUnauthorized() throws Exception {
 		// Act
 
 		// post api call to log in

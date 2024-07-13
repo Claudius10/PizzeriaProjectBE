@@ -67,7 +67,7 @@ public class AnonControllerRegisterTests {
 										"Password1",
 										"Password1")))
 						.with(csrf()))
-				.andExpect(status().isOk());
+				.andExpect(status().isCreated());
 
 		// Assert
 
@@ -243,6 +243,6 @@ public class AnonControllerRegisterTests {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))
 						.with(csrf()))
-				.andExpect(status().isOk());
+				.andExpect(status().isCreated());
 	}
 }

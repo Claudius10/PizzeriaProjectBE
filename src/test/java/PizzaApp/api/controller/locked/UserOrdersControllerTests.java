@@ -78,6 +78,89 @@ public class UserOrdersControllerTests {
 	}
 
 	@Test
+	public void givenPostApiCallToCreateOrder_thenCreateOrder() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		Long userId = createUserTestSubject();
+
+		// create address in database
+		Long addressId = createAddressTestSubject("Test", 1);
+
+		// create JWT token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+				"Tester@gmail.com",
+				userId,
+				"USER");
+
+		// create DTO object
+		Cart cart = new Cart.Builder()
+				.withOrderItems(List.of(new OrderItem.Builder()
+						.withWithName("Pepperoni")
+						.withFormat("Familiar")
+						.withProductType("Pizza")
+						.withQuantity(1)
+						.withPrice(18.30)
+						.build()))
+				.withTotalQuantity(1)
+				.withTotalCost(18.30)
+				.build();
+
+		OrderDetails orderDetails = new OrderDetails.Builder()
+				.withDeliveryHour("ASAP")
+				.withPaymentType("Card")
+				.build();
+
+		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(userId, addressId, orderDetails, cart);
+
+		// post api call to create user order
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/orders")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(newUserOrderDTO))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false))
+						.with(csrf()))
+				.andReturn().getResponse();
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+	}
+
+	@Test
+	public void givenPostApiCallToCreateOrder_whenCartIsEmpty_thenCreateOrder() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		Long userId = createUserTestSubject();
+
+		// create address in database
+		Long addressId = createAddressTestSubject("Test", 1);
+
+		// create JWT token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+				"Tester@gmail.com",
+				userId,
+				"USER");
+
+		OrderDetails orderDetails = new OrderDetails.Builder()
+				.withDeliveryHour("ASAP")
+				.withPaymentType("Card")
+				.build();
+
+		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(userId, addressId, orderDetails, null);
+
+		// post api call to create user order
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/orders")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(newUserOrderDTO))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false))
+						.with(csrf()))
+				.andReturn().getResponse();
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
 	public void givenGetApiCallToFindOrder_thenReturnOrder() throws Exception {
 
 		// Arrange
@@ -135,7 +218,8 @@ public class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(getResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
 		OrderDTO order = objectMapper.readValue(getResponse.getContentAsString(), OrderDTO.class);
 		assertThat(order.getId()).isEqualTo(orderId);
 	}
@@ -821,7 +905,7 @@ public class UserOrdersControllerTests {
 								"Password1",
 								"Password1")))
 						.with(csrf()))
-				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
 	}
 
 	public Long createAddressTestSubject(String streetName, int streetNumber) {

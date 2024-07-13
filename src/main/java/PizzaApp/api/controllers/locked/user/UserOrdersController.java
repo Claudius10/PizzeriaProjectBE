@@ -40,7 +40,7 @@ public class UserOrdersController {
 	@ValidateUserId
 	@PostMapping
 	public ResponseEntity<Long> createUserOrder(@RequestBody @Valid NewUserOrderDTO order, HttpServletRequest request) {
-		return ResponseEntity.ok().body(orderService.createUserOrder(order));
+		return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createUserOrder(order));
 	}
 
 	@ValidateUserId

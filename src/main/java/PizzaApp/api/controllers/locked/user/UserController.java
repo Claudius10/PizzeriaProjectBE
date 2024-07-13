@@ -64,7 +64,7 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 		}
 
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@ValidateUserId

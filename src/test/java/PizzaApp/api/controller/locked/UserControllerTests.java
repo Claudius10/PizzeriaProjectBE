@@ -130,7 +130,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
 		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
@@ -157,7 +157,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
 		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
@@ -183,7 +183,7 @@ public class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
 
 		assertThat(userRepository.count()).isEqualTo(1);
 		assertThat(addressRepository.count()).isEqualTo(1);
@@ -229,7 +229,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
 		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
@@ -298,7 +298,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
 		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
@@ -363,7 +363,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create address object
 		Address address = new Address.Builder()
@@ -413,13 +413,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
-
-		// create address object
-		Address address = new Address.Builder()
-				.withStreet("Street")
-				.withStreetNr(1)
-				.build();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
 		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
@@ -470,7 +464,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create dto object
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("dsa$·", "Password1");
@@ -507,7 +501,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create dto object
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("NewUserName", "Password1");
@@ -540,7 +534,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("invalidEmailFormat", "Password1");
@@ -577,7 +571,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("validEmailFormat@gmail.com", "Password1");
@@ -606,11 +600,44 @@ public class UserControllerTests {
 	}
 
 	@Test
+	public void givenEmailUpdatePutApiCall_whenEmailAlreadyExists_thenThrowError() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		createUserTestSubject("Tester@gmail.com");
+		Long userIdTwo = createUserTestSubject("Tester2@gmail.com");
+
+		// create dto object
+		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("Tester@gmail.com", "Password1");
+
+		// create access token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
+				"Tester@gmail.com",
+				userIdTwo,
+				"USER");
+
+		// Act
+
+		// put api call to update user email
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/email", userIdTwo).with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(emailChangeDTO))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userIdTwo), 60, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.EMAIL_ALREADY_EXISTS);
+	}
+
+	@Test
 	public void givenContactNumberUpdatePutApiCall_whenInvalidFormat_thenThrowError() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123, "Password1");
@@ -647,7 +674,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123456789, "Password1");
@@ -676,11 +703,58 @@ public class UserControllerTests {
 	}
 
 	@Test
+	public void givenContactNumberUpdatePutApiCall_whenNumberAlreadyExists_thenThrowError() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userIdTwo = createUserTestSubject("Tester2@gmail.com");
+
+		// create dto object
+		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123456789, "Password1");
+		ContactNumberChangeDTO contactNumberChangeDTOTwo = new ContactNumberChangeDTO(123456789, "Password1");
+
+		// create access token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
+				"Tester@gmail.com",
+				userId,
+				"USER");
+
+		String accessTokenTwo = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
+				"Tester@gmail.com",
+				userIdTwo,
+				"USER");
+
+		// Act
+
+		// put api call to update user contact number
+		mockMvc.perform(put("/api/user/{userId}/contact_number", userId).with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(contactNumberChangeDTO))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+				.andReturn().getResponse();
+
+		// put api call to update user contact number
+		MockHttpServletResponse responseTwo = mockMvc.perform(put("/api/user/{userId}/contact_number", userIdTwo).with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(contactNumberChangeDTOTwo))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userIdTwo), 60, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessTokenTwo, 60, true, false)))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(responseTwo.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseTwo.getContentAsString()).isEqualTo(ValidationResponses.NUMBER_ALREADY_EXISTS);
+	}
+
+	@Test
 	public void givenUpdatePasswordPutApiCall_whenInvalidCurrentPassword_thenThrowBadCredentialsException() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
@@ -716,7 +790,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
@@ -753,7 +827,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
@@ -786,7 +860,7 @@ public class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
 		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
@@ -820,7 +894,7 @@ public class UserControllerTests {
 
 	}
 
-	public Long createUserTestSubject() throws Exception {
+	public Long createUserTestSubject(String email) throws Exception {
 		if (roleRepository.findByName("USER") == null) {
 			roleRepository.save(new Role("USER"));
 		}
@@ -829,11 +903,11 @@ public class UserControllerTests {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
 								"Tester",
-								"Tester@gmail.com",
-								"Tester@gmail.com",
+								email,
+								email,
 								"Password1",
 								"Password1")))
 						.with(csrf()))
-				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
 	}
 }

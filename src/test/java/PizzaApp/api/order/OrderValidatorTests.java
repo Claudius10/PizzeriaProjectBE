@@ -11,9 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -86,9 +84,9 @@ public class OrderValidatorTests {
 	}
 
 	@Test
-	public void givenIsCartEmptyMethod_whenValidatingNullCart_thenReturnFalse() {
+	public void givenIsCartEmptyMethod_whenValidatingNullCart_thenReturnTrue() {
 		boolean isCartEmpty = orderValidator.isCartEmpty(null);
-		assertFalse(isCartEmpty);
+		assertTrue(isCartEmpty);
 	}
 
 	@Test

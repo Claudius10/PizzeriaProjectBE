@@ -2,10 +2,8 @@ package PizzaApp.api.validation.order;
 
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
-import PizzaApp.api.entity.order.OrderItem;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface OrderValidator {
 

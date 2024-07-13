@@ -3,8 +3,7 @@ package PizzaApp.api.exceptions;
 import PizzaApp.api.utils.globals.SecurityResponses;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,10 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -40,33 +37,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.badRequest().body(String.valueOf(errorMessages));
 	}
 
-	@ExceptionHandler({ConstraintViolationException.class})
-	protected ResponseEntity<String> handleEntityFieldExceptions(HttpServletRequest request, ConstraintViolationException ex) {
-		// Todo - test
+	@ExceptionHandler({DataIntegrityViolationException.class})
+	protected ResponseEntity<String> handleDataAccessExceptions(HttpServletRequest request, DataIntegrityViolationException ex) {
 
-		Set<ConstraintViolation<?>> violationSet = ex.getConstraintViolations();
-		List<String> errorMessages = new ArrayList<>();
+		ConstraintViolationException cve = (ConstraintViolationException) ex.getCause();
+		String constraint = cve.getConstraintName();
+		String message = cve.getMessage();
 
-		for (ConstraintViolation<?> violation : violationSet) {
-			errorMessages.add(violation.getMessage());
+		if (constraint != null) {
+			message = switch (constraint) {
+				case "UK_OB8KQYQQGMEFL0ACO34AKDTPE" -> ValidationResponses.EMAIL_ALREADY_EXISTS;
+				case "UK_M3NRR354U2L0HE9RIUB37LTQN" -> ValidationResponses.NUMBER_ALREADY_EXISTS;
+				default -> message;
+			};
 		}
 
-		return ResponseEntity.badRequest().body(String.valueOf(errorMessages));
+		return ResponseEntity.badRequest().body(message);
 	}
 
-	@ExceptionHandler({SQLIntegrityConstraintViolationException.class})
-	protected ResponseEntity<String> handleDuplicateDatabaseEntry(HttpServletRequest request, SQLIntegrityConstraintViolationException ex) {
-		// Todo - test
-		String message = ex.getMessage();
-		if (ex.getErrorCode() == 1062) {
-			message = String.valueOf(ex.getErrorCode());
-		}
-
-		return ResponseEntity.badRequest().body((message));
+	@ExceptionHandler(AccessDeniedException.class)
+	protected ResponseEntity<String> handleAuthenticationExceptions(HttpServletRequest request, AccessDeniedException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
 	}
 
-	@ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
-	protected ResponseEntity<String> handleAuthenticationExceptions(HttpServletRequest request, RuntimeException ex) {
+	@ExceptionHandler(AuthenticationException.class)
+	protected ResponseEntity<String> handleAuthenticationExceptions(HttpServletRequest request, AuthenticationException ex) {
 
 		String errorMsg;
 		if (ex instanceof BadCredentialsException) {
@@ -76,11 +71,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMsg);
-	}
-
-	@ExceptionHandler({DataIntegrityViolationException.class})
-	protected ResponseEntity<String> handleDataAccessExceptions(HttpServletRequest request, RuntimeException ex) {
-		// TODO - test whatever returning static message in all cases is a good idea
-		return ResponseEntity.badRequest().body(ValidationResponses.EMAIL_ALREADY_EXISTS);
 	}
 }

@@ -2,13 +2,11 @@ package PizzaApp.api.validation.order;
 
 import PizzaApp.api.entity.order.Cart;
 import PizzaApp.api.entity.order.OrderDetails;
-import PizzaApp.api.entity.order.OrderItem;
 import PizzaApp.api.services.order.OrderService;
 import PizzaApp.api.utils.globals.ValidationResponses;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 public class OrderValidatorImpl implements OrderValidator {
@@ -65,7 +63,7 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public boolean isCartEmpty(Cart cart) {
-		return cart != null && cart.getOrderItems().isEmpty() && cart.getTotalQuantity() == 0;
+		return cart == null || cart.getOrderItems().isEmpty() || cart.getTotalQuantity() == 0;
 	}
 
 	// changeRequested > totalCostAfterOffers || changeRequested > totalCost

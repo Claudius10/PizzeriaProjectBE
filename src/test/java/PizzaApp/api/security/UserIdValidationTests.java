@@ -170,6 +170,6 @@ public class UserIdValidationTests {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO))
 						.with(csrf()))
-				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
 	}
 }

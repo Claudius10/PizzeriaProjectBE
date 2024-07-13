@@ -32,7 +32,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
+		return ResponseEntity.badRequest().body(result.getMessage());
 	}
 
 	@Around(value = "execution(* PizzaApp.api.controllers.locked.user.UserOrdersController.createUserOrder(..)) && args(order, request)", argNames = "pjp,order,request")
@@ -43,8 +43,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		// TODO - test
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
+		return ResponseEntity.badRequest().body(result.getMessage());
 	}
 
 	@Around(value = "execution(* PizzaApp.api.controllers.locked.user.UserOrdersController.updateUserOrder(..)) && args(order, request)", argNames = "pjp,order,request")
@@ -60,7 +59,7 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getMessage());
+		return ResponseEntity.badRequest().body(result.getMessage());
 	}
 
 	@Around(value = "execution(* PizzaApp.api.controllers.locked.user.UserOrdersController.deleteUserOrderById(..)) && args(orderId,request)", argNames = "pjp,orderId,request")
@@ -74,7 +73,7 @@ public class ValidateOrderOperation {
 		String message = result.getMessage();
 
 		if (message.equals(ValidationResponses.ORDER_DELETE_TIME_ERROR)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+			return ResponseEntity.badRequest().body(message);
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
 		}

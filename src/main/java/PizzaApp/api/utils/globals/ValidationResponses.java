@@ -11,8 +11,11 @@ public final class ValidationResponses {
 
 	public static final String EMAIL_NO_MATCH = "El correo electrónico debe coincidir.";
 
-	public static final String EMAIL_ALREADY_EXISTS = "Ya existe una cuenta con el correo electrónico introducido. Si no " +
-			"recuerda la contraseña, contacte con nosotros.";
+	public static final String EMAIL_ALREADY_EXISTS = "Email asociado a una cuenta existente. Por favor, utilice esa cuenta o " +
+			"contacte con nosotros.";
+
+	public static final String NUMBER_ALREADY_EXISTS = "Número de contacto asociado a una cuenta existente. Por favor, utilice " +
+			"esa cuenta o contacte con nosotros.";
 
 	public static final String PASSWORD_INVALID = "La contraseña debe tener una longitud mínima de 8 valores " +
 			"alfanuméricos, incluir una letra mayúscula y un número.";

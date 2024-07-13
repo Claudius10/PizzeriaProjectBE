@@ -58,11 +58,12 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String addUserAddress(Long userId, Address address) {
+		String result = null;
 		User user = findUserOrThrow(userId);
 		Optional<Address> dbAddress = addressService.findByExample(address);
 
 		if (user.getAddressList().size() == 3) {
-			return ValidationResponses.ADDRESS_MAX_SIZE;
+			result = ValidationResponses.ADDRESS_MAX_SIZE;
 		}
 
 		if (dbAddress.isPresent()) {
@@ -71,11 +72,12 @@ public class UserServiceImpl implements UserService {
 			user.addAddress(address);
 		}
 
-		return null;
+		return result;
 	}
 
 	@Override
 	public String removeUserAddress(Long userId, Long addressId) {
+		String result = null;
 		User user = findUserOrThrow(userId);
 
 		Optional<Address> dbAddress = user.getAddressList()
@@ -83,12 +85,13 @@ public class UserServiceImpl implements UserService {
 				.filter(address1 -> address1.getId().equals(addressId))
 				.findFirst();
 
-		if (dbAddress.isEmpty()) {
-			return ValidationResponses.ADDRESS_NOT_FOUND;
+		if (dbAddress.isPresent()) {
+			user.removeAddress(dbAddress.get());
+		} else {
+			result = ValidationResponses.ADDRESS_NOT_FOUND;
 		}
 
-		user.removeAddress(dbAddress.get());
-		return null;
+		return result;
 	}
 
 	@Override

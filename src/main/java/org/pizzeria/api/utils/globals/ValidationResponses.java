@@ -11,12 +11,6 @@ public final class ValidationResponses {
 
 	public static final String EMAIL_NO_MATCH = "El correo electrónico debe coincidir.";
 
-	public static final String EMAIL_ALREADY_EXISTS = "Email asociado a una cuenta existente. Por favor, utilice esa cuenta o " +
-			"contacte con nosotros.";
-
-	public static final String NUMBER_ALREADY_EXISTS = "Número de contacto asociado a una cuenta existente. Por favor, utilice " +
-			"esa cuenta o contacte con nosotros.";
-
 	public static final String PASSWORD_INVALID = "La contraseña debe tener una longitud mínima de 8 valores " +
 			"alfanuméricos, incluir una letra mayúscula y un número.";
 
@@ -26,11 +20,6 @@ public final class ValidationResponses {
 
 	public static final String NUMBER_INVALID = "El teléfono de contacto debe tener una longitud fija de 9 " +
 			"dígitos.";
-
-	public static final String ADDRESS_MAX_SIZE = "La cantidad máxima de domicilios por usuario no debe exceder de tres " +
-			"domicilios.";
-
-	public static final String ADDRESS_NOT_FOUND = "El domicilio a eliminar no existe en la base de datos.";
 
 	public static final String ADDRESS_STREET = "La dirección no debe incluir símbolos especiales y su longitud debe " +
 			"tener entre 2-25 letras.";
@@ -72,10 +61,6 @@ public final class ValidationResponses {
 	public static final String ITEM_FORMAT_MISSING = "El formato del artículo no puede faltar.";
 
 	public static final String ITEM_MAX_PRICE = "Formato del precio válido: 12.55€, 10, 11.5.";
-
-	public static final String UPDATE_USER_ORDER_ERROR = "El pedido con id %s o la dirección con id %s no se puede encontrar.";
-
-	public static final String ORDER_NOT_FOUND = "El pedido con id %s no se puede encontrar.";
 
 	public static final String ORDER_UPDATE_TIME_ERROR = "El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.";
 

@@ -14,6 +14,7 @@ import org.pizzeria.api.entity.user.dto.*;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.role.RoleRepository;
 import org.pizzeria.api.repos.user.UserRepository;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.SecurityResponses;
 import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenFindUserGetApiCall_whenUserNotFound_thenReturnNotFound() throws Exception {
+	void givenFindUserGetApiCall_whenUserNotFound_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// create access token
@@ -99,7 +100,8 @@ class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1));
 	}
 
 	@Test
@@ -153,7 +155,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenCreateAddressPostApiCall_thenReturnOkStatus() throws Exception {
+	void givenCreateAddressPostApiCall_thenCreateAddressAndReturnAccepted() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -193,7 +195,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenCreateAddressPostApiCall_whenUserNotFound_thenReturnNotFoundStatus() throws Exception {
+	void givenCreateAddressPostApiCall_whenUserNotFound_thenReturnUnauthorizedWithMessage() throws Exception {
 		// Arrange
 
 		// create access token
@@ -221,11 +223,11 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(SecurityResponses.USER_NOT_FOUND, 1));
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1));
 	}
 
 	@Test
-	void givenCreateAddressPostApiCall_whenMaxAddressSize_thenReturnBadRequestStatus() throws Exception {
+	void givenCreateAddressPostApiCall_whenMaxAddressSize_thenReturnBadRequestStatusWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -290,7 +292,7 @@ class UserControllerTests {
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
 		assertThat(userAddressList).hasSize(3);
 
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ADDRESS_MAX_SIZE);
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ADDRESS_MAX_SIZE);
 	}
 
 	@Test
@@ -336,7 +338,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenUserAddressListGetApiCall_whenNotFound_thenReturnNotFoundStatus() throws Exception {
+	void givenUserAddressListGetApiCall_whenNotFound_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// create access token
@@ -355,7 +357,8 @@ class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
 	}
 
 	@Test
@@ -409,7 +412,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenDeleteUserAddressApiCall_whenUserAddressNotFound_thenReturnNotFound() throws Exception {
+	void givenDeleteUserAddressApiCall_whenUserAddressNotFound_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -431,12 +434,12 @@ class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ADDRESS_NOT_FOUND);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
 	}
 
 	@Test
-	void givenDeleteUserAddressApiCall_whenUserNotFound_thenReturnNotFound() throws Exception {
+	void givenDeleteUserAddressApiCall_whenUserNotFound_thenReturnUnauthorizedWithMessage() throws Exception {
 		// Arrange
 
 		// create access token
@@ -456,7 +459,7 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(SecurityResponses.USER_NOT_FOUND, 1L));
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1L));
 	}
 
 	@Test
@@ -600,7 +603,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenEmailUpdatePutApiCall_whenEmailAlreadyExists_thenThrowError() throws Exception {
+	void givenEmailUpdatePutApiCall_whenEmailAlreadyExists_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -629,7 +632,7 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.EMAIL_ALREADY_EXISTS);
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -703,7 +706,7 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenContactNumberUpdatePutApiCall_whenNumberAlreadyExists_thenThrowError() throws Exception {
+	void givenContactNumberUpdatePutApiCall_whenNumberAlreadyExists_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -746,7 +749,7 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(responseTwo.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseTwo.getContentAsString()).isEqualTo(ValidationResponses.NUMBER_ALREADY_EXISTS);
+		assertThat(responseTwo.getContentAsString()).isEqualTo(ApiResponses.NUMBER_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -873,7 +876,7 @@ class UserControllerTests {
 
 		// Act
 
-		// put api call to update password
+		// put api call to delete the user
 		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(passwordDTO))
@@ -887,11 +890,6 @@ class UserControllerTests {
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester@gmail.com");
 		assertThat(user).isEmpty();
-	}
-
-	@Test
-	void givenDeleteUserApiCall_whenUserHasOrders_thenDeleteUserAndUserIdFromOrders() {
-
 	}
 
 	Long createUserTestSubject(String email) throws Exception {

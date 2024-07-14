@@ -15,11 +15,13 @@ import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.entity.order.dto.OrderDTO;
 import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
 import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.entity.user.User;
+import org.pizzeria.api.entity.user.dto.PasswordDTO;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.repos.role.RoleRepository;
 import org.pizzeria.api.repos.user.UserRepository;
-import org.pizzeria.api.utils.globals.SecurityResponses;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -28,6 +30,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -68,6 +72,9 @@ class UserOrdersControllerTests {
 
 	@Autowired
 	private OrderRepository orderRepository;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@AfterEach
 	void cleanUp() {
@@ -126,7 +133,7 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenPostApiCallToCreateOrder_whenCartIsEmpty_thenCreateOrder() throws Exception {
+	void givenPostApiCallToCreateOrder_whenCartIsEmpty_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -158,6 +165,7 @@ class UserOrdersControllerTests {
 				.andReturn().getResponse();
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
 	@Test
@@ -225,7 +233,7 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenGetApiCallToFindOrder_whenOrderNotFound_thenReturnNotFound() throws Exception {
+	void givenGetApiCallToFindOrder_whenOrderNotFound_thenReturnAcceptedWithMessage() throws Exception {
 
 		// Arrange
 
@@ -248,7 +256,8 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.ORDER_NOT_FOUND, 99));
 	}
 
 	@Test
@@ -536,7 +545,7 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenOrderUpdate_whenOrderNotFound_thenReturnBadRequestWithMessage() throws Exception {
+	void givenOrderUpdate_whenOrderNotFound_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -588,13 +597,13 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.UPDATE_USER_ORDER_ERROR,
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR,
 				9879789, addressId));
 	}
 
 	@Test
-	void givenOrderUpdate_whenAddressNotFound_thenReturnBadRequestWithMessage() throws Exception {
+	void givenOrderUpdate_whenAddressNotFound_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -646,8 +655,8 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.UPDATE_USER_ORDER_ERROR,
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR,
 				order.getId(), 878678));
 	}
 
@@ -724,7 +733,7 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenOrderDelete_whenOrderNotFound_thenReturnNotFound() throws Exception {
+	void givenOrderDelete_whenOrderNotFound_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -748,8 +757,8 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ValidationResponses.ORDER_NOT_FOUND, 995678));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.ORDER_NOT_FOUND, 995678));
 	}
 
 	@Test
@@ -791,7 +800,7 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenGetUserOrderSummary_whenNoOrders_thenReturnNotFound() throws Exception {
+	void givenGetUserOrderSummary_whenNoOrders_thenReturnAcceptedWithMessage() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
@@ -818,11 +827,12 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ORDER_LIST_EMPTY);
 	}
 
 	@Test
-	void givenGetUserOrderSummary_whenUserNotFound_thenHandleException() throws Exception {
+	void givenGetUserOrderSummary_whenUserNotFound_thenReturnUnauthorizedWithMessage() throws Exception {
 		// Arrange
 
 		// create JWT token
@@ -847,7 +857,53 @@ class UserOrdersControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(SecurityResponses.USER_NOT_FOUND, 0));
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 0));
+	}
+
+	@Test
+	void givenDeleteUserApiCall_whenUserHasOrders_thenDeleteUserAndUserIdFromOrders() throws Exception {
+		// Arrange
+
+		// post api call to register new user in database
+		Long userId = createUserTestSubject();
+
+		// create address in database
+		Long addressId = createAddressTestSubject("Test", 1);
+
+		// create JWT token
+		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+				"Tester@gmail.com",
+				userId,
+				"USER");
+
+		// create user order
+		int minutesInThePast = 0;
+		OrderDTO orderDTO = createUserOrderTestSubject(minutesInThePast, userId, addressId, accessToken);
+
+		assertThat(userId).isEqualTo(orderDTO.getUser().id());
+
+		// delete the user
+
+		// create dto object
+		PasswordDTO passwordDTO = new PasswordDTO("Password1");
+
+		// put api call to delete the user
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(passwordDTO))
+						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 1800, true, false))
+						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
+						.with(csrf()))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester@gmail.com");
+		assertThat(user).isEmpty();
+
+		OrderDTO orderDTOAfterUserDeleted = findOrder(orderDTO.getId(), userId, accessToken);
+		assertThat(orderDTOAfterUserDeleted.getUser()).isNull();
 	}
 
 	OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {

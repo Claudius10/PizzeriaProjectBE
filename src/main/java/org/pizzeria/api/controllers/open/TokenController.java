@@ -32,6 +32,6 @@ public class TokenController {
 		}
 
 		securityTokenUtils.refreshTokens(response, refreshToken);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok().build();
 	}
 }

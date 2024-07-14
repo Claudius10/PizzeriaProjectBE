@@ -2,6 +2,8 @@ package org.pizzeria.api.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.user.User;
 
@@ -53,7 +55,8 @@ public class Order {
 	@JsonManagedReference
 	private Cart cart;
 
-	@ManyToOne(fetch = FetchType.LAZY) // on delete set null for the user FK
+	@ManyToOne(fetch = FetchType.LAZY)
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private User user;
 
 	public Order() {

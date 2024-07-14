@@ -3,6 +3,7 @@ package org.pizzeria.api.validation.order;
 import org.pizzeria.api.entity.order.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.services.order.OrderService;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +52,7 @@ public class OrderValidatorImpl implements OrderValidator {
 		LocalDateTime createdOn = orderService.findCreatedOnById(orderId);
 
 		if (createdOn == null) {
-			return new OrderValidationResult(String.format(ValidationResponses.ORDER_NOT_FOUND, orderId));
+			return new OrderValidationResult(String.format(ApiResponses.ORDER_NOT_FOUND, orderId));
 		}
 
 		if (LocalDateTime.now().isAfter(createdOn.plusMinutes(20))) {

@@ -37,7 +37,10 @@ class LoginTests {
 
 	@BeforeAll
 	void setUp() {
-		roleRepository.save(new Role("USER"));
+		Role role = roleRepository.findByName("USER");
+		if (role == null) {
+			roleRepository.save(new Role("USER"));
+		}
 		userService.createUser(new RegisterDTO(
 				"tester",
 				"test@gmail.com",

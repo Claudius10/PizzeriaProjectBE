@@ -9,8 +9,7 @@ import org.pizzeria.api.entity.user.dto.UserDTO;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.role.RoleService;
-import org.pizzeria.api.utils.globals.SecurityResponses;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,7 +59,7 @@ public class UserServiceImpl implements UserService {
 	public String addUserAddress(Long userId, Address address) {
 		User user = findUserOrThrow(userId);
 		if (user.getAddressList().size() == 3) {
-			return ValidationResponses.ADDRESS_MAX_SIZE;
+			return ApiResponses.ADDRESS_MAX_SIZE;
 		}
 
 		Optional<Address> dbAddress = addressService.findByExample(address);
@@ -86,7 +85,7 @@ public class UserServiceImpl implements UserService {
 		if (dbAddress.isPresent()) {
 			user.removeAddress(dbAddress.get());
 		} else {
-			result = ValidationResponses.ADDRESS_NOT_FOUND;
+			result = ApiResponses.ADDRESS_NOT_FOUND;
 		}
 
 		return result;
@@ -144,7 +143,7 @@ public class UserServiceImpl implements UserService {
 	public User findUserOrThrow(Long userId) {
 		Optional<User> dbUser = userRepository.findById(userId);
 		if (dbUser.isEmpty()) {
-			throw new UsernameNotFoundException(String.format(SecurityResponses.USER_NOT_FOUND, userId));
+			throw new UsernameNotFoundException(String.format(ApiResponses.USER_NOT_FOUND, userId));
 		} else {
 			return dbUser.get();
 		}

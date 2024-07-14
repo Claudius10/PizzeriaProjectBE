@@ -8,6 +8,7 @@ import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.user.dto.*;
 import org.pizzeria.api.services.user.UserService;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -36,23 +37,22 @@ public class UserController {
 
 	@ValidateUserId
 	@GetMapping("/{userId}")
-	public ResponseEntity<UserDTO> findUserById(@PathVariable Long userId, HttpServletRequest request) {
+	public ResponseEntity<Object> findUserById(@PathVariable Long userId, HttpServletRequest request) {
 		Optional<UserDTO> user = userService.findUserDTOById(userId);
-		return user
-				.map(userDTO -> ResponseEntity.ok().body(userDTO))
-				.orElseGet(() -> ResponseEntity.notFound().build());
+		return user.<ResponseEntity<Object>>map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.accepted().body(String.format(ApiResponses.USER_NOT_FOUND, userId)));
 	}
 
 	@ValidateUserId
 	@GetMapping("/{userId}/address")
-	public ResponseEntity<Set<Address>> findUserAddressListById(@PathVariable Long userId, HttpServletRequest request) {
+	public ResponseEntity<Object> findUserAddressListById(@PathVariable Long userId, HttpServletRequest request) {
 		Set<Address> userAddressList = userService.findUserAddressListById(userId);
 
 		if (userAddressList.isEmpty()) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.accepted().body(ApiResponses.ADDRESS_LIST_EMPTY);
 		}
 
-		return ResponseEntity.ok().body(userAddressList);
+		return ResponseEntity.ok(userAddressList);
 	}
 
 	@ValidateUserId
@@ -73,7 +73,7 @@ public class UserController {
 		String result = userService.removeUserAddress(userId, addressId);
 
 		if (result != null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+			return ResponseEntity.accepted().body(result);
 		}
 
 		return ResponseEntity.ok().build();
@@ -97,7 +97,7 @@ public class UserController {
 	public ResponseEntity<HttpStatus> updateContactNumber(@PathVariable Long userId,
 														  @Valid @RequestBody ContactNumberChangeDTO contactNumberChangeDTO) {
 		userService.updateUserContactNumber(contactNumberChangeDTO.password(), userId, contactNumberChangeDTO.contactNumber());
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/{userId}/password")
@@ -105,7 +105,7 @@ public class UserController {
 													 HttpServletRequest request, HttpServletResponse response) {
 		userService.updateUserPassword(passwordChangeDTO.currentPassword(), userId, passwordChangeDTO.newPassword());
 		SecurityCookieUtils.eatAllCookies(request, response);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/{userId}")
@@ -113,6 +113,6 @@ public class UserController {
 												 HttpServletRequest request, HttpServletResponse response) {
 		userService.deleteUserById(passwordDTO.password(), userId);
 		SecurityCookieUtils.eatAllCookies(request, response);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok().build();
 	}
 }

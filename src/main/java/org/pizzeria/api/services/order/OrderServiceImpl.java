@@ -12,7 +12,7 @@ import org.pizzeria.api.repos.order.projections.CreatedOnOnly;
 import org.pizzeria.api.repos.order.projections.OrderSummary;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.user.UserService;
-import org.pizzeria.api.utils.globals.SecurityResponses;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -177,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Page<OrderSummary> findUserOrderSummary(Long userId, int size, int page) {
 		if (!userService.existsById(userId)) {
-			throw new UsernameNotFoundException(String.format(SecurityResponses.USER_NOT_FOUND, userId));
+			throw new UsernameNotFoundException(String.format(ApiResponses.USER_NOT_FOUND, userId));
 		}
 
 		Sort.TypedSort<Order> order = Sort.sort(Order.class);

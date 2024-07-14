@@ -28,16 +28,16 @@ public class ResourceController {
 
 	@GetMapping(path = "/product", params = "type")
 	public ResponseEntity<List<Product>> findAllByType(@RequestParam String type) {
-		return ResponseEntity.ok().body(resourceService.findAllProductsByType(type));
+		return ResponseEntity.ok(resourceService.findAllProductsByType(type));
 	}
 
 	@GetMapping("/store")
 	public ResponseEntity<List<Store>> findAllStores() {
-		return ResponseEntity.ok().body(storeService.findAll());
+		return ResponseEntity.ok(storeService.findAll());
 	}
 
 	@GetMapping("/offer")
 	public ResponseEntity<List<Offer>> findAllOffers() {
-		return ResponseEntity.ok().body(resourceService.findAllOffers());
+		return ResponseEntity.ok(resourceService.findAllOffers());
 	}
 }

@@ -1,7 +1,11 @@
 package org.pizzeria.api;
 
+import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.services.role.RoleService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class PizzaAppApiApplication {
@@ -10,18 +14,13 @@ public class PizzaAppApiApplication {
 		SpringApplication.run(PizzaAppApiApplication.class, args);
 	}
 
-/*
-	// NOTE - comment out when testing
 	@Bean
-	CommandLineRunner run(RoleService roleService, JdbcTemplate jdbcTemplate) {
+	CommandLineRunner run(RoleService roleService) {
 		return args -> {
-			jdbcTemplate.execute("ALTER TABLE orders DROP FOREIGN KEY FKel9kyl84ego2otj2accfd8mr7");
-			jdbcTemplate.execute("ALTER TABLE orders ADD CONSTRAINT FKel9kyl84ego2otj2accfd8mr7 FOREIGN KEY (user_id) references user (id) ON DELETE SET NULL");
-
 			Role role = roleService.findByName("USER");
 			if (role == null) {
 				roleService.create("USER");
 			}
 		};
-	}*/
+	}
 }

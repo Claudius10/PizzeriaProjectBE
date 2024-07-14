@@ -6,6 +6,7 @@ import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.repos.role.RoleRepository;
 import org.pizzeria.api.repos.user.UserRepository;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -49,7 +50,10 @@ class AnonControllerRegisterTests {
 
 	@BeforeAll
 	void setUp() {
-		roleRepository.save(new Role("USER"));
+		Role role = roleRepository.findByName("USER");
+		if (role == null) {
+			roleRepository.save(new Role("USER"));
+		}
 	}
 
 	@Test
@@ -104,7 +108,7 @@ class AnonControllerRegisterTests {
 
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.EMAIL_ALREADY_EXISTS);
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test

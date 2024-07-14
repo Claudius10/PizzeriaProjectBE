@@ -2,8 +2,8 @@ package org.pizzeria.api.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.exception.ConstraintViolationException;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.SecurityResponses;
-import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,8 +46,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		if (constraint != null) {
 			message = switch (constraint) {
-				case "UK_OB8KQYQQGMEFL0ACO34AKDTPE" -> ValidationResponses.EMAIL_ALREADY_EXISTS;
-				case "UK_M3NRR354U2L0HE9RIUB37LTQN" -> ValidationResponses.NUMBER_ALREADY_EXISTS;
+				case "UK_OB8KQYQQGMEFL0ACO34AKDTPE" -> ApiResponses.EMAIL_ALREADY_EXISTS;
+				case "UK_M3NRR354U2L0HE9RIUB37LTQN" -> ApiResponses.NUMBER_ALREADY_EXISTS;
 				default -> message;
 			};
 		}

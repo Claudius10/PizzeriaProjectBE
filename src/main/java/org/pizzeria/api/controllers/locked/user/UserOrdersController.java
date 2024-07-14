@@ -8,7 +8,7 @@ import org.pizzeria.api.entity.order.dto.OrderDTO;
 import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
 import org.pizzeria.api.repos.order.projections.OrderSummary;
 import org.pizzeria.api.services.order.OrderService;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +30,10 @@ public class UserOrdersController {
 
 	@ValidateUserId
 	@GetMapping("/{orderId}")
-	public ResponseEntity<OrderDTO> findUserOrderDTO(@PathVariable Long orderId, HttpServletRequest request) {
+	public ResponseEntity<Object> findUserOrderDTO(@PathVariable Long orderId, HttpServletRequest request) {
 		Optional<OrderDTO> order = orderService.findDTOById(orderId);
-		return order
-				.map(orderDTO -> ResponseEntity.ok().body(orderDTO))
-				.orElseGet(() -> ResponseEntity.notFound().build());
+		return order.<ResponseEntity<Object>>map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.accepted().body(String.format(ApiResponses.ORDER_NOT_FOUND, orderId)));
 	}
 
 	@ValidateUserId
@@ -49,8 +48,8 @@ public class UserOrdersController {
 		Long result = orderService.updateUserOrder(order);
 
 		if (result == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format(
-					ValidationResponses.UPDATE_USER_ORDER_ERROR, order.getOrderId(), order.getAddressId()));
+			return ResponseEntity.accepted().body(String.format(
+					ApiResponses.UPDATE_USER_ORDER_ERROR, order.getOrderId(), order.getAddressId()));
 		}
 
 		return ResponseEntity.ok().body(String.valueOf(result));
@@ -59,19 +58,22 @@ public class UserOrdersController {
 	@ValidateUserId
 	@DeleteMapping(path = "/{orderId}")
 	public ResponseEntity<String> deleteUserOrderById(@PathVariable Long orderId, HttpServletRequest request) {
-		return ResponseEntity.ok().body(String.valueOf(orderService.deleteUserOrderById(orderId)));
+		Long id = orderService.deleteUserOrderById(orderId);
+		// NOTE - there's no need to check whatever id is null here
+		//  because if it is, OrderValidatorImpl will catch it
+		return ResponseEntity.ok(String.valueOf(id));
 	}
 
 	@ValidateUserId
 	@GetMapping(params = {"pageNumber", "pageSize", "userId"})
-	public ResponseEntity<Page<OrderSummary>> findUserOrdersSummary(@RequestParam Long userId, @RequestParam Integer pageSize,
-																	@RequestParam Integer pageNumber, HttpServletRequest request) {
+	public ResponseEntity<Object> findUserOrdersSummary(@RequestParam Long userId, @RequestParam Integer pageSize,
+														@RequestParam Integer pageNumber, HttpServletRequest request) {
 		Page<OrderSummary> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
 
 		if (!orderSummaryPage.hasContent()) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.accepted().body(ApiResponses.ORDER_LIST_EMPTY);
 		}
 
-		return ResponseEntity.ok().body(orderSummaryPage);
+		return ResponseEntity.ok(orderSummaryPage);
 	}
 }

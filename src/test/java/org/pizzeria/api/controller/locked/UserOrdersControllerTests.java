@@ -73,9 +73,6 @@ class UserOrdersControllerTests {
 	@Autowired
 	private OrderRepository orderRepository;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	@AfterEach
 	void cleanUp() {
 		orderRepository.deleteAll();

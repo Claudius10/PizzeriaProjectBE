@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,8 +39,8 @@ class LoginTests {
 
 	@BeforeAll
 	void setUp() {
-		Role role = roleRepository.findByName("USER");
-		if (role == null) {
+		Optional<Role> role = roleRepository.findByName("USER");
+		if (role.isEmpty()) {
 			roleRepository.save(new Role("USER"));
 		}
 		userService.createUser(new RegisterDTO(

@@ -22,6 +22,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -50,8 +51,8 @@ class AnonControllerRegisterTests {
 
 	@BeforeAll
 	void setUp() {
-		Role role = roleRepository.findByName("USER");
-		if (role == null) {
+		Optional<Role> role = roleRepository.findByName("USER");
+		if (role.isEmpty()) {
 			roleRepository.save(new Role("USER"));
 		}
 	}

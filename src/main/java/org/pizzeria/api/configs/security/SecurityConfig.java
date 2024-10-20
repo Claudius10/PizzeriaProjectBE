@@ -54,7 +54,8 @@ public class SecurityConfig {
 			(JWTUtils nimbusJWT,
 			 ValidLoginHandler validAuthHandler,
 			 InvalidLoginHandler invalidAuthHandler,
-			 ClearCookiesLogoutHandler clearCookiesLogoutHandler, CookieBearerTokenResolver cookieBearerTokenResolver,
+			 ClearCookiesLogoutHandler clearCookiesLogoutHandler,
+			 CookieBearerTokenResolver cookieBearerTokenResolver,
 			 OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint,
 			 OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler) {
 		this.nimbusJWT = nimbusJWT;
@@ -143,7 +144,7 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.1.128:5173", "https://pizzeriaproject-production.up.railway.app"));
+				Arrays.asList("http://localhost:4200", "https://pizzeriaproject-production.up.railway.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
 		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
@@ -177,8 +178,8 @@ public class SecurityConfig {
 		CookieCsrfTokenRepository result = new CookieCsrfTokenRepository();
 		result.setCookieCustomizer((cookie) -> {
 			cookie.httpOnly(true);
-			cookie.secure(true); // NOTE - on for prod fe
-			cookie.domain("up.railway.app"); // NOTE - on for prod fe
+			//cookie.secure(true); // NOTE - on for prod fe
+			//cookie.domain("up.railway.app"); // NOTE - on for prod fe
 		});
 		return result;
 	}

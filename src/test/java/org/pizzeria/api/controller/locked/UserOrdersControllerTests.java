@@ -14,12 +14,10 @@ import org.pizzeria.api.entity.order.OrderItem;
 import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.entity.order.dto.OrderDTO;
 import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
-import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.entity.user.dto.PasswordDTO;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.order.OrderRepository;
-import org.pizzeria.api.repos.role.RoleRepository;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.ValidationResponses;
@@ -30,9 +28,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
@@ -47,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
+@Sql(scripts = {"file:src/test/resources/db/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
@@ -57,9 +56,6 @@ class UserOrdersControllerTests {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	@Autowired
 	private SecurityTokenUtils securityTokenUtils;
@@ -78,7 +74,6 @@ class UserOrdersControllerTests {
 		orderRepository.deleteAll();
 		userRepository.deleteAll();
 		addressRepository.deleteAll();
-		roleRepository.deleteAll();
 	}
 
 	@Test
@@ -945,10 +940,6 @@ class UserOrdersControllerTests {
 	}
 
 	Long createUserTestSubject() throws Exception {
-		if (roleRepository.findByName("USER") == null) {
-			roleRepository.save(new Role("USER"));
-		}
-
 		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(

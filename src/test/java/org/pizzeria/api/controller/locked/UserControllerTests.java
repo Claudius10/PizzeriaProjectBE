@@ -8,11 +8,9 @@ import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.configs.security.utils.SecurityTokenUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.dto.auth.RegisterDTO;
-import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.entity.user.dto.*;
 import org.pizzeria.api.repos.address.AddressRepository;
-import org.pizzeria.api.repos.role.RoleRepository;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.SecurityResponses;
@@ -29,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
+@Sql(scripts = {"file:src/test/resources/db/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
@@ -65,9 +65,6 @@ class UserControllerTests {
 	private UserRepository userRepository;
 
 	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
 	private AddressRepository addressRepository;
 
 	@Autowired
@@ -77,7 +74,6 @@ class UserControllerTests {
 	void cleanUp() {
 		userRepository.deleteAll();
 		addressRepository.deleteAll();
-		roleRepository.deleteAll();
 	}
 
 	@Test
@@ -893,10 +889,6 @@ class UserControllerTests {
 	}
 
 	Long createUserTestSubject(String email) throws Exception {
-		if (roleRepository.findByName("USER") == null) {
-			roleRepository.save(new Role("USER"));
-		}
-
 		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(

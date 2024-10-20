@@ -42,14 +42,17 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Long createUser(RegisterDTO registerDTO) {
-		Role userRole = roleService.findByName("USER");
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
+		Optional<Role> userRole = roleService.findByName("USER");
+		if (userRole.isEmpty()) {
+			return null;
+		}
 
 		User user = new User.Builder()
 				.withName(registerDTO.name())
 				.withEmail(registerDTO.email())
 				.withPassword(encodedPassword)
-				.withRoles(userRole)
+				.withRoles(userRole.get())
 				.build();
 
 		return userRepository.save(user).getId();

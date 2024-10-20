@@ -31,6 +31,7 @@ public class AnonController {
 
 	@PostMapping("/register")
 	public ResponseEntity<Long> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) {
+		// TODO - check whatever createUser returns null and act accordingly
 		return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(registerDTO));
 	}
 

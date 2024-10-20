@@ -77,19 +77,28 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- MariaDB -->
+
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+        <!-- HSQLDB -->
+
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>2.7.2</version>
-            <scope>test</scope>
+            <version>2.7.3</version>
         </dependency>
 
-        <!-- MySQL -->
+        <!-- Database Monitoring -->
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <groupId>net.ttddyy</groupId>
+            <artifactId>datasource-proxy</artifactId>
+            <version>1.10</version>
         </dependency>
 
         <!-- Jackson -->

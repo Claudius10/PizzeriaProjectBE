@@ -27,6 +27,8 @@ import java.util.Optional;
 @Transactional
 public class OrderServiceImpl implements OrderService {
 
+	private final static int HOURS_TO_ADJUST = 1;
+
 	private final OrderRepository orderRepository;
 
 	private final AddressService addressService;
@@ -58,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order anonOrder = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
-				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
+				.withFormattedCreatedOn(LocalDateTime.now().plusHours(HOURS_TO_ADJUST).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")))
 				.withAnonCustomer(
 						newAnonOrder.anonCustomerName(),
@@ -101,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order order = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
-				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
+				.withFormattedCreatedOn(LocalDateTime.now().plusHours(HOURS_TO_ADJUST).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")))
 				.withUser(user)
 				.withAddress(address)
@@ -151,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
 
 			if (pendingAddressUpdate || pendingOrderDetailsUpdate || pendingCartUpdate) {
 				order.setUpdatedOn(LocalDateTime.now());
-				order.setFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
+				order.setFormattedUpdatedOn(LocalDateTime.now().plusHours(HOURS_TO_ADJUST).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")));
 			}
 

@@ -19,22 +19,22 @@ public class OrderDetails {
 
 	@Column
 	@NotBlank(message = ValidationResponses.ORDER_DETAILS_DELIVERY_HOUR)
-	private String deliveryHour;
+	private String deliveryTime;
 
 	@Column
 	@NotBlank(message = ValidationResponses.ORDER_DETAILS_PAYMENT)
-	private String paymentType;
+	private String paymentMethod;
 
 	@Column
 	@DoubleLengthNullable(min = 0, max = 5, message = ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED_LENGTH)
-	private Double changeRequested;
+	private Double billToChange;
 
 	@Column
-	private Double paymentChange;
+	private Double changeToGive;
 
 	@Column
 	@Pattern(regexp = ValidationRules.ORDER_DETAILS_COMMENT, message = ValidationResponses.ORDER_DETAILS_COMMENT)
-	private String deliveryComment;
+	private String comment;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
@@ -43,11 +43,11 @@ public class OrderDetails {
 
 	private OrderDetails(Builder builder) {
 		this.id = builder.id;
-		this.deliveryHour = builder.deliveryHour;
-		this.paymentType = builder.paymentType;
-		this.changeRequested = builder.changeRequested;
-		this.paymentChange = builder.paymentChange;
-		this.deliveryComment = builder.deliveryComment;
+		this.deliveryTime = builder.deliveryHour;
+		this.paymentMethod = builder.paymentType;
+		this.billToChange = builder.changeRequested;
+		this.changeToGive = builder.paymentChange;
+		this.comment = builder.deliveryComment;
 		this.order = null;
 	}
 
@@ -109,44 +109,44 @@ public class OrderDetails {
 		this.id = id;
 	}
 
-	public String getDeliveryHour() {
-		return deliveryHour;
+	public String getDeliveryTime() {
+		return deliveryTime;
 	}
 
-	public void setDeliveryHour(String deliveryHour) {
-		this.deliveryHour = deliveryHour;
+	public void setDeliveryTime(String deliveryTime) {
+		this.deliveryTime = deliveryTime;
 	}
 
-	public String getPaymentType() {
-		return paymentType;
+	public String getPaymentMethod() {
+		return paymentMethod;
 	}
 
-	public void setPaymentType(String paymentType) {
-		this.paymentType = paymentType;
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
 	}
 
-	public Double getChangeRequested() {
-		return changeRequested;
+	public Double getBillToChange() {
+		return billToChange;
 	}
 
-	public void setChangeRequested(Double changeRequested) {
-		this.changeRequested = changeRequested;
+	public void setBillToChange(Double billToChange) {
+		this.billToChange = billToChange;
 	}
 
-	public Double getPaymentChange() {
-		return paymentChange;
+	public Double getChangeToGive() {
+		return changeToGive;
 	}
 
-	public void setPaymentChange(Double paymentChange) {
-		this.paymentChange = paymentChange;
+	public void setChangeToGive(Double changeToGive) {
+		this.changeToGive = changeToGive;
 	}
 
-	public String getDeliveryComment() {
-		return deliveryComment;
+	public String getComment() {
+		return comment;
 	}
 
-	public void setDeliveryComment(String deliveryComment) {
-		this.deliveryComment = deliveryComment;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 	public Order getOrder() {
@@ -159,16 +159,16 @@ public class OrderDetails {
 
 	@Override
 	public String toString() {
-		return "OrderDetails [id=" + id + ", deliveryHour=" + deliveryHour + ", paymentType=" + paymentType
-				+ ", changeRequested=" + changeRequested + ", paymentChange=" + paymentChange + ", deliveryComment="
-				+ deliveryComment + "]";
+		return "OrderDetails [id=" + id + ", deliveryTime=" + deliveryTime + ", paymentMethod=" + paymentMethod
+				+ ", billToChange=" + billToChange + ", changeToGive=" + changeToGive + ", comment="
+				+ comment + "]";
 	}
 
 	public boolean contentEquals(Object o) {
 		OrderDetails that = (OrderDetails) o;
-		return Objects.equals(deliveryHour, that.deliveryHour)
-				&& Objects.equals(paymentType, that.paymentType)
-				&& Objects.equals(changeRequested, that.changeRequested)
-				&& Objects.equals(deliveryComment, that.deliveryComment);
+		return Objects.equals(deliveryTime, that.deliveryTime)
+				&& Objects.equals(paymentMethod, that.paymentMethod)
+				&& Objects.equals(billToChange, that.billToChange)
+				&& Objects.equals(comment, that.comment);
 	}
 }

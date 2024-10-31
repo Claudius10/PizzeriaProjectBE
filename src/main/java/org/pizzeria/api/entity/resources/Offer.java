@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 public class Offer {
 
 	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offer_generator")
+	@SequenceGenerator(name = "offer_generator", sequenceName = "offer_seq", allocationSize = 1)
 	private Long id;
 
 	@Column(name = "image")

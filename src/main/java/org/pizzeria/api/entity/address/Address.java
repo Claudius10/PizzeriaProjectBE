@@ -13,8 +13,8 @@ import java.util.Objects;
 public class Address {
 
 	@Id
-	@Column()
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_generator")
+	@SequenceGenerator(name = "address_generator", sequenceName = "address_seq", allocationSize = 1)
 	private Long id;
 
 	@Column(nullable = false)

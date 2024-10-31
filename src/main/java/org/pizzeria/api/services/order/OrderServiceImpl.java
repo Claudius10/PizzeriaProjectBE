@@ -131,11 +131,11 @@ public class OrderServiceImpl implements OrderService {
 			}
 
 			if (pendingOrderDetailsUpdate) {
-				order.getOrderDetails().setDeliveryHour(updateUserOrder.getOrderDetails().getDeliveryHour());
-				order.getOrderDetails().setPaymentType(updateUserOrder.getOrderDetails().getPaymentType());
-				order.getOrderDetails().setChangeRequested(updateUserOrder.getOrderDetails().getChangeRequested());
-				order.getOrderDetails().setPaymentChange(updateUserOrder.getOrderDetails().getPaymentChange());
-				order.getOrderDetails().setDeliveryComment(updateUserOrder.getOrderDetails().getDeliveryComment());
+				order.getOrderDetails().setDeliveryTime(updateUserOrder.getOrderDetails().getDeliveryTime());
+				order.getOrderDetails().setPaymentMethod(updateUserOrder.getOrderDetails().getPaymentMethod());
+				order.getOrderDetails().setBillToChange(updateUserOrder.getOrderDetails().getBillToChange());
+				order.getOrderDetails().setChangeToGive(updateUserOrder.getOrderDetails().getChangeToGive());
+				order.getOrderDetails().setComment(updateUserOrder.getOrderDetails().getComment());
 			}
 
 			// cart == null if !isCartUpdateValid

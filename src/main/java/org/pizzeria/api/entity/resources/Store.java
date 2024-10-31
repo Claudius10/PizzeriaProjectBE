@@ -8,8 +8,8 @@ import org.pizzeria.api.entity.address.Address;
 public class Store {
 
 	@Id
-	@Column
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "store_generator")
+	@SequenceGenerator(name = "store_generator", sequenceName = "store_seq", allocationSize = 1)
 	private Long id;
 
 	@Column

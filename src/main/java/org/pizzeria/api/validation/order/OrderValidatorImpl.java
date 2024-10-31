@@ -24,11 +24,11 @@ public class OrderValidatorImpl implements OrderValidator {
 			return new OrderValidationResult(ValidationResponses.CART_IS_EMPTY);
 		}
 
-		if (!isChangeRequestedValid(orderDetails.getChangeRequested(), cart.getTotalCostOffers(), cart.getTotalCost())) {
+		if (!isChangeRequestedValid(orderDetails.getBillToChange(), cart.getTotalCostOffers(), cart.getTotalCost())) {
 			return new OrderValidationResult(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
 		}
 
-		orderDetails.setPaymentChange(calculatePaymentChange(orderDetails.getChangeRequested(), cart.getTotalCost(), cart.getTotalCostOffers()));
+		orderDetails.setChangeToGive(calculatePaymentChange(orderDetails.getBillToChange(), cart.getTotalCost(), cart.getTotalCostOffers()));
 		return new OrderValidationResult();
 	}
 
@@ -69,11 +69,11 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	// changeRequested > totalCostAfterOffers || changeRequested > totalCost
 	@Override
-	public boolean isChangeRequestedValid(Double changeRequested, Double totalCostAfterOffers, Double totalCost) {
-		if (changeRequested == null) {
+	public boolean isChangeRequestedValid(Double billToChange, Double totalCostAfterOffers, Double totalCost) {
+		if (billToChange == null) {
 			return true;
 		}
-		return (totalCostAfterOffers <= 0 || changeRequested >= totalCostAfterOffers) && (totalCostAfterOffers != 0 || changeRequested >= totalCost);
+		return (totalCostAfterOffers <= 0 || billToChange >= totalCostAfterOffers) && (totalCostAfterOffers != 0 || billToChange >= totalCost);
 	}
 
 	@Override

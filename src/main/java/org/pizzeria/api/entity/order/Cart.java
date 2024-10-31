@@ -37,9 +37,7 @@ public class Cart {
 	// when updating Cart, the merge operation is going to be cascaded to the
 	// OrderItem association as well, so there's no need to manually
 	// sync the bidirectional association
-	@OneToMany(mappedBy = "cart",
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private List<OrderItem> orderItems;
 
@@ -83,6 +81,7 @@ public class Cart {
 		public Builder withOrderItems(List<OrderItem> orderItems) {
 			cart.orderItems = new ArrayList<>();
 			for (OrderItem item : orderItems) {
+				item.setId(null);
 				cart.addItem(item);
 			}
 			return this;

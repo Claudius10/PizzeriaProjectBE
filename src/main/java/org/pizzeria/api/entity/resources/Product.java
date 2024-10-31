@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 public class Product {
 
 	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_generator")
+	@SequenceGenerator(name = "product_generator", sequenceName = "product_seq", allocationSize = 1)
 	private Long id;
 
 	@Column(name = "product_type")

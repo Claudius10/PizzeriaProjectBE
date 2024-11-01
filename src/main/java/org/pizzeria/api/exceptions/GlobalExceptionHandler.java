@@ -2,6 +2,7 @@ package org.pizzeria.api.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.exception.ConstraintViolationException;
+import org.pizzeria.api.exceptions.custom.RoleNotFoundException;
 import org.pizzeria.api.utils.globals.ApiResponses;
 import org.pizzeria.api.utils.globals.SecurityResponses;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -71,5 +72,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMsg);
+	}
+
+	@ExceptionHandler(RoleNotFoundException.class)
+	protected ResponseEntity<String> handleRoleNotFoundException(HttpServletRequest request, RoleNotFoundException ex) {
+		return ResponseEntity.internalServerError().body(ex.getMessage());
 	}
 }

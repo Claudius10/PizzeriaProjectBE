@@ -6,6 +6,7 @@ import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.entity.user.dto.UserDTO;
+import org.pizzeria.api.exceptions.custom.RoleNotFoundException;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.role.RoleService;
@@ -41,11 +42,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Long createUser(RegisterDTO registerDTO) {
+	public Long createUser(RegisterDTO registerDTO) throws RoleNotFoundException {
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 		Optional<Role> userRole = roleService.findByName("USER");
 		if (userRole.isEmpty()) {
-			return null;
+			throw new RoleNotFoundException("El privilegio 'USUARIO' no existe en la base de datos.");
 		}
 
 		User user = new User.Builder()

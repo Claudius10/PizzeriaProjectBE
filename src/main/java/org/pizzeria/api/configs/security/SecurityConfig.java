@@ -1,28 +1,30 @@
 package org.pizzeria.api.configs.security;
 
-import org.pizzeria.api.configs.security.auth.ClearCookiesLogoutHandler;
-import org.pizzeria.api.configs.security.auth.InvalidLoginHandler;
-import org.pizzeria.api.configs.security.auth.ValidLoginHandler;
-import org.pizzeria.api.configs.security.oauth2.OAuth2RESTAccessDeniedHandler;
-import org.pizzeria.api.configs.security.oauth2.OAuth2RESTAuthEntryPoint;
-import org.pizzeria.api.configs.security.utils.JWTUtils;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import org.pizzeria.api.configs.security.access.*;
+import org.pizzeria.api.configs.security.keys.RSAKeyPair;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -36,42 +38,22 @@ import java.util.Set;
 @Configuration
 public class SecurityConfig {
 
-	private final JWTUtils nimbusJWT;
-
-	private final ValidLoginHandler validAuthHandler;
-
-	private final InvalidLoginHandler invalidAuthHandler;
-
-	private final ClearCookiesLogoutHandler clearCookiesLogoutHandler;
-
-	private final CookieBearerTokenResolver cookieBearerTokenResolver;
-
-	private final OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint;
-
-	private final OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler;
-
-	public SecurityConfig
-			(JWTUtils nimbusJWT,
-			 ValidLoginHandler validAuthHandler,
-			 InvalidLoginHandler invalidAuthHandler,
-			 ClearCookiesLogoutHandler clearCookiesLogoutHandler,
-			 CookieBearerTokenResolver cookieBearerTokenResolver,
-			 OAuth2RESTAuthEntryPoint oAuth2RESTAuthEntryPoint,
-			 OAuth2RESTAccessDeniedHandler oAuth2RESTAccessDeniedHandler) {
-		this.nimbusJWT = nimbusJWT;
-		this.validAuthHandler = validAuthHandler;
-		this.invalidAuthHandler = invalidAuthHandler;
-		this.clearCookiesLogoutHandler = clearCookiesLogoutHandler;
-		this.cookieBearerTokenResolver = cookieBearerTokenResolver;
-		this.oAuth2RESTAuthEntryPoint = oAuth2RESTAuthEntryPoint;
-		this.oAuth2RESTAccessDeniedHandler = oAuth2RESTAccessDeniedHandler;
-	}
-
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(
+			HttpSecurity http,
+			JwtDecoder jwtDecoder,
+			ValidLoginHandler validAuthHandler,
+			InvalidLoginHandler invalidAuthHandler,
+			ClearCookiesLogoutHandler clearCookiesLogoutHandler,
+			AuthenticationHandler authenticationHandler,
+			AccessDeniedHandler accessDeniedHandler,
+			CookieBearerTokenResolver cookieBearerTokenResolver
+	) throws Exception {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-		http.csrf(csrf -> {
+		http.csrf(AbstractHttpConfigurer::disable);
+
+	/*	http.csrf(csrf -> {
 
 			csrf.csrfTokenRepository(csrfTokenRepository()); // persist CSRF token in a cookie
 			csrf.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()); // get CSRF token off cookie
@@ -85,18 +67,7 @@ public class SecurityConfig {
 					return object;
 				}
 			});
-		});
-
-		// post authentication JWT resource protection
-		http.oauth2ResourceServer(oauth2ResourceServer -> {
-			oauth2ResourceServer.jwt(jwt -> {
-				jwt.decoder(nimbusJWT.jwtDecoder());
-				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
-			});
-			oauth2ResourceServer.authenticationEntryPoint(oAuth2RESTAuthEntryPoint); // handle jwt auth failure
-			oauth2ResourceServer.accessDeniedHandler(oAuth2RESTAccessDeniedHandler); // handle jwt access denied
-			oauth2ResourceServer.bearerTokenResolver(cookieBearerTokenResolver); // load JWT from cookie
-		});
+		});*/
 
 		http.authorizeHttpRequests(auth -> {
 			auth.requestMatchers("/api/resource/**").permitAll();
@@ -120,31 +91,55 @@ public class SecurityConfig {
 			logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()); // return 200 on successful logout
 		});
 
+		// post authentication JWT resource protection
+		http.oauth2ResourceServer(oauth2ResourceServer -> {
+			oauth2ResourceServer.jwt(jwt -> {
+				jwt.decoder(jwtDecoder);
+				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter());
+			});
+			oauth2ResourceServer.authenticationEntryPoint(authenticationHandler); // handle jwt auth failure
+			oauth2ResourceServer.accessDeniedHandler(accessDeniedHandler); // handle jwt access denied
+			oauth2ResourceServer.bearerTokenResolver(cookieBearerTokenResolver); // load JWT from cookie
+		});
+
 		return http.build();
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(6);
 	}
 
 	@Bean
-	public AuthenticationManager authManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+	AuthenticationManager authManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService);
 		authenticationProvider.setPasswordEncoder(passwordEncoder);
 		return new ProviderManager(authenticationProvider);
 	}
 
+	@Bean
+	JwtEncoder jwtEncoder(RSAKeyPair keys) {
+		JWK jwk = new RSAKey.Builder(keys.getPublicKey()).privateKey(keys.getPrivateKey()).build();
+		JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+		return new NimbusJwtEncoder(jwks);
+	}
+
+	@Bean
+	JwtDecoder jwtDecoder(RSAKeyPair keys) {
+		NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
+		decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("https://pizzeriaprojectbe-production.up.railway.app"));
+		return decoder;
+	}
+
 	/*
 	Set Access-Control-Allow-Headers when allowing headers to be passed from the client to the server (e.g. If-Match).
 	Set Access-Control-Expose-Headers when allowing headers to be passed back from the server to the client (e.g. ETag).
 	*/
-
-	public CorsConfigurationSource corsConfigurationSource() {
+	private CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://localhost:4200", "https://pizzeriaproject-production.up.railway.app"));
+				Arrays.asList("http://192.168.1.128:4200", "https://pizzeriaproject-production.up.railway.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
 		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));

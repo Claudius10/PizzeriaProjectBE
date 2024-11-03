@@ -1,4 +1,4 @@
-package org.pizzeria.api.configs.security;
+package org.pizzeria.api.configs.security.access;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -5,9 +5,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.pizzeria.api.configs.security.auth.JWTTokenManager;
 import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
-import org.pizzeria.api.configs.security.utils.SecurityTokenUtils;
 import org.pizzeria.api.entity.dto.auth.RegisterDTO;
+import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.utils.globals.Constants;
 import org.pizzeria.api.utils.globals.SecurityResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -23,8 +25,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -47,7 +48,7 @@ class UserIdValidationTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private SecurityTokenUtils securityTokenUtils;
+	private JWTTokenManager JWTTokenManager;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -74,20 +75,17 @@ class UserIdValidationTests {
 				"Password1"));
 
 		// create JWT token
-
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+		String accessToken = JWTTokenManager.getAccessToken(
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
-				testUserId,
-				"USER");
+				List.of(new Role("USER")),
+				String.valueOf(testUserId));
 
 		Long nonMatchingUserId = 9999L;
 
 		// Act
 
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", testUserId)
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(nonMatchingUserId), 1800, false, false))
-						.with(csrf()))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", nonMatchingUserId)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -95,41 +93,6 @@ class UserIdValidationTests {
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.FRAUDULENT_TOKEN);
-	}
-
-	@Test
-	void givenAccessToProtectedResource_whenMissingUserIdCookie_thenReturnUnauthorized() throws Exception {
-
-		// Arrange
-
-		// create user test subject
-
-		long testUserId = createUserTestSubject(new RegisterDTO(
-				"UserIdValidation",
-				"UserIdValidationTestMissingUserIdCookie@gmail.com",
-				"UserIdValidationTestMissingUserIdCookie@gmail.com",
-				"Password1",
-				"Password1"));
-
-		// create JWT token
-
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"UserIdValidationTestMissingUserIdCookie@gmail.com",
-				testUserId,
-				"USER");
-
-		// Act
-
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/orders/{orderId}", testUserId)
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.with(csrf()))
-				.andReturn()
-				.getResponse();
-
-		// Assert
-
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.USER_ID_MISSING);
 	}
 
 	@Test
@@ -148,17 +111,15 @@ class UserIdValidationTests {
 
 		// create JWT token
 
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
+		String accessToken = JWTTokenManager.getAccessToken(
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
-				testUserId,
-				"USER");
+				List.of(new Role("USER")),
+				String.valueOf(testUserId));
 
 		// Act
 
 		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", testUserId)
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(testUserId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn()
 				.getResponse();
 

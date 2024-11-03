@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.pizzeria.api.configs.security.auth.JWTTokenManager;
 import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
-import org.pizzeria.api.configs.security.utils.SecurityTokenUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.order.Cart;
@@ -13,13 +13,16 @@ import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.entity.order.OrderItem;
 import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.entity.order.dto.OrderDTO;
+import org.pizzeria.api.entity.order.dto.OrderSummaryListDTO;
 import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
+import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.entity.user.dto.PasswordDTO;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.utils.globals.ApiResponses;
+import org.pizzeria.api.utils.globals.Constants;
 import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -33,13 +36,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,7 +58,7 @@ class UserOrdersControllerTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private SecurityTokenUtils securityTokenUtils;
+	private JWTTokenManager JWTTokenManager;
 
 	@Autowired
 	private AddressRepository addressRepository;
@@ -87,10 +87,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create DTO object
 		Cart cart = new Cart.Builder()
@@ -110,15 +107,13 @@ class UserOrdersControllerTests {
 				.withPaymentType("Card")
 				.build();
 
-		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(userId, addressId, orderDetails, cart);
+		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/order", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
@@ -135,25 +130,20 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		OrderDetails orderDetails = new OrderDetails.Builder()
 				.withDeliveryHour("ASAP")
 				.withPaymentType("Card")
 				.build();
 
-		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(userId, addressId, orderDetails, null);
+		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, null);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/order", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -172,10 +162,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create DTO object
 		Cart cart = new Cart.Builder()
@@ -195,15 +182,13 @@ class UserOrdersControllerTests {
 				.withPaymentType("Card")
 				.build();
 
-		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(userId, addressId, orderDetails, cart);
+		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/order", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		Long orderId = Long.valueOf(response.getContentAsString());
@@ -211,9 +196,8 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to find user order
-		MockHttpServletResponse getResponse = mockMvc.perform(get("/api/user/orders/{orderId}", orderId)
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+		MockHttpServletResponse getResponse = mockMvc.perform(get("/api/user/{userId}/order/{orderId}", userId, orderId)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -233,17 +217,13 @@ class UserOrdersControllerTests {
 		Long userId = createUserTestSubject();
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// get api call to find user order
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/orders/{orderId}", 99)
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/{orderId}", userId, 99)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -267,18 +247,13 @@ class UserOrdersControllerTests {
 		Long newAddressId = createAddressTestSubject("Test", 2);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				order.getId(),
-				userId,
 				newAddressId,
 				order.getCreatedOn(),
 				order.getOrderDetails(),
@@ -287,12 +262,10 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.getId())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -315,18 +288,13 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				order.getId(),
-				userId,
 				addressId,
 				order.getCreatedOn(),
 				new OrderDetails.Builder()
@@ -339,12 +307,10 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.getId())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -368,18 +334,13 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				order.getId(),
-				userId,
 				addressId,
 				order.getCreatedOn(),
 				order.getOrderDetails(),
@@ -399,12 +360,10 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.getId())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -428,10 +387,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		int minutesInThePast = 11;
@@ -439,8 +395,6 @@ class UserOrdersControllerTests {
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				order.getId(),
-				userId,
 				addressId,
 				order.getCreatedOn(),
 				order.getOrderDetails(),
@@ -460,12 +414,10 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.getId())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -489,10 +441,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		int minutesInThePast = 16;
@@ -500,8 +449,6 @@ class UserOrdersControllerTests {
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				order.getId(),
-				userId,
 				addressId,
 				order.getCreatedOn(),
 				order.getOrderDetails(),
@@ -521,12 +468,10 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.getId())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -547,18 +492,13 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				9879789L,
-				userId,
 				addressId,
 				order.getCreatedOn(),
 				order.getOrderDetails(),
@@ -578,20 +518,18 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, 99)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR,
-				9879789, addressId));
+				99, addressId));
 	}
 
 	@Test
@@ -605,18 +543,13 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
 
 		// create UserOrderUpdate DTO
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				order.getId(),
-				userId,
 				878678L,
 				order.getCreatedOn(),
 				order.getOrderDetails(),
@@ -636,20 +569,17 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/orders")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.getId())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR,
-				order.getId(), 878678));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR, order.getId(), 878678));
 	}
 
 	@Test
@@ -663,10 +593,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		int minutesInThePast = 0;
@@ -675,10 +602,8 @@ class UserOrdersControllerTests {
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/orders/{orderId}", order.getId())
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/order/{orderId}", userId, order.getId())
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -699,10 +624,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		int minutesInThePast = 21;
@@ -711,10 +633,8 @@ class UserOrdersControllerTests {
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/orders/{orderId}", order.getId())
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/order/{orderId}", userId, order.getId())
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -725,32 +645,26 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenOrderDelete_whenOrderNotFound_thenReturnAcceptedWithMessage() throws Exception {
+	void givenOrderDelete_whenOrderNotFound_thenReturnBadRequest() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
 		Long userId = createUserTestSubject();
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/orders/{orderId}", 995678)
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false))
-						.with(csrf()))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/order/{orderId}", userId, 995678)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.ORDER_NOT_FOUND, 995678));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test
@@ -764,25 +678,20 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		int minutesInThePast = 0;
 		createUserOrderTestSubject(minutesInThePast, userId, addressId, accessToken);
 
-		int pageSize = 1;
+		int pageSize = 5;
 		int pageNumber = 0;
 
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/orders?pageNumber={pN}&pageSize={pS}&userId={userId}",
-						pageNumber, pageSize, userId)
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false)))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/all?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -799,10 +708,7 @@ class UserOrdersControllerTests {
 		Long userId = createUserTestSubject();
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		int pageSize = 1;
 		int pageNumber = 0;
@@ -810,17 +716,18 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/orders?pageNumber={pN}&pageSize={pS}&userId={userId}",
-						pageNumber, pageSize, userId)
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 30, false, false)))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/all?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ORDER_LIST_EMPTY);
+		String contentAsString = response.getContentAsString();
+		OrderSummaryListDTO orderList = objectMapper.readValue(contentAsString, OrderSummaryListDTO.class);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(orderList).isNotNull();
+		assertThat(orderList.orderList()).isEmpty();
 	}
 
 	@Test
@@ -828,10 +735,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				0L,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), "0");
 
 		int pageSize = 1;
 		int pageNumber = 0;
@@ -839,10 +743,8 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/orders?pageNumber={pN}&pageSize={pS}&userId={userId}",
-						pageNumber, pageSize, 0)
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 30, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(0), 30, false, false)))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/all?pageNumber={pN}&pageSize={pS}", 0, pageNumber, pageSize)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
@@ -863,10 +765,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create user order
 		int minutesInThePast = 0;
@@ -883,9 +782,7 @@ class UserOrdersControllerTests {
 		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(passwordDTO))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -899,10 +796,9 @@ class UserOrdersControllerTests {
 	}
 
 	OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {
-		String response = mockMvc.perform(get("/api/user/orders/{orderId}", orderId)
-				.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-				.with(csrf())).andReturn().getResponse().getContentAsString();
+		String response = mockMvc.perform(get("/api/user/{userId}/order/{orderId}", userId, orderId)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 1800, true, false)))
+				.andReturn().getResponse().getContentAsString();
 		return objectMapper.readValue(response, OrderDTO.class);
 	}
 
@@ -924,15 +820,13 @@ class UserOrdersControllerTests {
 				.withPaymentType("Card")
 				.build();
 
-		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(userId, addressId, orderDetails, cart);
+		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/orders/tests?minusMin={minutesInThePast}", minutesInThePast)
+		MockHttpServletResponse response = mockMvc.perform(post("/api/tests/user/{userId}/order?minusMin={minutesInThePast}", userId, minutesInThePast)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
 		Long orderId = Long.valueOf(response.getContentAsString());
@@ -947,8 +841,7 @@ class UserOrdersControllerTests {
 								"Tester@gmail.com",
 								"Tester@gmail.com",
 								"Password1",
-								"Password1")))
-						.with(csrf()))
+								"Password1"))))
 				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
 	}
 

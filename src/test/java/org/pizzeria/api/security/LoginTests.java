@@ -14,7 +14,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,12 +46,7 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=password")
-						.with(csrf()))
-
-				// Assert
-
-				.andExpect(status().isOk());
+		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=password")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -60,12 +54,7 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword")
-						.with(csrf()))
-
-				// Assert
-
-				.andExpect(status().isUnauthorized());
+		mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -73,12 +62,7 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=wrong_password")
-						.with(csrf()))
-
-				// Assert
-
-				.andExpect(status().isUnauthorized());
+		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=wrong_password")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -86,11 +70,6 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=nottest@gmail.com&password=password")
-						.with(csrf()))
-
-				// Assert
-
-				.andExpect(status().isUnauthorized());
+		mockMvc.perform(post("/api/auth/login?username=nottest@gmail.com&password=password")).andExpect(status().isUnauthorized());
 	}
 }

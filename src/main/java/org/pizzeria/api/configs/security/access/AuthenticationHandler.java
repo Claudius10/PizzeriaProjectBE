@@ -1,4 +1,4 @@
-package org.pizzeria.api.configs.security.oauth2;
+package org.pizzeria.api.configs.security.access;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Component
-public class OAuth2RESTAuthEntryPoint implements AuthenticationEntryPoint {
+public class AuthenticationHandler implements AuthenticationEntryPoint {
 
 	private final HandlerExceptionResolver resolver;
 
-	public OAuth2RESTAuthEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+	public AuthenticationHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
 		this.resolver = resolver;
 	}
 

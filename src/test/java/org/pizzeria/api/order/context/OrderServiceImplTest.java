@@ -33,8 +33,8 @@ public class OrderServiceImplTest {
 		this.userService = userService;
 	}
 
-	public Long createOrderTestSubjects(NewUserOrderDTO newUserOrder, LocalDateTime createdOn) {
-		User user = userService.findUserReference(newUserOrder.userId());
+	public Long createOrderTestSubjects(NewUserOrderDTO newUserOrder, Long userId, LocalDateTime createdOn) {
+		User user = userService.findUserReference(userId);
 		Address address = addressService.findReference(newUserOrder.addressId());
 
 		Cart cart = new Cart.Builder()

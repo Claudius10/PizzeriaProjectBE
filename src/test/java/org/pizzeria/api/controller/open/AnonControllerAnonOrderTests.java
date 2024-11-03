@@ -290,7 +290,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.deliveryHour");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.deliveryTime");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.ORDER_DETAILS_DELIVERY_HOUR);
 						}
 				);
@@ -322,7 +322,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.paymentType");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.paymentMethod");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.ORDER_DETAILS_PAYMENT);
 						}
 				);
@@ -384,7 +384,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.deliveryComment");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("orderDetails.comment");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.ORDER_DETAILS_COMMENT);
 						}
 				);

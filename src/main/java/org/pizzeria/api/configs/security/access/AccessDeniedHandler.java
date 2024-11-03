@@ -1,19 +1,18 @@
-package org.pizzeria.api.configs.security.oauth2;
+package org.pizzeria.api.configs.security.access;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Component
-public class OAuth2RESTAccessDeniedHandler implements AccessDeniedHandler {
+public class AccessDeniedHandler implements org.springframework.security.web.access.AccessDeniedHandler {
 
 	private final HandlerExceptionResolver resolver;
 
-	public OAuth2RESTAccessDeniedHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+	public AccessDeniedHandler(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
 		this.resolver = resolver;
 	}
 

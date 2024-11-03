@@ -5,10 +5,6 @@ import org.pizzeria.api.entity.order.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 
 public record NewUserOrderDTO(
-
-		@NotNull
-		Long userId,
-
 		@NotNull
 		Long addressId,
 

@@ -5,13 +5,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.web.csrf.CsrfToken;
 
 public final class SecurityCookieUtils {
 
 	private SecurityCookieUtils() {
 	}
 
+	public static Cookie prepareCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
+		Cookie cookie = new Cookie(name, value);
+		cookie.setPath("/");
+		cookie.setMaxAge(maxAge);
+		cookie.setHttpOnly(httpOnly);
+		cookie.setSecure(secure);
+		return cookie;
+	}
+
+	// 24 * 60 * 60 24h
+	// 168 * 60 * 60 7 days
 	public static ResponseCookie bakeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
 		return ResponseCookie.from(name, value)
 				.path("/")
@@ -23,61 +33,11 @@ public final class SecurityCookieUtils {
 				.build();
 	}
 
-	public static Cookie makeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setPath("/");
-		cookie.setMaxAge(maxAge);
-		cookie.setHttpOnly(httpOnly);
-		cookie.setSecure(secure);
-		return cookie;
-	}
-
-	public static void loadCsrf(HttpServletResponse response, CsrfToken csrfToken) {
+	public static void serveCookies(HttpServletResponse response, String accessToken) {
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie(
-						"XSRF-TOKEN",
-						csrfToken.getToken(),
-						30,
-						true,
-						false) // NOTE - true for prod
-						.toString());
-	}
-
-	// 24 * 60 * 60 24h
-	// 168 * 60 * 60 7 days
-	public static void createAuthCookies(HttpServletResponse response, String accessToken, String refreshToken, Long userId) {
-		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("fight", accessToken,
+				bakeCookie("token", accessToken,
 						24 * 60 * 60,
 						true,
-						false) // NOTE - true for prod
-						.toString());
-
-		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("pseudo_fight", "exp_d",
-						24 * 60 * 60,
-						false,
-						false) // NOTE - true for prod
-						.toString());
-
-		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("me", refreshToken,
-						168 * 60 * 60,
-						true,
-						false) // NOTE - true for prod
-						.toString());
-
-		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("pseudo_me", "exp_d",
-						168 * 60 * 60,
-						false,
-						false) // NOTE - true for prod
-						.toString());
-
-		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("id", String.valueOf(userId),
-						168 * 60 * 60,
-						false,
 						false) // NOTE - true for prod
 						.toString());
 	}

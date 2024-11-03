@@ -11,7 +11,6 @@ import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +26,6 @@ public class UserController {
 
 	public UserController(UserService userService) {
 		this.userService = userService;
-	}
-
-	@ValidateUserId
-	@GetMapping("/csrf")
-	public void csrf(HttpServletResponse response, CsrfToken csrfToken) {
-		SecurityCookieUtils.loadCsrf(response, csrfToken);
 	}
 
 	@ValidateUserId
@@ -57,7 +50,7 @@ public class UserController {
 
 	@ValidateUserId
 	@PostMapping("/{userId}/address")
-	public ResponseEntity<String> createUserAddress(@PathVariable Long userId, @RequestBody @Valid Address address, HttpServletRequest request) {
+	public ResponseEntity<String> createUserAddress(@RequestBody @Valid Address address, @PathVariable Long userId, HttpServletRequest request) {
 		String result = userService.addUserAddress(userId, address);
 
 		if (result != null) {
@@ -69,7 +62,7 @@ public class UserController {
 
 	@ValidateUserId
 	@DeleteMapping("/{userId}/address/{addressId}")
-	public ResponseEntity<String> deleteUserAddress(@PathVariable Long userId, @PathVariable Long addressId, HttpServletRequest request) {
+	public ResponseEntity<String> deleteUserAddress(@PathVariable Long addressId, @PathVariable Long userId, HttpServletRequest request) {
 		String result = userService.removeUserAddress(userId, addressId);
 
 		if (result != null) {

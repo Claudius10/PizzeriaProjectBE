@@ -88,8 +88,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long createUserOrder(NewUserOrderDTO newUserOrder) {
-		User user = userService.findUserOrThrow(newUserOrder.userId());
+	public Long createUserOrder(Long userId, NewUserOrderDTO newUserOrder) {
+		User user = userService.findUserOrThrow(userId);
 		Address address = addressService.findReference(newUserOrder.addressId());
 
 		Cart cart = new Cart.Builder()
@@ -113,10 +113,9 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long updateUserOrder(UpdateUserOrderDTO updateUserOrder) {
-		Long id = null;
+	public Long updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder) {
 		Optional<Address> dbAddress = addressService.findAddressById(updateUserOrder.getAddressId());
-		Optional<Order> dbOrder = findUserOrderById(updateUserOrder.getOrderId());
+		Optional<Order> dbOrder = findUserOrderById(orderId);
 
 		if (dbOrder.isPresent() && dbAddress.isPresent()) {
 			Address address = dbAddress.get();
@@ -155,23 +154,17 @@ public class OrderServiceImpl implements OrderService {
 						"dd/MM/yyyy")));
 			}
 
-			id = order.getId();
+			return orderId;
 		}
 
-		return id;
+		return null;
 	}
 
 	@Override
 	public Long deleteUserOrderById(Long orderId) {
-		Long id = null;
 		Optional<Order> dbOrder = findUserOrderById(orderId);
-
-		if (dbOrder.isPresent()) {
-			orderRepository.delete(dbOrder.get());
-			id = orderId;
-		}
-
-		return id;
+		dbOrder.ifPresent(orderRepository::delete);
+		return orderId;
 	}
 
 	@Override

@@ -8,12 +8,6 @@ import java.time.LocalDateTime;
 
 public class UpdateUserOrderDTO {
 
-	@NotNull(message = "El valor del ID del pedido no puede ser null.")
-	private final Long orderId;
-
-	@NotNull(message = "El valor del ID del usuario no puede ser null.")
-	private final Long userId;
-
 	@NotNull(message = "El valor del ID de la dirección no puede ser null.")
 	private final Long addressId;
 
@@ -26,26 +20,14 @@ public class UpdateUserOrderDTO {
 	private Cart cart;
 
 	public UpdateUserOrderDTO(
-			Long orderId,
-			Long userId,
 			Long addressId,
 			LocalDateTime createdOn,
 			OrderDetails orderDetails,
 			Cart cart) {
-		this.orderId = orderId;
-		this.userId = userId;
 		this.addressId = addressId;
 		this.createdOn = createdOn;
 		this.orderDetails = orderDetails;
 		this.cart = cart;
-	}
-
-	public Long getOrderId() {
-		return orderId;
-	}
-
-	public Long getUserId() {
-		return userId;
 	}
 
 	public Long getAddressId() {

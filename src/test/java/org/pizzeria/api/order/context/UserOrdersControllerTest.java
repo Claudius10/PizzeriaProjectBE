@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/user/orders/tests")
+@RequestMapping("/api/tests/user/{userId}/order")
 @Validated
 public class UserOrdersControllerTest {
 
@@ -20,8 +20,8 @@ public class UserOrdersControllerTest {
 	}
 
 	@PostMapping(params = "minusMin")
-	public ResponseEntity<Long> createOrderTestSubjects(@RequestBody NewUserOrderDTO order, @RequestParam Long minusMin) {
+	public ResponseEntity<Long> createOrderTestSubjects(@RequestBody NewUserOrderDTO order, @PathVariable Long userId, @RequestParam Long minusMin) {
 		LocalDateTime createdOn = LocalDateTime.now().minusMinutes(minusMin);
-		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImplTest.createOrderTestSubjects(order, createdOn));
+		return ResponseEntity.status(HttpStatus.OK).body(orderServiceImplTest.createOrderTestSubjects(order, userId, createdOn));
 	}
 }

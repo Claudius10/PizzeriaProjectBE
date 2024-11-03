@@ -4,15 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.pizzeria.api.configs.security.auth.JWTTokenManager;
 import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
-import org.pizzeria.api.configs.security.utils.SecurityTokenUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.dto.auth.RegisterDTO;
+import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.entity.user.dto.*;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.utils.globals.ApiResponses;
+import org.pizzeria.api.utils.globals.Constants;
 import org.pizzeria.api.utils.globals.SecurityResponses;
 import org.pizzeria.api.utils.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +35,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,7 +58,7 @@ class UserControllerTests {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private SecurityTokenUtils securityTokenUtils;
+	private JWTTokenManager JWTTokenManager;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -81,46 +80,19 @@ class UserControllerTests {
 		// Arrange
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				1L,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), "1");
 
 		// Act
 
 		// get api call to find user
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", 1).with(csrf())
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(1), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", 1)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
 		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1));
-	}
-
-	@Test
-	void givenFindUserGetApiCall_whenNoUserIdCookie_thenReturnUnauthorized() throws Exception {
-		// Arrange
-
-		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				1L,
-				"USER");
-
-		// Act
-
-		// get api call to find user
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", 1).with(csrf())
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
-				.andReturn().getResponse();
-
-		// Assert
-
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.USER_ID_MISSING);
 	}
 
 	@Test
@@ -131,16 +103,12 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", userId).with(csrf())
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", userId)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -158,10 +126,7 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create address object
 		Address address = new Address.Builder()
@@ -172,11 +137,10 @@ class UserControllerTests {
 		// Act
 
 		// post api call to add address to user
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(address))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -195,11 +159,7 @@ class UserControllerTests {
 		// Arrange
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				1L,
-				"USER");
-
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), "1");
 		// create address object
 		Address address = new Address.Builder()
 				.withStreet("Street")
@@ -209,11 +169,10 @@ class UserControllerTests {
 		// Act
 
 		// post api call to create address
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", 1).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", 1)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(address))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(1), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -230,52 +189,45 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		mockMvc.perform(post("/api/user/{userId}/address", userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
 						.withStreetNr(1)
 						.build()))
-				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-				.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)));
+				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		mockMvc.perform(post("/api/user/{userId}/address", userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
 						.withStreetNr(2)
 						.build()))
-				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-				.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)));
+				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		mockMvc.perform(post("/api/user/{userId}/address", userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
 						.withStreetNr(3)
 						.build()))
-				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-				.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)));
+				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// Act
 
 		// post api call to add address to user
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new Address.Builder()
 								.withStreet("Street")
 								.withStreetNr(4)
 								.build()))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -299,27 +251,22 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		mockMvc.perform(post("/api/user/{userId}/address", userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
 						.withStreetNr(1)
 						.build()))
-				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-				.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)));
+				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// Act
 
 		// get api call to find user address list
 		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/address", userId)
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -338,17 +285,13 @@ class UserControllerTests {
 		// Arrange
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				1L,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), "1");
 
 		// Act
 
 		// get api call to find user address list
 		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/address", 1)
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(1), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -371,17 +314,13 @@ class UserControllerTests {
 				.build();
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId).with(csrf())
+		mockMvc.perform(post("/api/user/{userId}/address", userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(address))
-				.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-				.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)));
+				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// confirm address was added
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
@@ -395,9 +334,8 @@ class UserControllerTests {
 
 		// delete api call to delete user address
 		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", userId,
-						dbAddress.get().getId()).with(csrf())
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						dbAddress.get().getId())
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -415,17 +353,13 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// delete api call to delete user address
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", userId, 1L).with(csrf())
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", userId, 1L)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -439,17 +373,13 @@ class UserControllerTests {
 		// Arrange
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				1L,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), "1");
 
 		// Act
 
 		// delete api call to delete user address
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", 1L, 1L).with(csrf())
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(1L), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", 1L, 1L)
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -469,19 +399,15 @@ class UserControllerTests {
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("dsa$·", "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// put api call to update user name
-		mockMvc.perform(put("/api/user/{userId}/name", userId).with(csrf())
+		mockMvc.perform(put("/api/user/{userId}/name", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(nameChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 
 				// Assert
 
@@ -506,19 +432,15 @@ class UserControllerTests {
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("NewUserName", "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// put api call to update user name
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/name", userId).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/name", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(nameChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -539,19 +461,15 @@ class UserControllerTests {
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("invalidEmailFormat", "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// put api call to update user email
-		mockMvc.perform(put("/api/user/{userId}/email", userId).with(csrf())
+		mockMvc.perform(put("/api/user/{userId}/email", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(emailChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 
 				// Assert
 
@@ -576,19 +494,15 @@ class UserControllerTests {
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("validEmailFormat@gmail.com", "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// put api call to update user email
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/email", userId).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/email", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(emailChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -610,19 +524,16 @@ class UserControllerTests {
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("Tester@gmail.com", "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userIdTwo,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")),
+				String.valueOf(userIdTwo));
 
 		// Act
 
 		// put api call to update user email
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/email", userIdTwo).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/email", userIdTwo)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(emailChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userIdTwo), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -642,19 +553,15 @@ class UserControllerTests {
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123, "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// put api call to update user contact number
-		mockMvc.perform(put("/api/user/{userId}/contact_number", userId).with(csrf())
+		mockMvc.perform(put("/api/user/{userId}/contact_number", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(contactNumberChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 
 				// Assert
 
@@ -679,19 +586,15 @@ class UserControllerTests {
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123456789, "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// Act
 
 		// put api call to update user contact number
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/contact_number", userId).with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/contact_number", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(contactNumberChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -714,32 +617,24 @@ class UserControllerTests {
 		ContactNumberChangeDTO contactNumberChangeDTOTwo = new ContactNumberChangeDTO(123456789, "Password1");
 
 		// create access token
-		String accessToken = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userId,
-				"USER");
-
-		String accessTokenTwo = securityTokenUtils.createToken(Instant.now().plus(60, ChronoUnit.SECONDS),
-				"Tester@gmail.com",
-				userIdTwo,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessTokenTwo = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")),
+				String.valueOf(userIdTwo));
 
 		// Act
 
 		// put api call to update user contact number
-		mockMvc.perform(put("/api/user/{userId}/contact_number", userId).with(csrf())
+		mockMvc.perform(put("/api/user/{userId}/contact_number", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(contactNumberChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessToken, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// put api call to update user contact number
-		MockHttpServletResponse responseTwo = mockMvc.perform(put("/api/user/{userId}/contact_number", userIdTwo).with(csrf())
+		MockHttpServletResponse responseTwo = mockMvc.perform(put("/api/user/{userId}/contact_number", userIdTwo)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(contactNumberChangeDTOTwo))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userIdTwo), 60, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("fight", accessTokenTwo, 60, true, false)))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessTokenTwo, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -756,10 +651,7 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create dto object
 		PasswordChangeDTO passwordChangeDTO = new PasswordChangeDTO(
@@ -773,9 +665,7 @@ class UserControllerTests {
 		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/password", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(passwordChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -792,10 +682,7 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create dto object
 		PasswordChangeDTO passwordChangeDTO = new PasswordChangeDTO(
@@ -809,9 +696,7 @@ class UserControllerTests {
 		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/password", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(passwordChangeDTO))
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -829,10 +714,7 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create dto object
 		PasswordDTO passwordDTO = new PasswordDTO("WrongPassword");
@@ -843,9 +725,7 @@ class UserControllerTests {
 		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(passwordDTO))
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -862,10 +742,7 @@ class UserControllerTests {
 		Long userId = createUserTestSubject("Tester@gmail.com");
 
 		// create JWT token
-		String validAccessToken = securityTokenUtils.createToken(Instant.now().plus(5, ChronoUnit.MINUTES),
-				"Tester@gmail.com",
-				userId,
-				"USER");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
 
 		// create dto object
 		PasswordDTO passwordDTO = new PasswordDTO("Password1");
@@ -876,9 +753,7 @@ class UserControllerTests {
 		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(passwordDTO))
-						.cookie(SecurityCookieUtils.makeCookie("fight", validAccessToken, 1800, true, false))
-						.cookie(SecurityCookieUtils.makeCookie("id", String.valueOf(userId), 1800, false, false))
-						.with(csrf()))
+						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
@@ -896,8 +771,7 @@ class UserControllerTests {
 								email,
 								email,
 								"Password1",
-								"Password1")))
-						.with(csrf()))
+								"Password1"))))
 				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
 	}
 }

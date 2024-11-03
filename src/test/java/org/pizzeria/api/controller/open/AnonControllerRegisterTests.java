@@ -23,7 +23,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,8 +57,7 @@ class AnonControllerRegisterTests {
 										"clau2@gmail.com",
 										"clau2@gmail.com",
 										"Password1",
-										"Password1")))
-						.with(csrf()))
+										"Password1"))))
 				.andExpect(status().isCreated());
 
 		// Assert
@@ -83,7 +81,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/register").with(csrf())
+		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -234,8 +232,7 @@ class AnonControllerRegisterTests {
 	void createUserTestSubject(RegisterDTO registerDTO) throws Exception {
 		mockMvc.perform(post("/api/anon/register")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerDTO))
-						.with(csrf()))
+						.content(objectMapper.writeValueAsString(registerDTO)))
 				.andExpect(status().isCreated());
 	}
 }

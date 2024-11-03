@@ -1,4 +1,4 @@
-package org.pizzeria.api.configs.security.auth;
+package org.pizzeria.api.configs.security.access;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,12 +39,15 @@ public class UserOrdersController {
 	@GetMapping("/{orderId}")
 	public ResponseEntity<Object> findUserOrderDTO(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) {
 		Optional<OrderDTO> order = orderService.findDTOById(orderId);
-		return order.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.accepted().body(String.format(ApiResponses.ORDER_NOT_FOUND, orderId)));
+		return order.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() ->
+				ResponseEntity.accepted().body(String.format(ApiResponses.ORDER_NOT_FOUND, orderId)));
 	}
 
 	@ValidateUserId
 	@PutMapping("/{orderId}")
-	public ResponseEntity<String> updateUserOrder(@PathVariable Long orderId, @RequestBody @Valid UpdateUserOrderDTO order, @PathVariable Long userId, HttpServletRequest request) {
+	public ResponseEntity<String> updateUserOrder(
+			@PathVariable Long orderId, @RequestBody @Valid UpdateUserOrderDTO order,
+			@PathVariable Long userId, HttpServletRequest request) {
 		Long result = orderService.updateUserOrder(orderId, order);
 
 		if (result == null) {
@@ -67,17 +69,15 @@ public class UserOrdersController {
 
 	@ValidateUserId
 	@GetMapping(path = "/all")
-	public ResponseEntity<Object> findUserOrdersSummary(
+	public ResponseEntity<OrderSummaryListDTO> findUserOrdersSummary(
 			@RequestParam(name = "pageNumber") Integer pageNumber,
 			@RequestParam(name = "pageSize") Integer pageSize,
 			@PathVariable Long userId,
 			HttpServletRequest request) {
 
 		Page<OrderSummary> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
-		List<OrderSummary> content = orderSummaryPage.getContent();
-		int totalPages = orderSummaryPage.getTotalPages();
+		OrderSummaryListDTO orders = new OrderSummaryListDTO(orderSummaryPage.getContent(), orderSummaryPage.getTotalPages());
 
-		OrderSummaryListDTO orders = new OrderSummaryListDTO(content, totalPages);
 		return ResponseEntity.ok(orders);
 	}
 }

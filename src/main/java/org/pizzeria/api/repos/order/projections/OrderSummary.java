@@ -23,6 +23,6 @@ public interface OrderSummary {
 	}
 
 	interface OrderDetailsView {
-		String getPaymentType();
+		String getPaymentMethod();
 	}
 }

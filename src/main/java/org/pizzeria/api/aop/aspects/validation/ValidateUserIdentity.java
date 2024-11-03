@@ -20,7 +20,7 @@ public class ValidateUserIdentity {
 	// The user id sent as a path variable or request param for endpoints that require it
 	// must match the user id stored in the access token.
 
-	@Around(value = "org.pizzeria.api.aop.pointcuts.UserPointCuts.requieresUserIdValidation() && args(.., userId, request)")
+	@Around(value = "org.pizzeria.api.aop.pointcuts.UserPointCuts.requieresUserIdValidation() && args(.., userId, request)", argNames = "pjp,userId,request")
 	public Object validate(ProceedingJoinPoint pjp, Long userId, HttpServletRequest request) throws Throwable {
 		if (userId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SecurityResponses.USER_ID_MISSING);

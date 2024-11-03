@@ -24,16 +24,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 @Configuration
 public class SecurityConfig {
@@ -149,7 +144,7 @@ public class SecurityConfig {
 		return source;
 	}
 
-	private RequestMatcher csrfProtectionMatcher() {
+/*	private RequestMatcher csrfProtectionMatcher() {
 		// custom CsrfFilter protection matcher implementation
 		AntPathRequestMatcher[] noCsrfTokenRoutes = {
 				new AntPathRequestMatcher("/api/resource/**"),
@@ -177,7 +172,7 @@ public class SecurityConfig {
 			//cookie.domain("up.railway.app"); // NOTE - on for prod fe
 		});
 		return result;
-	}
+	}*/
 
 	// change the auto added prefix to roles from SCOPE_ to ROLE_
 	private JwtAuthenticationConverter jwtAuthenticationConverter() {

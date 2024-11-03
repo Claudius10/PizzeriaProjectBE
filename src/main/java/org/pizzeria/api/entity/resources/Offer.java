@@ -27,14 +27,6 @@ public class Offer {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
-	public Offer(Long id, String image, String name, String description, String caveat) {
-		this.id = id;
-		this.image = image;
-		this.name = name;
-		this.description = description;
-		this.caveat = caveat;
-	}
-
 	public Long getId() {
 		return id;
 	}

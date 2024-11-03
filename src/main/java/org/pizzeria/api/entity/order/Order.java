@@ -8,7 +8,6 @@ import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.user.User;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity(name = "Order")
 @Table(name = "orders")
@@ -89,16 +88,8 @@ public class Order {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public LocalDateTime getCreatedOn() {
 		return createdOn;
-	}
-
-	public void setCreatedOn(LocalDateTime createdOn) {
-		this.createdOn = createdOn;
 	}
 
 	public LocalDateTime getUpdatedOn() {
@@ -113,10 +104,6 @@ public class Order {
 		return formattedCreatedOn;
 	}
 
-	public void setFormattedCreatedOn(String formattedCreatedOn) {
-		this.formattedCreatedOn = formattedCreatedOn;
-	}
-
 	public String getFormattedUpdatedOn() {
 		return formattedUpdatedOn;
 	}
@@ -129,24 +116,12 @@ public class Order {
 		return anonCustomerName;
 	}
 
-	public void setAnonCustomerName(String anonCustomerName) {
-		this.anonCustomerName = anonCustomerName;
-	}
-
 	public Integer getAnonCustomerContactNumber() {
 		return anonCustomerContactNumber;
 	}
 
-	public void setAnonCustomerContactNumber(Integer anonCustomerContactNumber) {
-		this.anonCustomerContactNumber = anonCustomerContactNumber;
-	}
-
 	public String getAnonCustomerEmail() {
 		return anonCustomerEmail;
-	}
-
-	public void setAnonCustomerEmail(String anonCustomerEmail) {
-		this.anonCustomerEmail = anonCustomerEmail;
 	}
 
 	public Address getAddress() {
@@ -169,21 +144,12 @@ public class Order {
 		return user;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public static class Builder {
 
 		private final Order order;
 
 		public Builder() {
 			order = new Order();
-		}
-
-		public Builder withId(long id) {
-			order.id = id;
-			return this;
 		}
 
 		public Builder withCreatedOn(LocalDateTime createdOn) {
@@ -193,16 +159,6 @@ public class Order {
 
 		public Builder withFormattedCreatedOn(String formattedCreatedOn) {
 			order.formattedCreatedOn = formattedCreatedOn;
-			return this;
-		}
-
-		public Builder withFormattedUpdatedOn(String formattedUpdatedOn) {
-			order.formattedUpdatedOn = formattedUpdatedOn;
-			return this;
-		}
-
-		public Builder withUpdatedOn(LocalDateTime updatedOn) {
-			order.updatedOn = updatedOn;
 			return this;
 		}
 
@@ -256,17 +212,5 @@ public class Order {
 			return false;
 
 		return id != null && id.equals(((Order) obj).getId());
-	}
-
-	public boolean contentEquals(Object o) {
-		Order order = (Order) o;
-		return Objects.equals(createdOn, order.createdOn) &&
-				Objects.equals(updatedOn, order.updatedOn) &&
-				Objects.equals(anonCustomerName, order.getAnonCustomerName()) &&
-				Objects.equals(anonCustomerContactNumber, order.getAnonCustomerContactNumber()) &&
-				Objects.equals(anonCustomerEmail, order.getAnonCustomerEmail()) &&
-				this.address.contentEquals(order.address) &&
-				this.orderDetails.contentEquals(order.orderDetails) &&
-				this.cart.contentEquals(order.cart);
 	}
 }

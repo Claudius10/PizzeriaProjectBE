@@ -98,16 +98,8 @@ public class User implements UserDetails {
 		return addressList;
 	}
 
-	public void setAddressList(Set<Address> addressList) {
-		this.addressList = addressList;
-	}
-
 	public Set<Role> getRoles() {
 		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
 	}
 
 	@Override

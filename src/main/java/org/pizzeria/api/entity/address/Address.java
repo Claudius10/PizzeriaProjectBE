@@ -40,7 +40,6 @@ public class Address {
 	}
 
 	private Address(Builder builder) {
-		this.id = builder.id;
 		this.street = builder.street;
 		this.streetNr = builder.streetNr;
 		this.gate = builder.gate;
@@ -48,59 +47,6 @@ public class Address {
 		this.floor = builder.floor;
 		this.door = builder.door;
 	}
-
-	public static class Builder {
-		private Long id;
-		private String street;
-		private Integer streetNr;
-		private String gate;
-		private String staircase;
-		private String floor;
-		private String door;
-
-		public Builder() {
-		}
-
-		public Builder withId(Long id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withStreet(String street) {
-			this.street = street;
-			return this;
-		}
-
-		public Builder withStreetNr(Integer number) {
-			this.streetNr = number;
-			return this;
-		}
-
-		public Builder withGate(String gate) {
-			this.gate = gate;
-			return this;
-		}
-
-		public Builder withStaircase(String staircase) {
-			this.staircase = staircase;
-			return this;
-		}
-
-		public Builder withFloor(String floor) {
-			this.floor = floor;
-			return this;
-		}
-
-		public Builder withDoor(String door) {
-			this.door = door;
-			return this;
-		}
-
-		public Address build() {
-			return new Address(this);
-		}
-	}
-
 
 	public Long getId() {
 		return id;
@@ -174,5 +120,51 @@ public class Address {
 				&& Objects.equals(staircase, address.staircase)
 				&& Objects.equals(floor, address.floor)
 				&& Objects.equals(door, address.door);
+	}
+
+	public static class Builder {
+		private String street;
+		private Integer streetNr;
+		private String gate;
+		private String staircase;
+		private String floor;
+		private String door;
+
+		public Builder() {
+		}
+
+		public Builder withStreet(String street) {
+			this.street = street;
+			return this;
+		}
+
+		public Builder withStreetNr(Integer number) {
+			this.streetNr = number;
+			return this;
+		}
+
+		public Builder withGate(String gate) {
+			this.gate = gate;
+			return this;
+		}
+
+		public Builder withStaircase(String staircase) {
+			this.staircase = staircase;
+			return this;
+		}
+
+		public Builder withFloor(String floor) {
+			this.floor = floor;
+			return this;
+		}
+
+		public Builder withDoor(String door) {
+			this.door = door;
+			return this;
+		}
+
+		public Address build() {
+			return new Address(this);
+		}
 	}
 }

@@ -131,6 +131,8 @@ class UserControllerTests {
 		// create address object
 		Address address = new Address.Builder()
 				.withStreet("Street")
+				.withGate("Gate")
+				.withStaircase("StairCase")
 				.withStreetNr(1)
 				.build();
 

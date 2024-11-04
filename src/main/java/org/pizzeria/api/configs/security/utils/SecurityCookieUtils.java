@@ -35,19 +35,23 @@ public final class SecurityCookieUtils {
 	public static void serveCookies(HttpServletResponse response, String accessToken, String idToken) {
 		// access token cookie
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("token", accessToken, Constants.ONE_DAY_MS, true, true).toString());
+				bakeCookie("token", accessToken, Constants.ONE_DAY_MS, true,
+						false) // NOTE - true for prod
+						.toString());
 
 		// id token cookie
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("idToken", idToken, Constants.ONE_DAY_MS, true, false).toString());
+				bakeCookie("idToken", idToken, Constants.ONE_DAY_MS, false,
+						false) // NOTE - true for prod
+						.toString());
 	}
 
 	public static void eatAllCookies(HttpServletRequest request, HttpServletResponse response) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null)
 			for (Cookie cookie : cookies) {
-				cookie.setSecure(false); // NOTE - on for prod fe
-				//cookie.setDomain("up.railway.app"); // NOTE - on for prod fe
+				cookie.setSecure(false); // NOTE - on for prod
+				//cookie.setDomain("up.railway.app"); // NOTE - on for prod
 				cookie.setValue("");
 				cookie.setPath("/");
 				cookie.setMaxAge(0);

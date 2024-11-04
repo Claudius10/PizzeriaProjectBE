@@ -24,14 +24,25 @@ public class JWTTokenManager {
 		this.jwtEncoder = jwtEncoder;
 	}
 
-	public String getAccessToken(String subject, Collection<? extends GrantedAuthority> roles, String userId) {
+	public String getAccessToken(String subject, Collection<? extends GrantedAuthority> roles, Long userId) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuedAt(Instant.now())
 				.issuer(ISSUER)
 				.expiresAt(ACCESS_TOKEN_EXPIRE_DATE)
 				.subject(subject)
 				.claim("roles", parseAuthorities(roles))
-				.claim("userId", userId)
+				.claim("userId", String.valueOf(userId))
+				.build();
+		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+	}
+
+	public String getIdToken(String subject, Long userId) {
+		JwtClaimsSet claims = JwtClaimsSet.builder()
+				.issuedAt(Instant.now())
+				.issuer(ISSUER)
+				.expiresAt(ACCESS_TOKEN_EXPIRE_DATE)
+				.subject(subject)
+				.claim("userId", String.valueOf(userId))
 				.build();
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}

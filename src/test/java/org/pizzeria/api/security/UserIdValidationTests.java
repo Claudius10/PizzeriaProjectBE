@@ -78,7 +78,7 @@ class UserIdValidationTests {
 		String accessToken = JWTTokenManager.getAccessToken(
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
 				List.of(new Role("USER")),
-				String.valueOf(testUserId));
+				testUserId);
 
 		Long nonMatchingUserId = 9999L;
 
@@ -114,7 +114,7 @@ class UserIdValidationTests {
 		String accessToken = JWTTokenManager.getAccessToken(
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
 				List.of(new Role("USER")),
-				String.valueOf(testUserId));
+				testUserId);
 
 		// Act
 

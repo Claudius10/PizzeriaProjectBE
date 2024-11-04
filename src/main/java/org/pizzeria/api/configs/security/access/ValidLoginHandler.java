@@ -21,7 +21,8 @@ public class ValidLoginHandler implements AuthenticationSuccessHandler {
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 		User user = (User) authentication.getPrincipal();
-		String accessToken = jwtTokenManager.getAccessToken(user.getEmail(), user.getRoles(), String.valueOf(user.getId()));
-		SecurityCookieUtils.serveCookies(response, accessToken);
+		String accessToken = jwtTokenManager.getAccessToken(user.getEmail(), user.getRoles(), user.getId());
+		String idToken = jwtTokenManager.getIdToken(user.getEmail(), user.getId());
+		SecurityCookieUtils.serveCookies(response, accessToken, idToken);
 	}
 }

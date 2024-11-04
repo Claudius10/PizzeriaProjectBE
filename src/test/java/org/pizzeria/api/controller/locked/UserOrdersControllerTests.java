@@ -87,7 +87,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create DTO object
 		Cart cart = new Cart.Builder()
@@ -130,7 +130,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		OrderDetails orderDetails = new OrderDetails.Builder()
 				.withDeliveryHour("ASAP")
@@ -162,7 +162,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create DTO object
 		Cart cart = new Cart.Builder()
@@ -217,7 +217,7 @@ class UserOrdersControllerTests {
 		Long userId = createUserTestSubject();
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// Act
 
@@ -247,7 +247,7 @@ class UserOrdersControllerTests {
 		Long newAddressId = createAddressTestSubject("Test", 2);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
@@ -288,7 +288,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
@@ -334,7 +334,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
@@ -387,7 +387,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		int minutesInThePast = 11;
@@ -441,7 +441,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		int minutesInThePast = 16;
@@ -492,7 +492,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
@@ -543,7 +543,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		OrderDTO order = createUserOrderTestSubject(0, userId, addressId, accessToken);
@@ -593,7 +593,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		int minutesInThePast = 0;
@@ -624,7 +624,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		int minutesInThePast = 21;
@@ -652,7 +652,7 @@ class UserOrdersControllerTests {
 		Long userId = createUserTestSubject();
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// Act
 
@@ -678,7 +678,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		int minutesInThePast = 0;
@@ -708,7 +708,7 @@ class UserOrdersControllerTests {
 		Long userId = createUserTestSubject();
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		int pageSize = 1;
 		int pageNumber = 0;
@@ -735,7 +735,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), "0");
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 0L);
 
 		int pageSize = 1;
 		int pageNumber = 0;
@@ -765,7 +765,7 @@ class UserOrdersControllerTests {
 		Long addressId = createAddressTestSubject("Test", 1);
 
 		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), String.valueOf(userId));
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create user order
 		int minutesInThePast = 0;

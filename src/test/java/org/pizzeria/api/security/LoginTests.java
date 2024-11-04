@@ -10,12 +10,14 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
@@ -46,7 +48,15 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=password")).andExpect(status().isOk());
+		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=password"))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getCookies()).isNotEmpty();
+		assertThat(response.getCookie("token")).isNotNull();
+		assertThat(response.getCookie("idToken")).isNotNull();
 	}
 
 	@Test
@@ -54,7 +64,13 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword")).andExpect(status().isUnauthorized());
+		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword"))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getCookies()).isEmpty();
 	}
 
 	@Test
@@ -62,7 +78,13 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=wrong_password")).andExpect(status().isUnauthorized());
+		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=wrong_password"))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getCookies()).isEmpty();
 	}
 
 	@Test
@@ -70,6 +92,12 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		mockMvc.perform(post("/api/auth/login?username=nottest@gmail.com&password=password")).andExpect(status().isUnauthorized());
+		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=nottest@gmail.com&password=password"))
+				.andReturn().getResponse();
+
+		// Assert
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getCookies()).isEmpty();
 	}
 }

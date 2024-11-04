@@ -39,7 +39,7 @@ class ApiSecurityTests {
 		String validAccessToken = JWTTokenManager.getAccessToken(
 				"TokenTestRequestLogout@gmail.com",
 				List.of(new Role("USER")),
-				"1");
+				1L);
 
 		// Act
 
@@ -63,7 +63,7 @@ class ApiSecurityTests {
 		String validAccessToken = JWTTokenManager.getAccessToken(
 				"TokenTestAccessProtectedResourceWithValidTokenAndRole@gmail.com",
 				List.of(new Role("USER")),
-				"0");
+				0L);
 
 		// Act
 
@@ -84,7 +84,7 @@ class ApiSecurityTests {
 		String validAccessToken = JWTTokenManager.getAccessToken(
 				"TokenTestAccessProtectedResourceWithValidTokenAndRole@gmail.com",
 				List.of(new Role("USER")),
-				"0");
+				0L);
 
 		// Act
 

@@ -3,6 +3,7 @@ package org.pizzeria.api.configs.security.utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.pizzeria.api.utils.globals.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 
@@ -20,8 +21,6 @@ public final class SecurityCookieUtils {
 		return cookie;
 	}
 
-	// 24 * 60 * 60 24h
-	// 168 * 60 * 60 7 days
 	public static ResponseCookie bakeCookie(String name, String value, int maxAge, boolean httpOnly, boolean secure) {
 		return ResponseCookie.from(name, value)
 				.path("/")
@@ -33,13 +32,14 @@ public final class SecurityCookieUtils {
 				.build();
 	}
 
-	public static void serveCookies(HttpServletResponse response, String accessToken) {
+	public static void serveCookies(HttpServletResponse response, String accessToken, String idToken) {
+		// access token cookie
 		response.addHeader(HttpHeaders.SET_COOKIE,
-				bakeCookie("token", accessToken,
-						24 * 60 * 60,
-						true,
-						false) // NOTE - true for prod
-						.toString());
+				bakeCookie("token", accessToken, Constants.ONE_DAY_MS, true, true).toString());
+
+		// id token cookie
+		response.addHeader(HttpHeaders.SET_COOKIE,
+				bakeCookie("idToken", idToken, Constants.ONE_DAY_MS, true, false).toString());
 	}
 
 	public static void eatAllCookies(HttpServletRequest request, HttpServletResponse response) {

@@ -46,20 +46,20 @@ public class User implements UserDetails {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
-	public void addAddress(Address address) {
-		this.addressList.add(address);
-	}
-
-	public void removeAddress(Address address) {
-		this.addressList.remove(address);
-	}
-
 	private User(Builder builder) {
 		this.name = builder.name;
 		this.email = builder.email;
 		this.contactNumber = builder.contactNumber;
 		this.password = builder.password;
 		this.roles = builder.roles;
+	}
+
+	public void addAddress(Address address) {
+		this.addressList.add(address);
+	}
+
+	public void removeAddress(Address address) {
+		this.addressList.remove(address);
 	}
 
 	public Long getId() {
@@ -90,10 +90,6 @@ public class User implements UserDetails {
 		this.contactNumber = contactNumber;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public Set<Address> getAddressList() {
 		return addressList;
 	}
@@ -110,6 +106,10 @@ public class User implements UserDetails {
 	@Override
 	public String getPassword() {
 		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@Override
@@ -152,11 +152,9 @@ public class User implements UserDetails {
 
 	public static class Builder {
 
-		private String email, password, name;
-
-		private Integer contactNumber;
-
 		private final Set<Role> roles;
+		private String email, password, name;
+		private Integer contactNumber;
 
 		public Builder() {
 			this.roles = new HashSet<>();

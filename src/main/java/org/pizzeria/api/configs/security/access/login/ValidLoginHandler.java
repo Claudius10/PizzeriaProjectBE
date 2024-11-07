@@ -1,4 +1,4 @@
-package org.pizzeria.api.configs.security.access;
+package org.pizzeria.api.configs.security.access.login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +22,7 @@ public class ValidLoginHandler implements AuthenticationSuccessHandler {
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 		User user = (User) authentication.getPrincipal();
 		String accessToken = jwtTokenManager.getAccessToken(user.getEmail(), user.getRoles(), user.getId());
-		String idToken = jwtTokenManager.getIdToken(user.getEmail(), user.getId());
+		String idToken = jwtTokenManager.getIdToken(user.getEmail(), user.getName(), user.getId());
 		SecurityCookieUtils.serveCookies(response, accessToken, idToken);
 	}
 }

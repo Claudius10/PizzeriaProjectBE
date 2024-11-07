@@ -36,12 +36,13 @@ public class JWTTokenManager {
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 	}
 
-	public String getIdToken(String subject, Long userId) {
+	public String getIdToken(String subject, String userName, Long userId) {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuedAt(Instant.now())
 				.issuer(ISSUER)
 				.expiresAt(ACCESS_TOKEN_EXPIRE_DATE)
 				.subject(subject)
+				.claim("userName", userName)
 				.claim("userId", String.valueOf(userId))
 				.build();
 		return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

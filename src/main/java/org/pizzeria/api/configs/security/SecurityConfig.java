@@ -6,7 +6,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import org.pizzeria.api.configs.security.access.*;
+import org.pizzeria.api.configs.security.access.AccessDeniedHandler;
+import org.pizzeria.api.configs.security.access.AuthenticationHandler;
+import org.pizzeria.api.configs.security.access.ClearCookiesLogoutHandler;
+import org.pizzeria.api.configs.security.access.CookieBearerTokenResolver;
+import org.pizzeria.api.configs.security.access.login.InvalidLoginHandler;
+import org.pizzeria.api.configs.security.access.login.ValidLoginHandler;
 import org.pizzeria.api.configs.security.keys.RSAKeyPair;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,14 +69,14 @@ public class SecurityConfig {
 			});
 		});*/
 
-		http.authorizeHttpRequests(auth -> {
-			auth.requestMatchers("/api/resource/**").permitAll();
-			auth.requestMatchers("/api/anon/**").permitAll();
-			auth.requestMatchers("/api/token/**").permitAll();
-			auth.requestMatchers("/api/user/**").hasAnyRole("USER");
-			auth.requestMatchers("/api/tests/security/admin").hasRole("ADMIN");
-			auth.requestMatchers("/api/tests/security/**").hasRole("USER");
-			auth.anyRequest().authenticated();
+		http.authorizeHttpRequests(authorize -> {
+			authorize.requestMatchers("/api/resource/**").permitAll();
+			authorize.requestMatchers("/api/anon/**").permitAll();
+			authorize.requestMatchers("/api/token/**").permitAll();
+			authorize.requestMatchers("/api/user/**").hasAnyRole("USER");
+			authorize.requestMatchers("/api/tests/security/admin").hasRole("ADMIN");
+			authorize.requestMatchers("/api/tests/security/**").hasRole("USER");
+			authorize.anyRequest().denyAll();
 		});
 
 		http.formLogin(formLogin -> {

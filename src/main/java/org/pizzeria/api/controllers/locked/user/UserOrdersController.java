@@ -68,7 +68,7 @@ public class UserOrdersController {
 	}
 
 	@ValidateUserId
-	@GetMapping(path = "/all")
+	@GetMapping(path = "/summary")
 	public ResponseEntity<OrderSummaryListDTO> findUserOrdersSummary(
 			@RequestParam(name = "pageNumber") Integer pageNumber,
 			@RequestParam(name = "pageSize") Integer pageSize,
@@ -76,7 +76,8 @@ public class UserOrdersController {
 			HttpServletRequest request) {
 
 		Page<OrderSummary> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
-		OrderSummaryListDTO orders = new OrderSummaryListDTO(orderSummaryPage.getContent(), orderSummaryPage.getTotalPages());
+		OrderSummaryListDTO orders = new OrderSummaryListDTO(orderSummaryPage.getContent(), orderSummaryPage.getTotalPages(),
+				orderSummaryPage.getPageable().getPageSize());
 
 		return ResponseEntity.ok(orders);
 	}

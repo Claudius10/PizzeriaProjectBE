@@ -690,7 +690,7 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/all?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/summary?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
@@ -716,7 +716,7 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/all?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/summary?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
@@ -743,7 +743,7 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/all?pageNumber={pN}&pageSize={pS}", 0, pageNumber, pageSize)
+		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/summary?pageNumber={pN}&pageSize={pS}", 0, pageNumber, pageSize)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();

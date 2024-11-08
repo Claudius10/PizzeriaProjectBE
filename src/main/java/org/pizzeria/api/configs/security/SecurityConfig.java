@@ -76,6 +76,7 @@ public class SecurityConfig {
 			authorize.requestMatchers("/api/user/**").hasAnyRole("USER");
 			authorize.requestMatchers("/api/tests/security/admin").hasRole("ADMIN");
 			authorize.requestMatchers("/api/tests/security/**").hasRole("USER");
+			authorize.requestMatchers("/api/tests/user/**").hasRole("USER");
 			authorize.anyRequest().denyAll();
 		});
 

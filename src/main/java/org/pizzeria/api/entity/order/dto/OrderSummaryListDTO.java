@@ -7,6 +7,7 @@ import java.util.List;
 public record OrderSummaryListDTO(
 
 		List<OrderSummary> orderList,
-		int totalPages
+		int totalPages,
+		int pageSize
 ) {
 }

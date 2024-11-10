@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.pizzeria.api.entity.address.Address;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.user.User;
 
 import java.time.LocalDateTime;
@@ -62,28 +63,6 @@ public class Order {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
-	public void setOrderDetails(OrderDetails orderDetails) {
-		if (orderDetails == null) {
-			if (this.orderDetails != null) {
-				this.orderDetails.setOrder(null);
-			}
-		} else {
-			orderDetails.setOrder(this);
-		}
-		this.orderDetails = orderDetails;
-	}
-
-	public void setCart(Cart cart) {
-		if (cart == null) {
-			if (this.cart != null) {
-				this.cart.setOrder(null);
-			}
-		} else {
-			cart.setOrder(this);
-		}
-		this.cart = cart;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -136,12 +115,50 @@ public class Order {
 		return orderDetails;
 	}
 
+	public void setOrderDetails(OrderDetails orderDetails) {
+		if (orderDetails == null) {
+			if (this.orderDetails != null) {
+				this.orderDetails.setOrder(null);
+			}
+		} else {
+			orderDetails.setOrder(this);
+		}
+		this.orderDetails = orderDetails;
+	}
+
 	public Cart getCart() {
 		return cart;
 	}
 
+	public void setCart(Cart cart) {
+		if (cart == null) {
+			if (this.cart != null) {
+				this.cart.setOrder(null);
+			}
+		} else {
+			cart.setOrder(this);
+		}
+		this.cart = cart;
+	}
+
 	public User getUser() {
 		return user;
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+
+		if (!(obj instanceof Order))
+			return false;
+
+		return id != null && id.equals(((Order) obj).getId());
 	}
 
 	public static class Builder {
@@ -196,21 +213,5 @@ public class Order {
 		public Order build() {
 			return order;
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-
-		if (!(obj instanceof Order))
-			return false;
-
-		return id != null && id.equals(((Order) obj).getId());
 	}
 }

@@ -1,6 +1,6 @@
 package org.pizzeria.api.validation.order;
 
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.utils.globals.ApiResponses;
@@ -64,7 +64,7 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public boolean isCartEmpty(Cart cart) {
-		return cart == null || cart.getOrderItems().isEmpty() || cart.getTotalQuantity() == 0;
+		return cart == null || cart.getCartItems().isEmpty() || cart.getTotalQuantity() == 0;
 	}
 
 	// changeRequested > totalCostAfterOffers || changeRequested > totalCost

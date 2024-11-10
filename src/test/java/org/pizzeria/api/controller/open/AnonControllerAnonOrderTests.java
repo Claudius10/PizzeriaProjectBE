@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
-import org.pizzeria.api.entity.order.OrderItem;
+import org.pizzeria.api.entity.cart.CartItem;
 import org.pizzeria.api.entity.order.dto.NewAnonOrderDTO;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.utils.globals.ValidationResponses;
@@ -424,7 +424,7 @@ class AnonControllerAnonOrderTests {
 								  String deliveryHour, String paymentType, String comment,
 								  boolean emptyCart) {
 		Cart cartStub = new Cart.Builder()
-				.withOrderItems(List.of(new OrderItem.Builder()
+				.withCartItems(List.of(new CartItem.Builder()
 						.withProductType("pizza")
 						.withWithName("Carbonara")
 						.withFormat("Mediana")

@@ -1,8 +1,9 @@
-package org.pizzeria.api.entity.order;
+package org.pizzeria.api.entity.cart;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.pizzeria.api.entity.order.Order;
 import org.pizzeria.api.exceptions.constraints.annotation.DoubleLength;
 import org.pizzeria.api.exceptions.constraints.annotation.DoubleLengthNullable;
 import org.pizzeria.api.exceptions.constraints.annotation.IntegerLength;
@@ -31,15 +32,15 @@ public class Cart {
 	@DoubleLengthNullable(min = 0, max = 6, message = ValidationResponses.CART_COST_INVALID)
 	private Double totalCostOffers;
 
-	// INFO to remember about the Cart/OrderItem association:
+	// INFO to remember about the Cart/CartItem association:
 	// given that Order & Cart association has CascadeType.ALL
-	// and Cart & OrderItem bidirectional association also has CascadeType.ALL
+	// and Cart & CartItem bidirectional association also has CascadeType.ALL
 	// when updating Cart, the merge operation is going to be cascaded to the
-	// OrderItem association as well, so there's no need to manually
+	// CartItem association as well, so there's no need to manually
 	// sync the bidirectional association
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JsonManagedReference
-	private List<OrderItem> orderItems;
+	private List<CartItem> cartItems;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
@@ -50,61 +51,13 @@ public class Cart {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
-	public static class Builder {
-
-		private final Cart cart;
-
-		public Builder() {
-			this.cart = new Cart();
-		}
-
-		public Builder withId(Long id) {
-			cart.id = id;
-			return this;
-		}
-
-		public Builder withTotalQuantity(Integer totalQuantity) {
-			cart.totalQuantity = totalQuantity;
-			return this;
-		}
-
-		public Builder withTotalCost(Double totalCost) {
-			cart.totalCost = totalCost;
-			return this;
-		}
-
-		public Builder withTotalCostOffers(Double totalCostOffers) {
-			cart.totalCostOffers = totalCostOffers;
-			return this;
-		}
-
-		public Builder withOrderItems(List<OrderItem> orderItems) {
-			cart.orderItems = new ArrayList<>();
-			for (OrderItem item : orderItems) {
-				item.setId(null);
-				cart.addItem(item);
-			}
-			return this;
-		}
-
-		public Builder withEmptyItemList() {
-			cart.orderItems = new ArrayList<>();
-			cart.totalQuantity = 0;
-			return this;
-		}
-
-		public Cart build() {
-			return cart;
-		}
-	}
-
-	public void addItem(OrderItem item) {
-		orderItems.add(item);
+	public void addItem(CartItem item) {
+		cartItems.add(item);
 		item.setCart(this);
 	}
 
-	public void removeItem(OrderItem item) {
-		orderItems.remove(item);
+	public void removeItem(CartItem item) {
+		cartItems.remove(item);
 		item.setCart(null);
 	}
 
@@ -140,12 +93,12 @@ public class Cart {
 		this.totalCostOffers = totalCostOffers;
 	}
 
-	public List<OrderItem> getOrderItems() {
-		return orderItems;
+	public List<CartItem> getCartItems() {
+		return cartItems;
 	}
 
-	public void setOrderItems(List<OrderItem> orderItems) {
-		this.orderItems = orderItems;
+	public void setCartItems(List<CartItem> cartItems) {
+		this.cartItems = cartItems;
 	}
 
 	public Order getOrder() {
@@ -169,14 +122,14 @@ public class Cart {
 
 		// orderItem contentEquals
 		List<Boolean> itemEqualityCheck = new ArrayList<>();
-		for (int i = 0; i < orderItems.size(); i++) {
-			for (int j = 0; j < cart.getOrderItems().size(); j++) {
+		for (int i = 0; i < cartItems.size(); i++) {
+			for (int j = 0; j < cart.getCartItems().size(); j++) {
 
-				if (orderItems.get(i).contentEquals(cart.orderItems.get(j))) {
+				if (cartItems.get(i).contentEquals(cart.cartItems.get(j))) {
 					itemEqualityCheck.add(true);
 
 					// avoid i value becoming greater than orderItems.size() value
-					if (i < orderItems.size() - 1) {
+					if (i < cartItems.size() - 1) {
 						// move to next i if i0 is equal to j0
 						// to avoid comparing i0 to j1
 						i++;
@@ -199,5 +152,53 @@ public class Cart {
 				Objects.equals(totalCost, cart.totalCost) &&
 				Objects.equals(totalCostOffers, cart.totalCostOffers) &&
 				areItemsEqual;
+	}
+
+	public static class Builder {
+
+		private final Cart cart;
+
+		public Builder() {
+			this.cart = new Cart();
+		}
+
+		public Builder withId(Long id) {
+			cart.id = id;
+			return this;
+		}
+
+		public Builder withTotalQuantity(Integer totalQuantity) {
+			cart.totalQuantity = totalQuantity;
+			return this;
+		}
+
+		public Builder withTotalCost(Double totalCost) {
+			cart.totalCost = totalCost;
+			return this;
+		}
+
+		public Builder withTotalCostOffers(Double totalCostOffers) {
+			cart.totalCostOffers = totalCostOffers;
+			return this;
+		}
+
+		public Builder withCartItems(List<CartItem> cartItems) {
+			cart.cartItems = new ArrayList<>();
+			for (CartItem item : cartItems) {
+				item.setId(null);
+				cart.addItem(item);
+			}
+			return this;
+		}
+
+		public Builder withEmptyItemList() {
+			cart.cartItems = new ArrayList<>();
+			cart.totalQuantity = 0;
+			return this;
+		}
+
+		public Cart build() {
+			return cart;
+		}
 	}
 }

@@ -48,15 +48,15 @@ public class ValidateOrderOperation {
 	@Around(value = "execution(* org.pizzeria.api.controllers.locked.user.UserOrdersController.updateUserOrder(..)) && args" +
 			"(orderId, order, userId, request)", argNames = "pjp,orderId,order,userId,request")
 	public Object validateUserOrderUpdate(ProceedingJoinPoint pjp, Long orderId, UpdateUserOrderDTO order, Long userId, HttpServletRequest request) throws Throwable {
-		OrderValidationResult result = orderValidator.validateUpdate(order.getCart(), order.getOrderDetails(), order.getCreatedOn());
+		OrderValidationResult result = orderValidator.validateUpdate(order.cart(), order.orderDetails(), order.createdOn());
 
 		if (result.isValid() && result.isCartUpdateValid()) {
 			return pjp.proceed();
 		}
 
 		if (result.isValid() && !result.isCartUpdateValid()) {
-			order.setCart(null);
-			return pjp.proceed();
+			UpdateUserOrderDTO updateUserOrderDTO = order.withCart(null);
+			return pjp.proceed(new Object[]{orderId, updateUserOrderDTO, userId, request});
 		}
 
 		return ResponseEntity.badRequest().body(result.getMessage());

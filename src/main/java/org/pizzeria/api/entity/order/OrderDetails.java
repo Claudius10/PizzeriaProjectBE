@@ -55,52 +55,6 @@ public class OrderDetails {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
-	public static class Builder {
-		private Long id;
-		private String deliveryHour;
-		private String paymentType;
-		private Double changeRequested;
-		private Double paymentChange;
-		private String deliveryComment;
-
-		public Builder() {
-		}
-
-		public Builder withId(Long id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withDeliveryHour(String deliveryHour) {
-			this.deliveryHour = deliveryHour;
-			return this;
-		}
-
-		public Builder withPaymentType(String paymentType) {
-			this.paymentType = paymentType;
-			return this;
-		}
-
-		public Builder withChangeRequested(Double changeRequested) {
-			this.changeRequested = changeRequested;
-			return this;
-		}
-
-		public Builder withPaymentChange(Double paymentChange) {
-			this.paymentChange = paymentChange;
-			return this;
-		}
-
-		public Builder withDeliveryComment(String deliveryComment) {
-			this.deliveryComment = deliveryComment;
-			return this;
-		}
-
-		public OrderDetails build() {
-			return new OrderDetails(this);
-		}
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -170,5 +124,51 @@ public class OrderDetails {
 				&& Objects.equals(paymentMethod, that.paymentMethod)
 				&& Objects.equals(billToChange, that.billToChange)
 				&& Objects.equals(comment, that.comment);
+	}
+
+	public static class Builder {
+		private Long id;
+		private String deliveryHour;
+		private String paymentType;
+		private Double changeRequested;
+		private Double paymentChange;
+		private String deliveryComment;
+
+		public Builder() {
+		}
+
+		public Builder withId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withDeliveryHour(String deliveryHour) {
+			this.deliveryHour = deliveryHour;
+			return this;
+		}
+
+		public Builder withPaymentType(String paymentType) {
+			this.paymentType = paymentType;
+			return this;
+		}
+
+		public Builder withChangeRequested(Double changeRequested) {
+			this.changeRequested = changeRequested;
+			return this;
+		}
+
+		public Builder withPaymentChange(Double paymentChange) {
+			this.paymentChange = paymentChange;
+			return this;
+		}
+
+		public Builder withDeliveryComment(String deliveryComment) {
+			this.deliveryComment = deliveryComment;
+			return this;
+		}
+
+		public OrderDetails build() {
+			return new OrderDetails(this);
+		}
 	}
 }

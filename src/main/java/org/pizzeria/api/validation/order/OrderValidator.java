@@ -1,6 +1,6 @@
 package org.pizzeria.api.validation.order;
 
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 
 import java.time.LocalDateTime;

@@ -7,7 +7,7 @@ import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.entity.order.dto.OrderDTO;
 import org.pizzeria.api.entity.order.dto.OrderSummaryListDTO;
 import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
-import org.pizzeria.api.repos.order.projections.OrderSummary;
+import org.pizzeria.api.entity.order.projections.OrderSummaryProjection;
 import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.data.domain.Page;
@@ -38,8 +38,8 @@ public class UserOrdersController {
 	@ValidateUserId
 	@GetMapping("/{orderId}")
 	public ResponseEntity<Object> findUserOrderDTO(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) {
-		Optional<OrderDTO> order = orderService.findDTOById(orderId);
-		return order.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() ->
+		Optional<OrderDTO> projectionById = orderService.findProjectionById(orderId);
+		return projectionById.<ResponseEntity<Object>>map(ResponseEntity::ok).orElseGet(() ->
 				ResponseEntity.accepted().body(String.format(ApiResponses.ORDER_NOT_FOUND, orderId)));
 	}
 
@@ -52,7 +52,7 @@ public class UserOrdersController {
 
 		if (result == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format(
-					ApiResponses.UPDATE_USER_ORDER_ERROR, orderId, order.getAddressId()));
+					ApiResponses.UPDATE_USER_ORDER_ERROR, orderId, order.addressId()));
 		}
 
 		return ResponseEntity.ok().body(String.valueOf(result));
@@ -75,7 +75,7 @@ public class UserOrdersController {
 			@PathVariable Long userId,
 			HttpServletRequest request) {
 
-		Page<OrderSummary> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
+		Page<OrderSummaryProjection> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
 		OrderSummaryListDTO orders = new OrderSummaryListDTO(orderSummaryPage.getContent(), orderSummaryPage.getTotalPages(),
 				orderSummaryPage.getPageable().getPageSize());
 

@@ -1,12 +1,12 @@
 package org.pizzeria.api.entity.order.dto;
 
-import org.pizzeria.api.repos.order.projections.OrderSummary;
+import org.pizzeria.api.entity.order.projections.OrderSummaryProjection;
 
 import java.util.List;
 
 public record OrderSummaryListDTO(
 
-		List<OrderSummary> orderList,
+		List<OrderSummaryProjection> orderList,
 		int totalPages,
 		int pageSize
 ) {

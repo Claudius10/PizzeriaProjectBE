@@ -2,14 +2,13 @@ package org.pizzeria.api.services.order;
 
 import jakarta.transaction.Transactional;
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
+import org.pizzeria.api.entity.cart.CartItem;
 import org.pizzeria.api.entity.order.Order;
-import org.pizzeria.api.entity.order.OrderItem;
 import org.pizzeria.api.entity.order.dto.*;
+import org.pizzeria.api.entity.order.projections.OrderSummaryProjection;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.repos.order.OrderRepository;
-import org.pizzeria.api.repos.order.projections.CreatedOnOnly;
-import org.pizzeria.api.repos.order.projections.OrderSummary;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.utils.globals.ApiResponses;
@@ -40,9 +39,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Optional<OrderDTO> findDTOById(Long orderId) {
-		Optional<Order> order = findUserOrderById(orderId);
-		return order.map(OrderDTO::new);
+	public Optional<OrderDTO> findProjectionById(Long orderId) {
+		return orderRepository.findOrderById(orderId);
 	}
 
 	@Override
@@ -53,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
 				.withTotalQuantity(newAnonOrder.cart().getTotalQuantity())
 				.withTotalCost(newAnonOrder.cart().getTotalCost())
 				.withTotalCostOffers(newAnonOrder.cart().getTotalCostOffers())
-				.withOrderItems(newAnonOrder.cart().getOrderItems())
+				.withCartItems(newAnonOrder.cart().getCartItems())
 				.build();
 
 		Order anonOrder = new Order.Builder()
@@ -96,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
 				.withTotalQuantity(newUserOrder.cart().getTotalQuantity())
 				.withTotalCost(newUserOrder.cart().getTotalCost())
 				.withTotalCostOffers(newUserOrder.cart().getTotalCostOffers())
-				.withOrderItems(newUserOrder.cart().getOrderItems())
+				.withCartItems(newUserOrder.cart().getCartItems())
 				.build();
 
 		Order order = new Order.Builder()
@@ -114,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Long updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder) {
-		Optional<Address> dbAddress = addressService.findAddressById(updateUserOrder.getAddressId());
+		Optional<Address> dbAddress = addressService.findAddressById(updateUserOrder.addressId());
 		Optional<Order> dbOrder = findUserOrderById(orderId);
 
 		if (dbOrder.isPresent() && dbAddress.isPresent()) {
@@ -122,28 +120,28 @@ public class OrderServiceImpl implements OrderService {
 			Order order = dbOrder.get();
 
 			boolean pendingAddressUpdate = !order.getAddress().contentEquals(address);
-			boolean pendingOrderDetailsUpdate = !order.getOrderDetails().contentEquals(updateUserOrder.getOrderDetails());
-			boolean pendingCartUpdate = updateUserOrder.getCart() != null && !order.getCart().contentEquals(updateUserOrder.getCart());
+			boolean pendingOrderDetailsUpdate = !order.getOrderDetails().contentEquals(updateUserOrder.orderDetails());
+			boolean pendingCartUpdate = updateUserOrder.cart() != null && !order.getCart().contentEquals(updateUserOrder.cart());
 
 			if (pendingAddressUpdate) {
 				order.setAddress(address);
 			}
 
 			if (pendingOrderDetailsUpdate) {
-				order.getOrderDetails().setDeliveryTime(updateUserOrder.getOrderDetails().getDeliveryTime());
-				order.getOrderDetails().setPaymentMethod(updateUserOrder.getOrderDetails().getPaymentMethod());
-				order.getOrderDetails().setBillToChange(updateUserOrder.getOrderDetails().getBillToChange());
-				order.getOrderDetails().setChangeToGive(updateUserOrder.getOrderDetails().getChangeToGive());
-				order.getOrderDetails().setComment(updateUserOrder.getOrderDetails().getComment());
+				order.getOrderDetails().setDeliveryTime(updateUserOrder.orderDetails().getDeliveryTime());
+				order.getOrderDetails().setPaymentMethod(updateUserOrder.orderDetails().getPaymentMethod());
+				order.getOrderDetails().setBillToChange(updateUserOrder.orderDetails().getBillToChange());
+				order.getOrderDetails().setChangeToGive(updateUserOrder.orderDetails().getChangeToGive());
+				order.getOrderDetails().setComment(updateUserOrder.orderDetails().getComment());
 			}
 
 			// cart == null if !isCartUpdateValid
 			if (pendingCartUpdate) {
-				order.getCart().setTotalQuantity(updateUserOrder.getCart().getTotalQuantity());
-				order.getCart().setTotalCost(updateUserOrder.getCart().getTotalCost());
-				order.getCart().setTotalCostOffers(updateUserOrder.getCart().getTotalCostOffers());
-				order.getCart().getOrderItems().clear();
-				for (OrderItem item : updateUserOrder.getCart().getOrderItems()) {
+				order.getCart().setTotalQuantity(updateUserOrder.cart().getTotalQuantity());
+				order.getCart().setTotalCost(updateUserOrder.cart().getTotalCost());
+				order.getCart().setTotalCostOffers(updateUserOrder.cart().getTotalCostOffers());
+				order.getCart().getCartItems().clear();
+				for (CartItem item : updateUserOrder.cart().getCartItems()) {
 					order.getCart().addItem(item);
 				}
 			}
@@ -168,7 +166,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<OrderSummary> findUserOrderSummary(Long userId, int size, int page) {
+	public Page<OrderSummaryProjection> findUserOrderSummary(Long userId, int size, int page) {
 		if (!userService.existsById(userId)) {
 			throw new UsernameNotFoundException(String.format(ApiResponses.USER_NOT_FOUND, userId));
 		}
@@ -188,7 +186,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public LocalDateTime findCreatedOnById(Long orderId) {
-		Optional<CreatedOnOnly> createdOn = orderRepository.findCreatedOnById(orderId);
-		return createdOn.map(CreatedOnOnly::createdOn).orElse(null);
+		Optional<CreatedOnDTO> createdOn = orderRepository.findCreatedOnById(orderId);
+		return createdOn.map(CreatedOnDTO::createdOn).orElse(null);
 	}
 }

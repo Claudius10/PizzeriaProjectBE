@@ -1,4 +1,4 @@
-package org.pizzeria.api.entity.order;
+package org.pizzeria.api.entity.cart;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -9,44 +9,44 @@ import org.pizzeria.api.utils.globals.ValidationResponses;
 
 import java.util.Objects;
 
-@Entity(name = "OrderItem")
-@Table(name = "order_item")
-public class OrderItem {
+@Entity(name = "CartItem")
+@Table(name = "cart_items")
+public class CartItem {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_item_generator")
-	@SequenceGenerator(name = "order_item_generator", sequenceName = "order_item_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cart_item_generator")
+	@SequenceGenerator(name = "cart_item_generator", sequenceName = "cart_item_seq", allocationSize = 1)
 	private Long id;
 
 	@Column
-	@NotBlank(message = ValidationResponses.ITEM_TYPE_MISSING)
+	@NotBlank(message = ValidationResponses.CART_ITEM_TYPE_MISSING)
 	private String productType;
 
 	@Column
-	@NotBlank(message = ValidationResponses.ITEM_NAME_MISSING)
+	@NotBlank(message = ValidationResponses.CART_ITEM_NAME_MISSING)
 	private String name;
 
 	@Column
-	@NotBlank(message = ValidationResponses.ITEM_FORMAT_MISSING)
+	@NotBlank(message = ValidationResponses.CART_ITEM_FORMAT_MISSING)
 	private String format;
 
 	@Column
-	@IntegerLength(min = 1, max = 2, message = ValidationResponses.ORDER_ITEM_MAX_QUANTITY_ERROR)
+	@IntegerLength(min = 1, max = 2, message = ValidationResponses.CART_ITEM_MAX_QUANTITY_ERROR)
 	private Integer quantity;
 
 	@Column
-	@DoubleLength(min = 1, max = 5, message = ValidationResponses.ITEM_MAX_PRICE)
+	@DoubleLength(min = 1, max = 5, message = ValidationResponses.CART_ITEM_MAX_PRICE)
 	private Double price;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	private Cart cart;
 
-	public OrderItem() {
+	public CartItem() {
 		// The JPA specification requires all Entity classes to have a default no-arg constructor.
 	}
 
-	private OrderItem(Builder builder) {
+	private CartItem(Builder builder) {
 		this.id = builder.id;
 		this.productType = builder.productType;
 		this.name = builder.name;
@@ -54,52 +54,6 @@ public class OrderItem {
 		this.quantity = builder.quantity;
 		this.price = builder.price;
 		this.cart = null;
-	}
-
-	public static class Builder {
-		private Long id;
-		private String productType;
-		private String name;
-		private String format;
-		private Integer quantity;
-		private Double price;
-
-		public Builder() {
-		}
-
-		public Builder withId(Long id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withProductType(String productType) {
-			this.productType = productType;
-			return this;
-		}
-
-		public Builder withWithName(String name) {
-			this.name = name;
-			return this;
-		}
-
-		public Builder withFormat(String format) {
-			this.format = format;
-			return this;
-		}
-
-		public Builder withQuantity(Integer quantity) {
-			this.quantity = quantity;
-			return this;
-		}
-
-		public Builder withPrice(Double price) {
-			this.price = price;
-			return this;
-		}
-
-		public OrderItem build() {
-			return new OrderItem(this);
-		}
 	}
 
 	public Long getId() {
@@ -168,24 +122,70 @@ public class OrderItem {
 		if (this == obj)
 			return true;
 
-		if (!(obj instanceof OrderItem))
+		if (!(obj instanceof CartItem))
 			return false;
 
-		return id != null && id.equals(((OrderItem) obj).getId());
+		return id != null && id.equals(((CartItem) obj).getId());
 	}
 
 	@Override
 	public String toString() {
-		return "OrderItem [id=" + id + ", productType=" + productType + ", name=" + name + ", format=" + format
+		return "CartItem [id=" + id + ", productType=" + productType + ", name=" + name + ", format=" + format
 				+ ", quantity=" + quantity + ", price=" + price + "]";
 	}
 
 	public boolean contentEquals(Object o) {
-		OrderItem orderItem = (OrderItem) o;
-		return Objects.equals(productType, orderItem.productType)
-				&& Objects.equals(name, orderItem.name)
-				&& Objects.equals(format, orderItem.format)
-				&& Objects.equals(quantity, orderItem.quantity)
-				&& Objects.equals(price, orderItem.price);
+		CartItem cartItem = (CartItem) o;
+		return Objects.equals(productType, cartItem.productType)
+				&& Objects.equals(name, cartItem.name)
+				&& Objects.equals(format, cartItem.format)
+				&& Objects.equals(quantity, cartItem.quantity)
+				&& Objects.equals(price, cartItem.price);
+	}
+
+	public static class Builder {
+		private Long id;
+		private String productType;
+		private String name;
+		private String format;
+		private Integer quantity;
+		private Double price;
+
+		public Builder() {
+		}
+
+		public Builder withId(Long id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder withProductType(String productType) {
+			this.productType = productType;
+			return this;
+		}
+
+		public Builder withWithName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder withFormat(String format) {
+			this.format = format;
+			return this;
+		}
+
+		public Builder withQuantity(Integer quantity) {
+			this.quantity = quantity;
+			return this;
+		}
+
+		public Builder withPrice(Double price) {
+			this.price = price;
+			return this;
+		}
+
+		public CartItem build() {
+			return new CartItem(this);
+		}
 	}
 }

@@ -1,7 +1,7 @@
 package org.pizzeria.api.entity.order.dto;
 
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 
 public record CreatedAnonOrderDTO(

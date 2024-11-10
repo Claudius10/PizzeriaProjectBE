@@ -1,4 +1,4 @@
-package org.pizzeria.api.repos.user.projections;
+package org.pizzeria.api.entity.user.projections;
 
 public interface UserProjection {
 

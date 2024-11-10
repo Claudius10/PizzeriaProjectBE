@@ -1,6 +1,6 @@
-package org.pizzeria.api.repos.order.projections;
+package org.pizzeria.api.entity.order.projections;
 
-public interface OrderSummary {
+public interface OrderSummaryProjection {
 
 	Long getId();
 

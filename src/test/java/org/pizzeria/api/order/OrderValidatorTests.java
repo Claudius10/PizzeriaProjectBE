@@ -2,8 +2,8 @@ package org.pizzeria.api.order;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.pizzeria.api.entity.order.Cart;
-import org.pizzeria.api.entity.order.OrderItem;
+import org.pizzeria.api.entity.cart.Cart;
+import org.pizzeria.api.entity.cart.CartItem;
 import org.pizzeria.api.validation.order.OrderValidatorImpl;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -68,8 +68,8 @@ class OrderValidatorTests {
 
 	@Test
 	void givenIsCartEmptyMethod_whenValidatingNonEmptyCart_thenReturnFalse() {
-		Cart cart = new Cart.Builder().withOrderItems
-						(Collections.singletonList(new OrderItem.Builder()
+		Cart cart = new Cart.Builder().withCartItems
+						(Collections.singletonList(new CartItem.Builder()
 								.withPrice(5D)
 								.withWithName("Chocolate dreams")
 								.withProductType("Ice cream")

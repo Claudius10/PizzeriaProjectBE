@@ -2,7 +2,7 @@ package org.pizzeria.api.order.context;
 
 import jakarta.transaction.Transactional;
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.Order;
 import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.entity.user.User;
@@ -41,7 +41,7 @@ public class OrderServiceImplTest {
 				.withTotalQuantity(newUserOrder.cart().getTotalQuantity())
 				.withTotalCost(newUserOrder.cart().getTotalCost())
 				.withTotalCostOffers(newUserOrder.cart().getTotalCostOffers())
-				.withOrderItems(newUserOrder.cart().getOrderItems())
+				.withCartItems(newUserOrder.cart().getCartItems())
 				.build();
 
 		Order order = new Order.Builder()

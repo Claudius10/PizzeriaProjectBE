@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.order.Cart;
+import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.exceptions.constraints.annotation.IntegerLength;
 import org.pizzeria.api.utils.globals.ValidationResponses;

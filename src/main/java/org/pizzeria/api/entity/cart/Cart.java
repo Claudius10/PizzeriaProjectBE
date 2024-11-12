@@ -52,6 +52,7 @@ public class Cart {
 	}
 
 	public void addItem(CartItem item) {
+		item.setId(null);
 		cartItems.add(item);
 		item.setCart(this);
 	}

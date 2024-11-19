@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Component
 public class OrderValidatorImpl implements OrderValidator {
 
+	private final static int UPDATE_LIMIT = 10;
+
 	private final OrderService orderService;
 
 	public OrderValidatorImpl(OrderService orderService) {
@@ -55,7 +57,7 @@ public class OrderValidatorImpl implements OrderValidator {
 			return new OrderValidationResult(String.format(ApiResponses.ORDER_NOT_FOUND, orderId));
 		}
 
-		if (LocalDateTime.now().isAfter(createdOn.plusMinutes(20))) {
+		if (LocalDateTime.now().isAfter(createdOn.plusMinutes(UPDATE_LIMIT))) {
 			return new OrderValidationResult(ValidationResponses.ORDER_DELETE_TIME_ERROR);
 		}
 
@@ -78,12 +80,12 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public boolean isCartUpdateTimeLimitValid(LocalDateTime createdOn) {
-		return LocalDateTime.now().isBefore(createdOn.plusMinutes(10));
+		return LocalDateTime.now().isBefore(createdOn.plusMinutes(UPDATE_LIMIT));
 	}
 
 	@Override
 	public boolean isOrderDataUpdateTimeLimitValid(LocalDateTime createdOn) {
-		return LocalDateTime.now().isBefore(createdOn.plusMinutes(15));
+		return LocalDateTime.now().isBefore(createdOn.plusMinutes(UPDATE_LIMIT));
 	}
 
 	// changeRequested == null || (changeRequested - totalCostOffers || totalCost)

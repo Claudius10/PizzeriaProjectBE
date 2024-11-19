@@ -62,9 +62,9 @@ public final class ValidationResponses {
 
 	public static final String CART_ITEM_MAX_PRICE = "Formato del precio válido: 12.55€, 10, 11.5.";
 
-	public static final String ORDER_UPDATE_TIME_ERROR = "El tiempo límite para actualizar el pedido (15 minutos) ha finalizado.";
+	public static final String ORDER_UPDATE_TIME_ERROR = "El tiempo límite para actualizar el pedido (10 minutos) ha finalizado.";
 
-	public static final String ORDER_DELETE_TIME_ERROR = "El tiempo límite para anular el pedido (20 minutos) ha finalizado.";
+	public static final String ORDER_DELETE_TIME_ERROR = "El tiempo límite para anular el pedido (10 minutos) ha finalizado.";
 
 	public static final String CART_MAX_PRODUCTS_QUANTITY_ERROR = "Se ha superado el límite de artículos por pedido (20). " +
 			"Contacte con " +

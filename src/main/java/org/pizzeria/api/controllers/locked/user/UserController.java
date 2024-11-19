@@ -101,10 +101,10 @@ public class UserController {
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{userId}")
-	public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long userId, @Valid @RequestBody PasswordDTO passwordDTO,
+	@DeleteMapping()
+	public ResponseEntity<HttpStatus> deleteUser(@RequestParam Long id, @RequestParam String password,
 												 HttpServletRequest request, HttpServletResponse response) {
-		userService.deleteUserById(passwordDTO.password(), userId);
+		userService.deleteUserById(password, id);
 		SecurityCookieUtils.eatAllCookies(request, response);
 		return ResponseEntity.ok().build();
 	}

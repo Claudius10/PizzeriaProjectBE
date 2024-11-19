@@ -716,15 +716,13 @@ class UserControllerTests {
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
-		// create dto object
-		PasswordDTO passwordDTO = new PasswordDTO("WrongPassword");
+		// password
+		String password = "WrongPassword";
 
 		// Act
 
 		// delete api call to delete user
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(passwordDTO))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user?id={userId}&password={password}", userId, password)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 
@@ -745,14 +743,12 @@ class UserControllerTests {
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create dto object
-		PasswordDTO passwordDTO = new PasswordDTO("Password1");
+		String password = "Password1";
 
 		// Act
 
 		// put api call to delete the user
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}", userId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(passwordDTO))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/user?id={userId}&password={password}", userId, password)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn().getResponse();
 

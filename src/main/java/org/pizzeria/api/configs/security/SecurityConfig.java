@@ -81,7 +81,7 @@ public class SecurityConfig {
 		});
 
 		http.formLogin(formLogin -> {
-			formLogin.loginPage("/api/auth/login");
+			formLogin.loginPage("/api/auth/login").permitAll();
 			formLogin.successHandler(validAuthHandler);
 			formLogin.failureHandler(invalidAuthHandler);
 		});

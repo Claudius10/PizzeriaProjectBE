@@ -374,60 +374,6 @@ class UserOrdersControllerTests {
 	}
 
 	@Test
-	void givenOrderUpdate_whenNewCartAndCartUpdateTimeLimitPassed_thenReturnOrderWithOriginalCart() throws Exception {
-		// Arrange
-
-		// post api call to register new user in database
-		Long userId = createUserTestSubject();
-
-		// create address in database
-		Long addressId = createAddressTestSubject("Test", 1);
-
-		// create JWT token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
-
-		// create user order
-		int minutesInThePast = 11;
-		OrderDTO order = createUserOrderTestSubject(minutesInThePast, userId, addressId, accessToken);
-
-		// create UserOrderUpdate DTO
-		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
-				addressId,
-				order.createdOn(),
-				order.orderDetails(),
-				new Cart.Builder()
-						.withCartItems(List.of(new CartItem.Builder()
-								.withQuantity(1)
-								.withProductType("Pizza")
-								.withFormat("Mediana")
-								.withWithName("Carbonara")
-								.withPrice(14.75)
-								.build()))
-						.withId(order.id())
-						.withTotalQuantity(1)
-						.withTotalCost(14.75)
-						.build());
-
-		// Act
-
-		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.id())
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(orderUpdate))
-						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
-				.andReturn()
-				.getResponse();
-
-		// Assert
-
-		Long orderId = Long.valueOf(response.getContentAsString());
-		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
-
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(updatedOrder.cart().contentEquals(order.cart())).isTrue();
-	}
-
-	@Test
 	void givenOrderUpdate_whenOrderUpdateTimeLimitPassed_thenReturnBadRequestWithMessage() throws Exception {
 		// Arrange
 

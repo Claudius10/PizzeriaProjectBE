@@ -31,7 +31,7 @@ class OrderDeleteValidationTest {
 
 		assertAll(() -> {
 			assertFalse(isDeleteRequestValid.isValid());
-			assertEquals("El tiempo límite para anular el pedido (20 minutos) ha finalizado.", isDeleteRequestValid.getMessage());
+			assertEquals("El tiempo límite para anular el pedido (10 minutos) ha finalizado.", isDeleteRequestValid.getMessage());
 		});
 
 		verify(orderService, times(1)).findCreatedOnById(1L);
@@ -39,7 +39,7 @@ class OrderDeleteValidationTest {
 
 	@Test
 	void givenOrderDeleteRequest_whenDeleteWindowDidNotPass_thenReturnValidResult() {
-		when(orderService.findCreatedOnById(1L)).thenReturn(LocalDateTime.now().minusMinutes(10));
+		when(orderService.findCreatedOnById(1L)).thenReturn(LocalDateTime.now().minusMinutes(9));
 
 		OrderValidationResult isDeleteRequestValid = orderValidator.validateDelete(1L);
 

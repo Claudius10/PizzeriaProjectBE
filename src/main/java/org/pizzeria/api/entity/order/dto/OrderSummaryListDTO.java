@@ -8,6 +8,8 @@ public record OrderSummaryListDTO(
 
 		List<OrderSummaryProjection> orderList,
 		int totalPages,
-		int pageSize
+		int pageSize,
+		long totalElements,
+		boolean hasNext
 ) {
 }

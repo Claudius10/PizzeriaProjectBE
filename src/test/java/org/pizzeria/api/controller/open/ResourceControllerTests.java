@@ -56,7 +56,7 @@ class ResourceControllerTests {
 		productRepository.save(new Product(null, "pizza", null, "", "", 1D, ""));
 		offerRepository.save(new Offer());
 		addressRepository.save(new Address.Builder().withStreet("Street").withStreetNr(5).build());
-		storeService.createStore(1L, "", null, "");
+		storeService.createStore(1L, "", null, "", "");
 	}
 
 	@Test

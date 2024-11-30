@@ -23,9 +23,9 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
-	public void createStore(Long addressId, String name, Integer number, String schedule) {
+	public void createStore(Long addressId, String name, Integer number, String schedule, String image) {
 		Address address = addressService.findReference(addressId);
-		storeRepository.save(new Store(null, name, address, number, schedule));
+		storeRepository.save(new Store(null, name, address, number, schedule, image));
 	}
 
 	@Override

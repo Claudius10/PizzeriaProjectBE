@@ -1,10 +1,18 @@
 package org.pizzeria.api.entity.resources;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.pizzeria.api.entity.address.Address;
 
 @Entity(name = "Store")
 @Table(name = "store")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Store {
 
 	@Id
@@ -24,55 +32,6 @@ public class Store {
 	@Column
 	private String schedule;
 
-	public Store() {
-		// The JPA specification requires all Entity classes to have a default no-arg constructor.
-	}
-
-	public Store(Long id, String name, Address address, Integer phoneNumber, String schedule) {
-		this.id = id;
-		this.name = name;
-		this.address = address;
-		this.phoneNumber = phoneNumber;
-		this.schedule = schedule;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Address getAddress() {
-		return address;
-	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	public Integer getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(Integer phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public String getSchedule() {
-		return schedule;
-	}
-
-	public void setSchedule(String schedule) {
-		this.schedule = schedule;
-	}
+	@Column
+	private String image;
 }

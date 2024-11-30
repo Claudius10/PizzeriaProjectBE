@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface StoreService {
 
-	void createStore(Long addressId, String name, Integer number, String schedule);
+	void createStore(Long addressId, String name, Integer number, String schedule, String image);
 
 	List<Store> findAll();
 }

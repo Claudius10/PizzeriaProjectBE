@@ -38,6 +38,9 @@ public class CartItem {
 	@DoubleLength(min = 1, max = 5, message = ValidationResponses.CART_ITEM_MAX_PRICE)
 	private Double price;
 
+	@Column
+	private String image;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	private Cart cart;
@@ -110,6 +113,10 @@ public class CartItem {
 
 	public void setCart(Cart cart) {
 		this.cart = cart;
+	}
+
+	public String getImage() {
+		return image;
 	}
 
 	@Override

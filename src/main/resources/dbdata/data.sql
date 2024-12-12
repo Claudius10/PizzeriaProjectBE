@@ -1,10 +1,9 @@
-INSERT INTO pizzeria.address (door, floor, gate, staircase, street, street_nr, id)
-VALUES (NULL, NULL, NULL, NULL, 'Calle Alustre', 15, 1),
-       (NULL, NULL, NULL, NULL, 'Avenida Viciosa', 221, 2);
+INSERT INTO pizzeria.address (id, details, `number`, street)
+VALUES (1, NULL, 15, 'Avenida Alustre'),
+       (2, NULL, 221, 'Calle Viciosa'),
 
-INSERT INTO pizzeria.store (name, phone_number, schedule, address_id, id)
-VALUES ('Alustre', 666555666, 'L-D 12:00h-00:00h', 1, 1),
-       ('Viciosa', 555666555, 'L-D 12:00h-00:00h', 2, 2);
+INSERT INTO pizzeria.store (id, image, name, phone_number, schedule, address_id)
+VALUES (1, 'https://i.imgur.com/AlrpKpH.png', 'Alustre', 666555666, 'L-D 12:00h-00:00h', 1), (2, 'https://i.imgur.com/I3Rq9sb.png', 'Viciosa', 555666555, 'L-D 12:00h-00:00h', 2);
 
 INSERT INTO pizzeria.offer (caveat, description, image, name, id)
 VALUES ('Cualquiera especialidad o hasta 4 ingredientes', 'Válida todos los días en Medianas y Familiares',

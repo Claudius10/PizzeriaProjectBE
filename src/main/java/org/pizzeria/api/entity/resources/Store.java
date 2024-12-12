@@ -1,18 +1,10 @@
 package org.pizzeria.api.entity.resources;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.pizzeria.api.entity.address.Address;
 
 @Entity(name = "Store")
 @Table(name = "store")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class Store {
 
 	@Id
@@ -34,4 +26,40 @@ public class Store {
 
 	@Column
 	private String image;
+
+	public Store(Long id, String name, Address address, Integer phoneNumber, String schedule, String image) {
+		this.id = id;
+		this.name = name;
+		this.address = address;
+		this.phoneNumber = phoneNumber;
+		this.schedule = schedule;
+		this.image = image;
+	}
+
+	public Store() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public Integer getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public String getSchedule() {
+		return schedule;
+	}
+
+	public String getImage() {
+		return image;
+	}
 }

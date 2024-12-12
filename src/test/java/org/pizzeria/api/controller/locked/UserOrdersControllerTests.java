@@ -751,7 +751,7 @@ class UserOrdersControllerTests {
 		return addressRepository.save(
 						new Address.Builder()
 								.withStreet(streetName)
-								.withStreetNr(streetNumber)
+								.withNumber(streetNumber)
 								.build())
 				.getId();
 	}

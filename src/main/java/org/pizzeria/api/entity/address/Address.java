@@ -18,96 +18,37 @@ public class Address {
 	private Long id;
 
 	@Column(nullable = false)
-
 	private String street;
 
 	@Column(nullable = false)
-	private Integer streetNr;
+	private Integer number;
 
 	@Column
-	private String gate;
-
-	@Column
-	private String staircase;
-
-	@Column
-	private String floor;
-
-	@Column
-	private String door;
+	private String details;
 
 	public Address() {
 	}
 
 	private Address(Builder builder) {
 		this.street = builder.street;
-		this.streetNr = builder.streetNr;
-		this.gate = builder.gate;
-		this.staircase = builder.staircase;
-		this.floor = builder.floor;
-		this.door = builder.door;
+		this.number = builder.number;
+		this.details = builder.details;
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getStreet() {
 		return street;
 	}
 
-	public void setStreet(String street) {
-		this.street = street;
+	public Integer getNumber() {
+		return number;
 	}
 
-	public Integer getStreetNr() {
-		return streetNr;
-	}
-
-	public void setStreetNr(Integer streetNr) {
-		this.streetNr = streetNr;
-	}
-
-	public String getGate() {
-		return gate;
-	}
-
-	public void setGate(String gate) {
-		this.gate = gate;
-	}
-
-	public String getStaircase() {
-		return staircase;
-	}
-
-	public void setStaircase(String staircase) {
-		this.staircase = staircase;
-	}
-
-	public String getFloor() {
-		return floor;
-	}
-
-	public void setFloor(String floor) {
-		this.floor = floor;
-	}
-
-	public String getDoor() {
-		return door;
-	}
-
-	public void setDoor(String door) {
-		this.door = door;
-	}
-
-	@Override
-	public String toString() {
-		return "Address [id=" + id + ", street=" + street + ", streetNr=" + streetNr + ", gate=" + gate + ", staircase="
-				+ staircase + ", floor=" + floor + ", door=" + door + "]";
+	public String getDetails() {
+		return details;
 	}
 
 	public boolean contentEquals(Object o) {
@@ -115,20 +56,14 @@ public class Address {
 		if (o == null || getClass() != o.getClass()) return false;
 		Address address = (Address) o;
 		return Objects.equals(street, address.street)
-				&& Objects.equals(streetNr, address.streetNr)
-				&& Objects.equals(gate, address.gate)
-				&& Objects.equals(staircase, address.staircase)
-				&& Objects.equals(floor, address.floor)
-				&& Objects.equals(door, address.door);
+				&& Objects.equals(number, address.number)
+				&& Objects.equals(details, address.details);
 	}
 
 	public static class Builder {
 		private String street;
-		private Integer streetNr;
-		private String gate;
-		private String staircase;
-		private String floor;
-		private String door;
+		private Integer number;
+		private String details;
 
 		public Builder() {
 		}
@@ -138,28 +73,13 @@ public class Address {
 			return this;
 		}
 
-		public Builder withStreetNr(Integer number) {
-			this.streetNr = number;
+		public Builder withNumber(Integer number) {
+			this.number = number;
 			return this;
 		}
 
-		public Builder withGate(String gate) {
-			this.gate = gate;
-			return this;
-		}
-
-		public Builder withStaircase(String staircase) {
-			this.staircase = staircase;
-			return this;
-		}
-
-		public Builder withFloor(String floor) {
-			this.floor = floor;
-			return this;
-		}
-
-		public Builder withDoor(String door) {
-			this.door = door;
+		public Builder withDetails(String details) {
+			this.details = details;
 			return this;
 		}
 

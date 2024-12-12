@@ -10,11 +10,7 @@ public record CreatedAnonOrderDTO(
 
 		String formattedCreatedOn,
 
-		String anonCustomerName,
-
-		Integer anonCustomerContactNumber,
-
-		String anonCustomerEmail,
+		CustomerDTO customer,
 
 		Address address,
 

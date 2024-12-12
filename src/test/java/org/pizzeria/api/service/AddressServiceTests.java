@@ -33,7 +33,7 @@ class AddressServiceTests {
 
 		Address testAddress = new Address.Builder()
 				.withStreet("Test Street")
-				.withStreetNr(9)
+				.withNumber(9)
 				.build();
 
 		// Act
@@ -51,7 +51,7 @@ class AddressServiceTests {
 
 		Address testAddress = new Address.Builder()
 				.withStreet("Test Street")
-				.withStreetNr(9)
+				.withNumber(9)
 				.build();
 
 		// Act
@@ -69,7 +69,7 @@ class AddressServiceTests {
 
 		Address testAddress = new Address.Builder()
 				.withStreet("Test Street")
-				.withStreetNr(9)
+				.withNumber(9)
 				.build();
 
 		// Act

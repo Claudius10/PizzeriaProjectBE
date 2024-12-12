@@ -26,17 +26,8 @@ public final class ValidationResponses {
 
 	public static final String ADDRESS_STREET_NUMBER = "El número debe tener una longitud máxima de 4 dígitos.";
 
-	public static final String ADDRESS_GATE = "El portal no debe incluir símbolos especiales y su longitud debe tener " +
-			"un máximo de 25 letras.";
-
-	public static final String ADDRESS_STAIRCASE = "La escalera no debe incluir símbolos especiales y su longitud debe " +
-			"tener un máximo de 25 letras.";
-
-	public static final String ADDRESS_FLOOR = "El piso no debe incluir símbolos especiales y su longitud debe tener un" +
-			" máximo de 25 letras.";
-
-	public static final String ADDRESS_DOOR = "La puerta no debe incluir símbolos especiales y su longitud debe tener " +
-			"un máximo de 25 letras.";
+	public static final String ADDRESS_DETAILS = "Los detalles de la dirección no debe incluir símbolos especiales y su " +
+			"longitud debe tener un máximo de 25 letras.";
 
 	public static final String ORDER_DETAILS_DELIVERY_HOUR = "La hora de entrega no puede faltar.";
 

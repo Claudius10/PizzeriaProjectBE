@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.cart.Cart;
-import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.entity.cart.CartItem;
+import org.pizzeria.api.entity.order.OrderDetails;
+import org.pizzeria.api.entity.order.dto.CustomerDTO;
 import org.pizzeria.api.entity.order.dto.NewAnonOrderDTO;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.utils.globals.ValidationResponses;
@@ -98,7 +99,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("anonCustomerName");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("customer.name");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.NAME_INVALID);
 						}
 				);
@@ -130,7 +131,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("anonCustomerContactNumber");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("customer.contactNumber");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.NUMBER_INVALID);
 						}
 				);
@@ -162,7 +163,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("anonCustomerEmail");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("customer.email");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.EMAIL_INVALID);
 						}
 				);
@@ -226,7 +227,7 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.streetNr");
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.number");
 							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.ADDRESS_STREET_NUMBER);
 						}
 				);
@@ -258,8 +259,8 @@ class AnonControllerAnonOrderTests {
 							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
-							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.floor");
-							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.ADDRESS_FLOOR);
+							List<FieldError> errors = exception.getBindingResult().getFieldErrors("address.details");
+							assertThat(errors.getFirst().getDefaultMessage()).isEqualTo(ValidationResponses.ADDRESS_DETAILS);
 						}
 				);
 	}
@@ -441,14 +442,14 @@ class AnonControllerAnonOrderTests {
 		}
 
 		return new NewAnonOrderDTO(
-				customerName,
-				customerNumber,
-				customerEmail,
+				new CustomerDTO(
+						customerName,
+						customerNumber,
+						customerEmail),
 				new Address.Builder()
 						.withStreet(street)
-						.withStreetNr(streetNumber)
-						.withFloor(floor)
-						.withDoor(door)
+						.withNumber(streetNumber)
+						.withDetails(floor + " " + door)
 						.build(),
 				new OrderDetails.Builder()
 						.withDeliveryHour(deliveryHour)

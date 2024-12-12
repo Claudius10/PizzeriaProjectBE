@@ -28,29 +28,14 @@ public class AddressValidator implements ConstraintValidator<ValidAddress, Addre
 			return false;
 		}
 
-		int streetNrDigits = String.valueOf(address.getStreetNr()).length();
+		int streetNrDigits = String.valueOf(address.getNumber()).length();
 		if (streetNrDigits > 4) {
-			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_STREET_NUMBER).addPropertyNode("streetNr").addConstraintViolation();
+			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_STREET_NUMBER).addPropertyNode("number").addConstraintViolation();
 			return false;
 		}
 
-		if (address.getGate() != null && !address.getGate().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
-			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_GATE).addPropertyNode("gate").addConstraintViolation();
-			return false;
-		}
-
-		if (address.getStaircase() != null && !address.getStaircase().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
-			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_STAIRCASE).addPropertyNode("staircase").addConstraintViolation();
-			return false;
-		}
-
-		if (address.getFloor() != null && !address.getFloor().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
-			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_FLOOR).addPropertyNode("floor").addConstraintViolation();
-			return false;
-		}
-
-		if (address.getDoor() != null && !address.getDoor().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
-			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_DOOR).addPropertyNode("door").addConstraintViolation();
+		if (address.getDetails() != null && !address.getDetails().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
+			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_DETAILS).addPropertyNode("details").addConstraintViolation();
 			return false;
 		}
 

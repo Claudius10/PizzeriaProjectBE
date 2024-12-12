@@ -59,9 +59,9 @@ public class OrderServiceImpl implements OrderService {
 				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")))
 				.withAnonCustomer(
-						newAnonOrder.anonCustomerName(),
-						newAnonOrder.anonCustomerContactNumber(),
-						newAnonOrder.anonCustomerEmail())
+						newAnonOrder.customer().name(),
+						newAnonOrder.customer().contactNumber(),
+						newAnonOrder.customer().email())
 				.withOrderDetails(newAnonOrder.orderDetails())
 				.withCart(cart)
 				.build();
@@ -76,9 +76,11 @@ public class OrderServiceImpl implements OrderService {
 		return new CreatedAnonOrderDTO(
 				order.getId(),
 				order.getFormattedCreatedOn(),
-				order.getAnonCustomerName(),
-				order.getAnonCustomerContactNumber(),
-				order.getAnonCustomerEmail(),
+				new CustomerDTO(
+						order.getAnonCustomerName(),
+						order.getAnonCustomerContactNumber(),
+						order.getAnonCustomerEmail()
+				),
 				order.getAddress(),
 				order.getOrderDetails(),
 				order.getCart()

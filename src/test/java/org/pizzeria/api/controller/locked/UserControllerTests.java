@@ -131,9 +131,8 @@ class UserControllerTests {
 		// create address object
 		Address address = new Address.Builder()
 				.withStreet("Street")
-				.withGate("Gate")
-				.withStaircase("StairCase")
-				.withStreetNr(1)
+				.withDetails("Gate")
+				.withNumber(1)
 				.build();
 
 		// Act
@@ -165,7 +164,7 @@ class UserControllerTests {
 		// create address object
 		Address address = new Address.Builder()
 				.withStreet("Street")
-				.withStreetNr(1)
+				.withNumber(1)
 				.build();
 
 		// Act
@@ -198,7 +197,7 @@ class UserControllerTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
-						.withStreetNr(1)
+						.withNumber(1)
 						.build()))
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
@@ -207,7 +206,7 @@ class UserControllerTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
-						.withStreetNr(2)
+						.withNumber(2)
 						.build()))
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
@@ -216,7 +215,7 @@ class UserControllerTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
-						.withStreetNr(3)
+						.withNumber(3)
 						.build()))
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
@@ -227,7 +226,7 @@ class UserControllerTests {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new Address.Builder()
 								.withStreet("Street")
-								.withStreetNr(4)
+								.withNumber(4)
 								.build()))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
@@ -260,7 +259,7 @@ class UserControllerTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
-						.withStreetNr(1)
+						.withNumber(1)
 						.build()))
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
@@ -312,7 +311,7 @@ class UserControllerTests {
 		// create address object
 		Address address = new Address.Builder()
 				.withStreet("Street")
-				.withStreetNr(1)
+				.withNumber(1)
 				.build();
 
 		// create access token

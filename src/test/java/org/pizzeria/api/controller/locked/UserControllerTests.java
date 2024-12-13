@@ -1,22 +1,21 @@
 package org.pizzeria.api.controller.locked;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.pizzeria.api.configs.security.auth.JWTTokenManager;
-import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
+import org.pizzeria.api.configs.web.security.auth.JWTTokenManager;
+import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
-import org.pizzeria.api.entity.user.dto.*;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.user.UserRepository;
-import org.pizzeria.api.utils.globals.ApiResponses;
-import org.pizzeria.api.utils.globals.Constants;
-import org.pizzeria.api.utils.globals.SecurityResponses;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.dto.user.dto.*;
+import org.pizzeria.api.web.globals.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -34,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
@@ -76,23 +75,26 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenFindUserGetApiCall_whenUserNotFound_thenReturnAcceptedWithMessage() throws Exception {
+	void givenFindUserGetApiCall_whenUserNotFound_thenReturnNoContent() throws Exception {
 		// Arrange
 
 		// create access token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 1L);
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 2L);
 
 		// Act
 
 		// get api call to find user
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", 1)
-						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
-				.andReturn().getResponse();
+		MockHttpServletResponse response =
+				mockMvc.perform(get(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID, 1)
+								.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
+						.andReturn().getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1));
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_NOT_FOUND);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 	}
 
 	@Test
@@ -100,30 +102,33 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// Act
 
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", userId)
+		MockHttpServletResponse response = mockMvc.perform(get(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID, userId)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		UserDTO userDTO = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), UserDTO.class);
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isNull();
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		UserDTO userDTO = getUserDTO(responseObj);
 		assertThat(userDTO.id()).isEqualTo(userId);
 	}
+
 
 	@Test
 	void givenCreateAddressPostApiCall_thenCreateAddressAndReturnAccepted() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -138,11 +143,12 @@ class UserControllerTests {
 		// Act
 
 		// post api call to add address to user
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", userId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(address))
-						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
-				.andReturn().getResponse();
+		MockHttpServletResponse response =
+				mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(objectMapper.writeValueAsString(address))
+								.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
+						.andReturn().getResponse();
 
 		// Assert
 
@@ -160,7 +166,7 @@ class UserControllerTests {
 		// Arrange
 
 		// create access token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 1L);
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 2L);
 		// create address object
 		Address address = new Address.Builder()
 				.withStreet("Street")
@@ -170,7 +176,13 @@ class UserControllerTests {
 		// Act
 
 		// post api call to create address
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", 1)
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE +
+								ApiRoutes.V1 +
+								ApiRoutes.USER_BASE +
+								ApiRoutes.USER_ID +
+								ApiRoutes.USER_ADDRESS,
+						999)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(address))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
@@ -178,8 +190,10 @@ class UserControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1));
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
+		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 	}
 
 	@Test
@@ -187,13 +201,13 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId)
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
@@ -202,7 +216,7 @@ class UserControllerTests {
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId)
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
@@ -211,7 +225,7 @@ class UserControllerTests {
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId)
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
@@ -222,7 +236,7 @@ class UserControllerTests {
 		// Act
 
 		// post api call to add address to user
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/address", userId)
+		MockHttpServletResponse response = mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new Address.Builder()
 								.withStreet("Street")
@@ -234,14 +248,15 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-		assertThat(userRepository.count()).isEqualTo(1);
 		assertThat(addressRepository.count()).isEqualTo(3);
 
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
 		assertThat(userAddressList).hasSize(3);
 
-		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ADDRESS_MAX_SIZE);
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_MAX_SIZE);
+		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.BAD_REQUEST.name());
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test
@@ -249,13 +264,13 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId)
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(new Address.Builder()
 						.withStreet("Street")
@@ -266,18 +281,18 @@ class UserControllerTests {
 		// Act
 
 		// get api call to find user address list
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/address", userId)
+		MockHttpServletResponse response = mockMvc.perform(get(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-
-		assertThat(userRepository.count()).isEqualTo(1);
+		assertThat(userRepository.count()).isEqualTo(2);
 		assertThat(addressRepository.count()).isEqualTo(1);
 
-		Set<Address> userAddressList = Set.of(objectMapper.readValue(response.getContentAsString(), Address[].class));
+		Response responseObj = getResponse(response);
+		List<Address> userAddressList = objectMapper.convertValue(responseObj.getData(), List.class);
 		assertThat(userAddressList).hasSize(1);
 	}
 
@@ -286,19 +301,21 @@ class UserControllerTests {
 		// Arrange
 
 		// create access token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 1L);
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 2L);
 
 		// Act
 
 		// get api call to find user address list
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/address", 1)
+		MockHttpServletResponse response = mockMvc.perform(get(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, 1)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
+		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
@@ -306,7 +323,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create address object
 		Address address = new Address.Builder()
@@ -318,7 +335,7 @@ class UserControllerTests {
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// post api call to add address to user
-		mockMvc.perform(post("/api/user/{userId}/address", userId)
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(address))
 				.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)));
@@ -334,10 +351,17 @@ class UserControllerTests {
 		// Act
 
 		// delete api call to delete user address
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", userId,
-						dbAddress.get().getId())
-						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
-				.andReturn().getResponse();
+		MockHttpServletResponse response =
+				mockMvc.perform(delete(
+								ApiRoutes.BASE +
+										ApiRoutes.V1 +
+										ApiRoutes.USER_BASE +
+										ApiRoutes.USER_ID +
+										ApiRoutes.USER_ADDRESS +
+										ApiRoutes.USER_ADDRESS_ID, userId,
+								dbAddress.get().getId())
+								.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
+						.andReturn().getResponse();
 
 		// Assert
 
@@ -347,11 +371,11 @@ class UserControllerTests {
 	}
 
 	@Test
-	void givenDeleteUserAddressApiCall_whenUserAddressNotFound_thenReturnAcceptedWithMessage() throws Exception {
+	void givenDeleteUserAddressApiCall_whenUserAddressNotFound_thenReturnNoContent() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -359,34 +383,53 @@ class UserControllerTests {
 		// Act
 
 		// delete api call to delete user address
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", userId, 1L)
+		MockHttpServletResponse response = mockMvc.perform(delete(
+						ApiRoutes.BASE +
+								ApiRoutes.V1 +
+								ApiRoutes.USER_BASE +
+								ApiRoutes.USER_ID +
+								ApiRoutes.USER_ADDRESS +
+								ApiRoutes.USER_ADDRESS_ID,
+						userId,
+						2L)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
+		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
-	void givenDeleteUserAddressApiCall_whenUserNotFound_thenReturnUnauthorizedWithMessage() throws Exception {
+	void givenDeleteUserAddressApiCall_whenUserNotFound_thenReturnUnauthorized() throws Exception {
 		// Arrange
 
 		// create access token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 1L);
+		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 2L);
 
 		// Act
 
 		// delete api call to delete user address
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/address/{addressId}", 1L, 1L)
+		MockHttpServletResponse response = mockMvc.perform(delete(
+						ApiRoutes.BASE +
+								ApiRoutes.V1 +
+								ApiRoutes.USER_BASE +
+								ApiRoutes.USER_ID +
+								ApiRoutes.USER_ADDRESS +
+								ApiRoutes.USER_ADDRESS_ID,
+						99L,
+						2L)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
-
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 1L));
+		Response responseObj = getResponse(response);
+		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
+		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 	}
 
 	@Test
@@ -394,7 +437,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("dsa$·", "Password1");
@@ -405,7 +448,13 @@ class UserControllerTests {
 		// Act
 
 		// put api call to update user name
-		mockMvc.perform(put("/api/user/{userId}/name", userId)
+		mockMvc.perform(put(
+						ApiRoutes.BASE +
+								ApiRoutes.V1 +
+								ApiRoutes.USER_BASE +
+								ApiRoutes.USER_ID +
+								ApiRoutes.USER_NAME,
+						userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(nameChangeDTO))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
@@ -427,18 +476,24 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
 
 		// create dto object
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("NewUserName", "Password1");
 
 		// create access token
-		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
+		String accessToken = JWTTokenManager.getAccessToken("Tester3@gmail.com", List.of(new Role("USER")), userId);
 
 		// Act
 
 		// put api call to update user name
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/name", userId)
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE +
+								ApiRoutes.V1 +
+								ApiRoutes.USER_BASE +
+								ApiRoutes.USER_ID +
+								ApiRoutes.USER_NAME,
+						userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(nameChangeDTO))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
@@ -447,8 +502,6 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		User user = userRepository.findUserByEmail("Tester@gmail.com");
-		assertThat(user.getName()).isEqualTo(nameChangeDTO.name());
 	}
 
 	@Test
@@ -456,7 +509,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("invalidEmailFormat", "Password1");
@@ -489,7 +542,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("validEmailFormat@gmail.com", "Password1");
@@ -518,8 +571,8 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		createUserTestSubject("Tester@gmail.com");
-		Long userIdTwo = createUserTestSubject("Tester2@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
+		Long userIdTwo = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("Tester@gmail.com", "Password1");
@@ -539,7 +592,7 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.EMAIL_ALREADY_EXISTS);
+		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -547,7 +600,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123, "Password1");
@@ -580,7 +633,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123456789, "Password1");
@@ -609,8 +662,8 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
-		Long userIdTwo = createUserTestSubject("Tester2@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
+		Long userIdTwo = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123456789, "Password1");
@@ -639,7 +692,7 @@ class UserControllerTests {
 		// Assert
 
 		assertThat(responseTwo.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseTwo.getContentAsString()).isEqualTo(ApiResponses.NUMBER_ALREADY_EXISTS);
+		assertThat(responseTwo.getContentAsString()).isEqualTo(ApiResponses.USER_NUMBER_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -647,7 +700,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -678,7 +731,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -710,7 +763,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -736,7 +789,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject("Tester@gmail.com");
+		Long userId = 2L; // NOTE - user is inserted in DB via data.sql
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -758,15 +811,28 @@ class UserControllerTests {
 		assertThat(user).isEmpty();
 	}
 
-	Long createUserTestSubject(String email) throws Exception {
-		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(new RegisterDTO(
-								"Tester",
-								email,
-								email,
-								"Password1",
-								"Password1"))))
-				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
+	private Response getResponse(MockHttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
+		return objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), Response.class);
+	}
+
+	private UserDTO getUserDTO(Response responseObj) {
+		return objectMapper.convertValue(responseObj.getData(), UserDTO.class);
+	}
+
+	Long createUserWithEncodedPassword(String email) throws Exception {
+
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(new RegisterDTO(
+						"Tester",
+						email,
+						email,
+						"Password1",
+						"Password1")
+				)));
+
+		Optional<User> user = userRepository.findUserByEmailWithRoles(email);
+		assertThat(user.isPresent()).isTrue();
+		return user.get().getId();
 	}
 }

@@ -5,12 +5,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.pizzeria.api.configs.security.auth.JWTTokenManager;
-import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
+import org.pizzeria.api.configs.web.security.auth.JWTTokenManager;
+import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.role.Role;
-import org.pizzeria.api.utils.globals.Constants;
-import org.pizzeria.api.utils.globals.SecurityResponses;
+import org.pizzeria.api.web.globals.Constants;
+import org.pizzeria.api.web.globals.SecurityResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -92,7 +92,7 @@ class UserIdValidationTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.FRAUDULENT_TOKEN);
+		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
 	}
 
 	@Test

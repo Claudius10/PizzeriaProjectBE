@@ -2,10 +2,12 @@ package org.pizzeria.api.controller.open;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.repos.user.UserRepository;
-import org.pizzeria.api.utils.globals.ApiResponses;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.globals.ApiResponses;
+import org.pizzeria.api.web.globals.ApiRoutes;
+import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +53,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -81,7 +84,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/register")
+		MockHttpServletResponse response = mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(
 								new RegisterDTO("Clau",
@@ -95,7 +98,10 @@ class AnonControllerRegisterTests {
 
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ApiResponses.EMAIL_ALREADY_EXISTS);
+
+		Response responseObj = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), Response.class);
+
+		assertThat(responseObj.getErrorMessage()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -103,7 +109,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
 								"UserToRegi·%$ster",
@@ -129,7 +135,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
 								"UserToRegister",
@@ -156,7 +162,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
 								"UserToRegister",
@@ -182,7 +188,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
 								"UserToRegister",
@@ -208,7 +214,7 @@ class AnonControllerRegisterTests {
 		// Act
 
 		// post api call to register new user in database
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(new RegisterDTO(
 								"UserToRegister",
@@ -230,7 +236,7 @@ class AnonControllerRegisterTests {
 	}
 
 	void createUserTestSubject(RegisterDTO registerDTO) throws Exception {
-		mockMvc.perform(post("/api/anon/register")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_REGISTER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(registerDTO)))
 				.andExpect(status().isCreated());

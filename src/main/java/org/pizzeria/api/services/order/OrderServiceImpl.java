@@ -5,13 +5,12 @@ import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.cart.CartItem;
 import org.pizzeria.api.entity.order.Order;
-import org.pizzeria.api.entity.order.dto.*;
-import org.pizzeria.api.entity.order.projections.OrderSummaryProjection;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.user.UserService;
-import org.pizzeria.api.utils.globals.ApiResponses;
+import org.pizzeria.api.web.dto.order.dto.*;
+import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -113,64 +112,68 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder) {
+	public boolean updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder) {
 		Optional<Address> dbAddress = addressService.findAddressById(updateUserOrder.addressId());
 		Optional<Order> dbOrder = findUserOrderById(orderId);
 
-		if (dbOrder.isPresent() && dbAddress.isPresent()) {
-			Address address = dbAddress.get();
-			Order order = dbOrder.get();
-
-			boolean pendingAddressUpdate = !order.getAddress().contentEquals(address);
-			boolean pendingOrderDetailsUpdate = !order.getOrderDetails().contentEquals(updateUserOrder.orderDetails());
-			boolean pendingCartUpdate = updateUserOrder.cart() != null && !order.getCart().contentEquals(updateUserOrder.cart());
-
-			if (pendingAddressUpdate) {
-				order.setAddress(address);
-			}
-
-			if (pendingOrderDetailsUpdate) {
-				order.getOrderDetails().setDeliveryTime(updateUserOrder.orderDetails().getDeliveryTime());
-				order.getOrderDetails().setPaymentMethod(updateUserOrder.orderDetails().getPaymentMethod());
-				order.getOrderDetails().setBillToChange(updateUserOrder.orderDetails().getBillToChange());
-				order.getOrderDetails().setChangeToGive(updateUserOrder.orderDetails().getChangeToGive());
-				order.getOrderDetails().setComment(updateUserOrder.orderDetails().getComment());
-			}
-
-			// cart == null if !isCartUpdateValid
-			if (pendingCartUpdate) {
-				order.getCart().setTotalQuantity(updateUserOrder.cart().getTotalQuantity());
-				order.getCart().setTotalCost(updateUserOrder.cart().getTotalCost());
-				order.getCart().setTotalCostOffers(updateUserOrder.cart().getTotalCostOffers());
-				order.getCart().getCartItems().clear();
-				for (CartItem item : updateUserOrder.cart().getCartItems()) {
-					order.getCart().addItem(item);
-				}
-			}
-
-			if (pendingAddressUpdate || pendingOrderDetailsUpdate || pendingCartUpdate) {
-				order.setUpdatedOn(LocalDateTime.now());
-				order.setFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
-						"dd/MM/yyyy")));
-			}
-
-			return orderId;
+		if (dbOrder.isEmpty() || dbAddress.isEmpty()) {
+			return false;
 		}
 
-		return null;
+		Address address = dbAddress.get();
+		Order order = dbOrder.get();
+
+		boolean pendingAddressUpdate = !order.getAddress().contentEquals(address);
+		boolean pendingOrderDetailsUpdate = !order.getOrderDetails().contentEquals(updateUserOrder.orderDetails());
+		boolean pendingCartUpdate = updateUserOrder.cart() != null && !order.getCart().contentEquals(updateUserOrder.cart());
+
+		if (pendingAddressUpdate) {
+			order.setAddress(address);
+		}
+
+		if (pendingOrderDetailsUpdate) {
+			order.getOrderDetails().setDeliveryTime(updateUserOrder.orderDetails().getDeliveryTime());
+			order.getOrderDetails().setPaymentMethod(updateUserOrder.orderDetails().getPaymentMethod());
+			order.getOrderDetails().setBillToChange(updateUserOrder.orderDetails().getBillToChange());
+			order.getOrderDetails().setChangeToGive(updateUserOrder.orderDetails().getChangeToGive());
+			order.getOrderDetails().setComment(updateUserOrder.orderDetails().getComment());
+		}
+
+		// cart == null if !isCartUpdateValid
+		if (pendingCartUpdate) {
+			order.getCart().setTotalQuantity(updateUserOrder.cart().getTotalQuantity());
+			order.getCart().setTotalCost(updateUserOrder.cart().getTotalCost());
+			order.getCart().setTotalCostOffers(updateUserOrder.cart().getTotalCostOffers());
+			order.getCart().getCartItems().clear();
+			for (CartItem item : updateUserOrder.cart().getCartItems()) {
+				order.getCart().addItem(item);
+			}
+		}
+
+		if (pendingAddressUpdate || pendingOrderDetailsUpdate || pendingCartUpdate) {
+			order.setUpdatedOn(LocalDateTime.now());
+			order.setFormattedUpdatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy")));
+		}
+
+		return true;
 	}
 
 	@Override
-	public Long deleteUserOrderById(Long orderId) {
+	public boolean deleteUserOrderById(Long orderId) {
 		Optional<Order> dbOrder = findUserOrderById(orderId);
-		dbOrder.ifPresent(orderRepository::delete);
-		return orderId;
+
+		if (dbOrder.isEmpty()) {
+			return false;
+		}
+
+		orderRepository.delete(dbOrder.get());
+		return true;
 	}
 
 	@Override
 	public Page<OrderSummaryProjection> findUserOrderSummary(Long userId, int size, int page) {
 		if (!userService.existsById(userId)) {
-			throw new UsernameNotFoundException(String.format(ApiResponses.USER_NOT_FOUND, userId));
+			throw new UsernameNotFoundException(String.format("UserNotFound %s", userId));
 		}
 
 		Sort.TypedSort<Order> order = Sort.sort(Order.class);

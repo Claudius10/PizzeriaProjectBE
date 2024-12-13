@@ -4,24 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.pizzeria.api.configs.security.auth.JWTTokenManager;
-import org.pizzeria.api.configs.security.utils.SecurityCookieUtils;
+import org.pizzeria.api.configs.web.security.auth.JWTTokenManager;
+import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.cart.CartItem;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.order.OrderDetails;
-import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
-import org.pizzeria.api.entity.order.dto.OrderDTO;
-import org.pizzeria.api.entity.order.dto.OrderSummaryListDTO;
-import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
+import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
+import org.pizzeria.api.web.dto.order.dto.OrderDTO;
+import org.pizzeria.api.web.dto.order.dto.OrderSummaryListDTO;
+import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
 import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.repos.user.UserRepository;
-import org.pizzeria.api.utils.globals.ApiResponses;
-import org.pizzeria.api.utils.globals.Constants;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.web.globals.ApiResponses;
+import org.pizzeria.api.web.globals.Constants;
+import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -471,7 +471,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR,
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_ORDER_UPDATE_ERROR,
 				99, addressId));
 	}
 
@@ -522,7 +522,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.UPDATE_USER_ORDER_ERROR, order.id(), 878678));
+		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_ORDER_UPDATE_ERROR, order.id(), 878678));
 	}
 
 	@Test

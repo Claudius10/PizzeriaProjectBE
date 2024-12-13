@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pizzeria.api.services.order.OrderService;
-import org.pizzeria.api.validation.order.OrderValidationResult;
-import org.pizzeria.api.validation.order.OrderValidatorImpl;
+import org.pizzeria.api.web.order.validation.OrderValidationResult;
+import org.pizzeria.api.web.order.validation.OrderValidatorImpl;
 
 import java.time.LocalDateTime;
 

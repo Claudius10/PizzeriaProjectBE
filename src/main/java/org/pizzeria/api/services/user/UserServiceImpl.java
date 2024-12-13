@@ -2,15 +2,14 @@ package org.pizzeria.api.services.user;
 
 import jakarta.transaction.Transactional;
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
-import org.pizzeria.api.entity.user.dto.UserDTO;
-import org.pizzeria.api.exceptions.custom.RoleNotFoundException;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.role.RoleService;
-import org.pizzeria.api.utils.globals.ApiResponses;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.dto.user.dto.UserDTO;
+import org.pizzeria.api.web.exceptions.custom.RoleNotFoundException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,11 +41,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Long createUser(RegisterDTO registerDTO) throws RoleNotFoundException {
+	public void createUser(RegisterDTO registerDTO) throws RoleNotFoundException {
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 		Optional<Role> userRole = roleService.findByName("USER");
 		if (userRole.isEmpty()) {
-			throw new RoleNotFoundException("El privilegio 'USUARIO' no existe en la base de datos.");
+			throw new RoleNotFoundException("UserRoleNotFound");
 		}
 
 		User user = new User.Builder()
@@ -56,29 +55,30 @@ public class UserServiceImpl implements UserService {
 				.withRoles(userRole.get())
 				.build();
 
-		return userRepository.save(user).getId();
+		userRepository.save(user);
 	}
 
 	@Override
-	public String addUserAddress(Long userId, Address address) {
+	public boolean addUserAddress(Long userId, Address address) {
 		User user = findUserOrThrow(userId);
+
 		if (user.getAddressList().size() == 3) {
-			return ApiResponses.ADDRESS_MAX_SIZE;
+			return false;
 		}
 
 		Optional<Address> dbAddress = addressService.findByExample(address);
+
 		if (dbAddress.isPresent()) {
 			user.addAddress(dbAddress.get());
 		} else {
 			user.addAddress(address);
 		}
 
-		return null;
+		return true;
 	}
 
 	@Override
-	public String removeUserAddress(Long userId, Long addressId) {
-		String result = null;
+	public boolean removeUserAddress(Long userId, Long addressId) {
 		User user = findUserOrThrow(userId);
 
 		Optional<Address> dbAddress = user.getAddressList()
@@ -86,13 +86,12 @@ public class UserServiceImpl implements UserService {
 				.filter(address1 -> address1.getId().equals(addressId))
 				.findFirst();
 
-		if (dbAddress.isPresent()) {
-			user.removeAddress(dbAddress.get());
-		} else {
-			result = ApiResponses.ADDRESS_NOT_FOUND;
+		if (dbAddress.isEmpty()) {
+			return false;
 		}
 
-		return result;
+		user.removeAddress(dbAddress.get());
+		return true;
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class UserServiceImpl implements UserService {
 	public User findUserOrThrow(Long userId) {
 		Optional<User> dbUser = userRepository.findById(userId);
 		if (dbUser.isEmpty()) {
-			throw new UsernameNotFoundException(String.format(ApiResponses.USER_NOT_FOUND, userId));
+			throw new UsernameNotFoundException(String.format("UserNotFound %s", userId));
 		} else {
 			return dbUser.get();
 		}

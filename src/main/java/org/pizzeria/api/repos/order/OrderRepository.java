@@ -1,9 +1,9 @@
 package org.pizzeria.api.repos.order;
 
 import org.pizzeria.api.entity.order.Order;
-import org.pizzeria.api.entity.order.dto.CreatedOnDTO;
-import org.pizzeria.api.entity.order.dto.OrderDTO;
-import org.pizzeria.api.entity.order.projections.OrderSummaryProjection;
+import org.pizzeria.api.web.dto.order.dto.CreatedOnDTO;
+import org.pizzeria.api.web.dto.order.dto.OrderDTO;
+import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

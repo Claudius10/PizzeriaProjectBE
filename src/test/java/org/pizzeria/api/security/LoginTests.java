@@ -3,7 +3,7 @@ package org.pizzeria.api.security;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;

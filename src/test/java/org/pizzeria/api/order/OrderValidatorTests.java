@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.cart.CartItem;
-import org.pizzeria.api.validation.order.OrderValidatorImpl;
+import org.pizzeria.api.web.order.validation.OrderValidatorImpl;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

@@ -2,7 +2,7 @@ package org.pizzeria.api.entity.address;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import org.pizzeria.api.exceptions.constraints.annotation.ValidAddress;
+import org.pizzeria.api.web.exceptions.constraints.annotation.ValidAddress;
 
 import java.util.Objects;
 

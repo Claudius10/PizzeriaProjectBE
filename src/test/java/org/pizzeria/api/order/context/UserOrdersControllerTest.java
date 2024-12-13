@@ -1,6 +1,6 @@
 package org.pizzeria.api.order.context;
 
-import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
+import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

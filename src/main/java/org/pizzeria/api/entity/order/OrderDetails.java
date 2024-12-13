@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import org.pizzeria.api.exceptions.constraints.annotation.DoubleLengthNullable;
-import org.pizzeria.api.utils.globals.ValidationResponses;
-import org.pizzeria.api.utils.globals.ValidationRules;
+import org.pizzeria.api.web.exceptions.constraints.annotation.DoubleLengthNullable;
+import org.pizzeria.api.web.globals.ValidationResponses;
+import org.pizzeria.api.web.globals.ValidationRules;
 
 import java.util.Objects;
 

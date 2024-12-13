@@ -2,7 +2,7 @@ package org.pizzeria.api.repos.user;
 
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.user.User;
-import org.pizzeria.api.entity.user.dto.UserDTO;
+import org.pizzeria.api.web.dto.user.dto.UserDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

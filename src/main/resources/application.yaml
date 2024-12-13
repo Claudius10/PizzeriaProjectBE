@@ -27,11 +27,13 @@ spring:
     import: optional:file:local.env[.properties]
 
 db:
-  url: ${DATABASE_URL}
-  username: ${DATABASE_USERNAME}
-  password: ${DATABASE_PASSWORD}
+  url: jdbc:mariadb://localhost:3306/pizzeria
+  username: root
+  password: root
 
 logging:
+  file:
+    name: /home/claudio/Desktop/logs/pizzeria_logs.log
   level:
     org.springframework.security: trace
     org.hibernate: info

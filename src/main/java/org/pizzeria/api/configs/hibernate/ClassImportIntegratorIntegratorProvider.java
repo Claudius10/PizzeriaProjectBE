@@ -3,7 +3,7 @@ package org.pizzeria.api.configs.hibernate;
 import io.hypersistence.utils.hibernate.type.util.ClassImportIntegrator;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.jpa.boot.spi.IntegratorProvider;
-import org.pizzeria.api.entity.user.dto.PasswordDTO;
+import org.pizzeria.api.web.dto.user.dto.PasswordDTO;
 
 import java.util.List;
 

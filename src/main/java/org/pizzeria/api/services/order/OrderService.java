@@ -1,12 +1,8 @@
 package org.pizzeria.api.services.order;
 
 import org.pizzeria.api.entity.order.Order;
-import org.pizzeria.api.entity.order.dto.CreatedAnonOrderDTO;
-import org.pizzeria.api.entity.order.dto.NewAnonOrderDTO;
-import org.pizzeria.api.entity.order.dto.NewUserOrderDTO;
-import org.pizzeria.api.entity.order.dto.UpdateUserOrderDTO;
-import org.pizzeria.api.entity.order.dto.OrderDTO;
-import org.pizzeria.api.entity.order.projections.OrderSummaryProjection;
+import org.pizzeria.api.web.dto.order.dto.*;
+import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -20,9 +16,9 @@ public interface OrderService {
 
 	Long createUserOrder(Long orderId, NewUserOrderDTO newUserOrder);
 
-	Long updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder);
+	boolean updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder);
 
-	Long deleteUserOrderById(Long orderId);
+	boolean deleteUserOrderById(Long orderId);
 
 	Page<OrderSummaryProjection> findUserOrderSummary(Long userId, int size, int page);
 

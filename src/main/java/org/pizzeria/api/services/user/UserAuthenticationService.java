@@ -2,7 +2,6 @@ package org.pizzeria.api.services.user;
 
 import jakarta.transaction.Transactional;
 import org.pizzeria.api.repos.user.UserRepository;
-import org.pizzeria.api.utils.globals.ApiResponses;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +20,6 @@ public class UserAuthenticationService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return userRepository.findUserByEmailWithRoles(username)
-				.orElseThrow(() -> new UsernameNotFoundException(String.format(ApiResponses.USER_EMAIL_NOT_FOUND,
-						username)));
+				.orElseThrow(() -> new UsernameNotFoundException(String.format("UserNotFound %s", username)));
 	}
 }

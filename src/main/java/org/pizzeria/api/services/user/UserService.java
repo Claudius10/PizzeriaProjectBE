@@ -1,22 +1,22 @@
 package org.pizzeria.api.services.user;
 
 import org.pizzeria.api.entity.address.Address;
-import org.pizzeria.api.entity.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.user.User;
-import org.pizzeria.api.entity.user.dto.UserDTO;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.dto.user.dto.UserDTO;
 
 import java.util.Optional;
 import java.util.Set;
 
 public interface UserService {
 
-	Long createUser(RegisterDTO registerDTO);
+	void createUser(RegisterDTO registerDTO);
 
 	Set<Address> findUserAddressListById(Long userId);
 
-	String addUserAddress(Long userId, Address address);
+	boolean addUserAddress(Long userId, Address address);
 
-	String removeUserAddress(Long userId, Long addressId);
+	boolean removeUserAddress(Long userId, Long addressId);
 
 	User findUserReference(Long userId);
 

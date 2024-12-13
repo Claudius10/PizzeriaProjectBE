@@ -3,9 +3,9 @@ package org.pizzeria.api.entity.cart;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.pizzeria.api.exceptions.constraints.annotation.DoubleLength;
-import org.pizzeria.api.exceptions.constraints.annotation.IntegerLength;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.web.exceptions.constraints.annotation.DoubleLength;
+import org.pizzeria.api.web.exceptions.constraints.annotation.IntegerLength;
+import org.pizzeria.api.web.globals.ValidationResponses;
 
 import java.util.Objects;
 

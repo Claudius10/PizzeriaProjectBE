@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.pizzeria.api.entity.order.Order;
-import org.pizzeria.api.exceptions.constraints.annotation.DoubleLength;
-import org.pizzeria.api.exceptions.constraints.annotation.DoubleLengthNullable;
-import org.pizzeria.api.exceptions.constraints.annotation.IntegerLength;
-import org.pizzeria.api.utils.globals.ValidationResponses;
+import org.pizzeria.api.web.exceptions.constraints.annotation.DoubleLength;
+import org.pizzeria.api.web.exceptions.constraints.annotation.DoubleLengthNullable;
+import org.pizzeria.api.web.exceptions.constraints.annotation.IntegerLength;
+import org.pizzeria.api.web.globals.ValidationResponses;
 
 import java.util.ArrayList;
 import java.util.List;

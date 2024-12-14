@@ -44,7 +44,7 @@ public class UserController {
 				.payload(user.orElse(null))
 				.build();
 
-		return ResponseEntity.status(user.isPresent() ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@ValidateUserId
@@ -60,7 +60,7 @@ public class UserController {
 				.payload(!userAddressList.isEmpty() ? userAddressList : null)
 				.build();
 
-		return ResponseEntity.status(!userAddressList.isEmpty() ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@ValidateUserId
@@ -90,7 +90,7 @@ public class UserController {
 				.errorClass(result ? null : ApiResponses.ADDRESS_NOT_FOUND)
 				.build();
 
-		return ResponseEntity.status(result ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping(ApiRoutes.USER_ID + ApiRoutes.USER_NAME)

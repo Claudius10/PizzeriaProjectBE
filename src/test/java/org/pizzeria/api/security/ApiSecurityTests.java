@@ -5,6 +5,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.pizzeria.api.configs.web.security.auth.JWTTokenManager;
 import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,7 +45,7 @@ class ApiSecurityTests {
 		// Act
 
 		// post api call to log-out
-		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/logout")
+		MockHttpServletResponse response = mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.AUTH_BASE + ApiRoutes.AUTH_LOGOUT)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 30, true, false)))
 				.andReturn().getResponse();
 

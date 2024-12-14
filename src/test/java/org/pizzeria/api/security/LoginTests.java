@@ -3,8 +3,9 @@ package org.pizzeria.api.security;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.services.user.UserService;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -48,7 +49,12 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=password"))
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.AUTH_BASE
+								+ ApiRoutes.AUTH_LOGIN
+								+ "?username=test@gmail.com&password=password"))
 				.andReturn().getResponse();
 
 		// Assert
@@ -64,7 +70,12 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=void@email.com&password=randomPassword"))
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.AUTH_BASE
+								+ ApiRoutes.AUTH_LOGIN +
+								"?username=void@email.com&password=randomPassword"))
 				.andReturn().getResponse();
 
 		// Assert
@@ -78,7 +89,12 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=test@gmail.com&password=wrong_password"))
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.AUTH_BASE
+								+ ApiRoutes.AUTH_LOGIN +
+								"?username=test@gmail.com&password=wrong_password"))
 				.andReturn().getResponse();
 
 		// Assert
@@ -92,7 +108,12 @@ class LoginTests {
 		// Act
 
 		// post api call to log in
-		MockHttpServletResponse response = mockMvc.perform(post("/api/auth/login?username=nottest@gmail.com&password=password"))
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.AUTH_BASE
+								+ ApiRoutes.AUTH_LOGIN +
+								"?username=nottest@gmail.com&password=password"))
 				.andReturn().getResponse();
 
 		// Assert

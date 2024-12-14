@@ -60,7 +60,7 @@ public class UserOrdersController {
 				.payload(projectionById.orElse(null))
 				.build();
 
-		return ResponseEntity.status(projectionById.isPresent() ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@ValidateUserId
@@ -80,7 +80,7 @@ public class UserOrdersController {
 				.payload(orderId)
 				.build();
 
-		return ResponseEntity.status(result ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@ValidateUserId
@@ -94,7 +94,7 @@ public class UserOrdersController {
 				.payload(orderId)
 				.build();
 
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.ok(response);
 	}
 
 	@ValidateUserId
@@ -121,6 +121,6 @@ public class UserOrdersController {
 				.payload(orders)
 				.build();
 
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.ok(response);
 	}
 }

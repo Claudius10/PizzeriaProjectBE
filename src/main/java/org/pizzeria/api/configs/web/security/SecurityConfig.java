@@ -81,13 +81,13 @@ public class SecurityConfig {
 		});
 
 		http.formLogin(formLogin -> {
-			formLogin.loginPage("/api/auth/login").permitAll();
+			formLogin.loginPage(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.AUTH_BASE + ApiRoutes.AUTH_LOGIN).permitAll();
 			formLogin.successHandler(validAuthHandler);
 			formLogin.failureHandler(invalidAuthHandler);
 		});
 
 		http.logout(logout -> {
-			logout.logoutUrl("/api/auth/logout");
+			logout.logoutUrl(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.AUTH_BASE + ApiRoutes.AUTH_LOGOUT);
 			logout.addLogoutHandler(clearCookiesLogoutHandler);
 			logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()); // return 200 on successful logout
 		});

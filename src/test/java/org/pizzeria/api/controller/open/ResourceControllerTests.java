@@ -77,7 +77,7 @@ class ResourceControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		List<Product> productList = objectMapper.convertValue(responseObj.getData(), List.class);
+		List<Product> productList = objectMapper.convertValue(responseObj.getPayload(), List.class);
 		assertThat(productList).hasSize(1);
 	}
 
@@ -96,7 +96,7 @@ class ResourceControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		List<Store> storeList = objectMapper.convertValue(responseObj.getData(), List.class);
+		List<Store> storeList = objectMapper.convertValue(responseObj.getPayload(), List.class);
 		assertThat(storeList).hasSize(1);
 	}
 
@@ -114,7 +114,7 @@ class ResourceControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		List<Offer> offerList = objectMapper.convertValue(responseObj.getData(), List.class);
+		List<Offer> offerList = objectMapper.convertValue(responseObj.getPayload(), List.class);
 		assertThat(offerList).hasSize(1);
 	}
 }

@@ -30,7 +30,7 @@ public class ResourceController {
 		Response response = Response.builder()
 				.statusCode(HttpStatus.OK.value())
 				.statusDescription(HttpStatus.OK.name())
-				.data(resourceService.findAllProductsByType(type))
+				.payload(resourceService.findAllProductsByType(type))
 				.build();
 
 		return ResponseEntity.ok(response);
@@ -42,7 +42,7 @@ public class ResourceController {
 		Response response = Response.builder()
 				.statusCode(HttpStatus.OK.value())
 				.statusDescription(HttpStatus.OK.name())
-				.data(storeService.findAll())
+				.payload(storeService.findAll())
 				.build();
 
 		return ResponseEntity.ok(response);
@@ -54,7 +54,7 @@ public class ResourceController {
 		Response response = Response.builder()
 				.statusCode(HttpStatus.OK.value())
 				.statusDescription(HttpStatus.OK.name())
-				.data(resourceService.findAllOffers())
+				.payload(resourceService.findAllOffers())
 				.build();
 
 		return ResponseEntity.ok(response);

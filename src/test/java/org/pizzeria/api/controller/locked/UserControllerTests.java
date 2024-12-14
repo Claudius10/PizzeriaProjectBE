@@ -112,7 +112,7 @@ class UserControllerTests {
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isNull();
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
-		UserDTO userDTO = objectMapper.convertValue(responseObj.getData(), UserDTO.class);
+		UserDTO userDTO = objectMapper.convertValue(responseObj.getPayload(), UserDTO.class);
 		assertThat(userDTO.id()).isEqualTo(userId);
 	}
 
@@ -286,7 +286,7 @@ class UserControllerTests {
 		assertThat(addressRepository.count()).isEqualTo(1);
 
 		Response responseObj = getResponse(response, objectMapper);
-		List<Address> userAddressList = objectMapper.convertValue(responseObj.getData(), List.class);
+		List<Address> userAddressList = objectMapper.convertValue(responseObj.getPayload(), List.class);
 		assertThat(userAddressList).hasSize(1);
 	}
 

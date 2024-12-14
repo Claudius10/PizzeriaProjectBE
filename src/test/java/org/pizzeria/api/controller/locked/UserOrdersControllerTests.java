@@ -210,7 +210,7 @@ class UserOrdersControllerTests {
 				.andReturn().getResponse();
 
 		Response responseObj = getResponse(response, objectMapper);
-		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
 		// Act
 
@@ -233,7 +233,7 @@ class UserOrdersControllerTests {
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(responseObjTwo.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		OrderDTO order = objectMapper.convertValue(responseObjTwo.getData(), OrderDTO.class);
+		OrderDTO order = objectMapper.convertValue(responseObjTwo.getPayload(), OrderDTO.class);
 		assertThat(order.id()).isEqualTo(orderId);
 	}
 
@@ -315,7 +315,7 @@ class UserOrdersControllerTests {
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 
@@ -370,7 +370,7 @@ class UserOrdersControllerTests {
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 		assertThat(updatedOrder.orderDetails().contentEquals(orderUpdate.orderDetails())).isTrue();
@@ -431,7 +431,7 @@ class UserOrdersControllerTests {
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 		assertThat(updatedOrder.cart().contentEquals(orderUpdate.cart())).isTrue();
@@ -645,7 +645,7 @@ class UserOrdersControllerTests {
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		Long id = objectMapper.convertValue(responseObj.getData(), Long.class);
+		Long id = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 		assertThat(id).isEqualTo(order.id());
 	}
 
@@ -788,7 +788,7 @@ class UserOrdersControllerTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
-		OrderSummaryListDTO orderList = objectMapper.convertValue(responseObj.getData(), OrderSummaryListDTO.class);
+		OrderSummaryListDTO orderList = objectMapper.convertValue(responseObj.getPayload(), OrderSummaryListDTO.class);
 		assertThat(orderList).isNotNull();
 		assertThat(orderList.orderList()).isEmpty();
 	}
@@ -836,7 +836,7 @@ class UserOrdersControllerTests {
 				.andReturn().getResponse();
 
 		Response responseObj = getResponse(response, objectMapper);
-		return objectMapper.convertValue(responseObj.getData(), OrderDTO.class);
+		return objectMapper.convertValue(responseObj.getPayload(), OrderDTO.class);
 	}
 
 	OrderDTO createUserOrderTestSubject(int minutesInThePast, long userId, long addressId, String validAccessToken) throws Exception {

@@ -40,7 +40,7 @@ public class UserOrdersController {
 		Response response = Response.builder()
 				.statusDescription(HttpStatus.CREATED.name())
 				.statusCode(HttpStatus.CREATED.value())
-				.data(id)
+				.payload(id)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -57,7 +57,7 @@ public class UserOrdersController {
 				.statusCode(projectionById.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 				.errorClass(projectionById.isPresent() ? null : ApiResponses.ORDER_NOT_FOUND)
 				.errorMessage(String.valueOf(orderId))
-				.data(projectionById.orElse(null))
+				.payload(projectionById.orElse(null))
 				.build();
 
 		return ResponseEntity.status(projectionById.isPresent() ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
@@ -77,7 +77,7 @@ public class UserOrdersController {
 				.statusDescription(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 				.statusCode(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 				.errorClass(result ? null : ApiResponses.ORDER_NOT_FOUND)
-				.data(orderId)
+				.payload(orderId)
 				.build();
 
 		return ResponseEntity.status(result ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
@@ -91,7 +91,7 @@ public class UserOrdersController {
 		Response response = Response.builder()
 				.statusDescription(HttpStatus.OK.name())
 				.statusCode(HttpStatus.OK.value())
-				.data(orderId)
+				.payload(orderId)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -118,7 +118,7 @@ public class UserOrdersController {
 		Response response = Response.builder()
 				.statusDescription(HttpStatus.OK.name())
 				.statusCode(HttpStatus.OK.value())
-				.data(orders)
+				.payload(orders)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

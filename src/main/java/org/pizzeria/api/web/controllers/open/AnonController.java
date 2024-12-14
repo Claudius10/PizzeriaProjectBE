@@ -51,7 +51,7 @@ public class AnonController {
 		Response response = Response.builder()
 				.statusDescription(HttpStatus.CREATED.toString())
 				.statusCode(HttpStatus.CREATED.value())
-				.data(createdOrder)
+				.payload(createdOrder)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);

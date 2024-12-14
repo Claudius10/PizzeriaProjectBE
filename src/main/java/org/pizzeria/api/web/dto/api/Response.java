@@ -24,5 +24,5 @@ public class Response {
 
 	private String errorMessage;
 
-	private Object data;
+	private Object payload;
 }

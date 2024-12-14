@@ -41,7 +41,7 @@ public class UserController {
 				.statusCode(user.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 				.errorClass(user.isPresent() ? null : ApiResponses.USER_NOT_FOUND)
 				.errorMessage(user.isPresent() ? null : String.valueOf(userId))
-				.data(user.orElse(null))
+				.payload(user.orElse(null))
 				.build();
 
 		return ResponseEntity.status(user.isPresent() ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
@@ -57,7 +57,7 @@ public class UserController {
 				.statusDescription(!userAddressList.isEmpty() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 				.statusCode(!userAddressList.isEmpty() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 				.errorClass(!userAddressList.isEmpty() ? null : ApiResponses.ADDRESS_LIST_EMPTY)
-				.data(!userAddressList.isEmpty() ? userAddressList : null)
+				.payload(!userAddressList.isEmpty() ? userAddressList : null)
 				.build();
 
 		return ResponseEntity.status(!userAddressList.isEmpty() ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);

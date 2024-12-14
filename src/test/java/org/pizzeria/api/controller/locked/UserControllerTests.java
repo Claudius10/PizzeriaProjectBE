@@ -86,9 +86,9 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_NOT_FOUND);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.USER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 	}
 
 	@Test
@@ -110,8 +110,8 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isNull();
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getError().getCause()).isNull();
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		UserDTO userDTO = objectMapper.convertValue(responseObj.getPayload(), UserDTO.class);
 		assertThat(userDTO.id()).isEqualTo(userId);
 	}
@@ -185,9 +185,9 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
-		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 	}
 
 	@Test
@@ -248,9 +248,9 @@ class UserControllerTests {
 		assertThat(userAddressList).hasSize(3);
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_MAX_SIZE);
-		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.BAD_REQUEST.name());
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ADDRESS_MAX_SIZE);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.BAD_REQUEST.name());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test
@@ -312,9 +312,9 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
-		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
@@ -397,9 +397,9 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
-		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
@@ -426,9 +426,9 @@ class UserControllerTests {
 
 		// Assert
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
-		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 	}
 
 	@Test
@@ -501,7 +501,7 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
@@ -572,7 +572,7 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		User user = userRepository.findUserByEmail(emailChangeDTO.email());
 		assertThat(user.getEmail()).isEqualTo(emailChangeDTO.email());
 	}
@@ -608,8 +608,8 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
 	}
 
 	@Test
@@ -680,7 +680,7 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		User user = userRepository.findUserByEmail("Tester3@gmail.com");
 		assertThat(user.getContactNumber()).isEqualTo(contactNumberChangeDTO.contactNumber());
 	}
@@ -718,8 +718,8 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.BAD_CREDENTIALS);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(SecurityResponses.BAD_CREDENTIALS);
 	}
 
 	@Test
@@ -755,7 +755,7 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		User user = userRepository.findUserByEmail("Tester3@gmail.com");
 		assertThat(passwordEncoder.matches(passwordChangeDTO.newPassword(), user.getPassword())).isTrue();
 	}
@@ -786,8 +786,8 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.BAD_CREDENTIALS);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(SecurityResponses.BAD_CREDENTIALS);
 	}
 
 	@Test
@@ -816,7 +816,7 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester3@gmail.com");
 		assertThat(user).isEmpty();
 	}

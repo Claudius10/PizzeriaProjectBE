@@ -1,6 +1,8 @@
 package org.pizzeria.api.web.exceptions;
 
+import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.globals.SecurityResponses;
 import org.springframework.dao.DataAccessException;
@@ -39,51 +41,75 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		});
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
-				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.errorClass(ex.getClass().getSimpleName())
-				.errorMessage(String.valueOf(errorMessages))
+				.status(Status.builder()
+						.description(HttpStatus.BAD_REQUEST.name())
+						.code(HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(ex.getClass().getSimpleName())
+						.message(String.valueOf(errorMessages))
+						.origin(GlobalExceptionHandler.class.getSimpleName() + ".handleMethodArgumentNotValid")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler({DataAccessException.class})
-	protected ResponseEntity<Response> handleDataAccessExceptions(DataAccessException ex) {
+	protected ResponseEntity<Response> dataAccessException(DataAccessException ex) {
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
-				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.errorClass(ex instanceof DataIntegrityViolationException ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
-				.errorMessage(ex.getMessage())
+				.status(Status.builder()
+						.description(HttpStatus.BAD_REQUEST.name())
+						.code(HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(ex instanceof DataIntegrityViolationException ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
+						.message(ex.getMessage())
+						.origin(GlobalExceptionHandler.class.getSimpleName() + ".dataAccessException")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
-	protected ResponseEntity<Response> handleAuthenticationExceptions(AccessDeniedException ex) {
+	protected ResponseEntity<Response> accessDenied(AccessDeniedException ex) {
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.UNAUTHORIZED.name())
-				.statusCode(HttpStatus.UNAUTHORIZED.value())
-				.errorClass(ex.getClass().getSimpleName())
-				.errorMessage(ex.getMessage())
+				.status(Status.builder()
+						.description(HttpStatus.UNAUTHORIZED.name())
+						.code(HttpStatus.UNAUTHORIZED.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(ex.getClass().getSimpleName())
+						.message(ex.getMessage())
+						.origin(GlobalExceptionHandler.class.getSimpleName() + ".accessDenied")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 
 	@ExceptionHandler(AuthenticationException.class)
-	protected ResponseEntity<Response> handleAuthenticationExceptions(AuthenticationException ex) {
+	protected ResponseEntity<Response> authenticationException(AuthenticationException ex) {
 
-		String errorMessage = ex instanceof BadCredentialsException ? SecurityResponses.BAD_CREDENTIALS : ex.toString();
+		String errorMessage = ex instanceof BadCredentialsException ? SecurityResponses.BAD_CREDENTIALS : ex.getMessage();
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.UNAUTHORIZED.name())
-				.statusCode(HttpStatus.UNAUTHORIZED.value())
-				.errorClass(ex.getClass().getSimpleName())
-				.errorMessage(errorMessage)
+				.status(Status.builder()
+						.description(HttpStatus.UNAUTHORIZED.name())
+						.code(HttpStatus.UNAUTHORIZED.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(ex.getClass().getSimpleName())
+						.message(errorMessage)
+						.origin(GlobalExceptionHandler.class.getSimpleName() + ".authenticationException")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);

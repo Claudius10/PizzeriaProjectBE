@@ -4,7 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
@@ -34,9 +36,15 @@ public class ValidateOrderOperation {
 		}
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
-				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.errorClass(result.getMessage())
+				.status(Status.builder()
+						.description(HttpStatus.BAD_REQUEST.name())
+						.code(HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result.getMessage())
+						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateNewAnonOrder")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
@@ -52,9 +60,15 @@ public class ValidateOrderOperation {
 		}
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
-				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.errorClass(result.getMessage())
+				.status(Status.builder()
+						.description(HttpStatus.BAD_REQUEST.name())
+						.code(HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result.getMessage())
+						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateNewUserOrder")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
@@ -75,9 +89,15 @@ public class ValidateOrderOperation {
 		}
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
-				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.errorClass(result.getMessage())
+				.status(Status.builder()
+						.description(HttpStatus.BAD_REQUEST.name())
+						.code(HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result.getMessage())
+						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateUserOrderUpdate")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
@@ -93,10 +113,17 @@ public class ValidateOrderOperation {
 		}
 
 		boolean isOrderNotFound = result.getMessage().equals(ApiResponses.ORDER_NOT_FOUND);
+
 		Response response = Response.builder()
-				.statusDescription(isOrderNotFound ? HttpStatus.NO_CONTENT.name() : HttpStatus.BAD_REQUEST.name())
-				.statusCode(isOrderNotFound ? HttpStatus.NO_CONTENT.value() : HttpStatus.BAD_REQUEST.value())
-				.errorClass(result.getMessage())
+				.status(Status.builder()
+						.description(isOrderNotFound ? HttpStatus.NO_CONTENT.name() : HttpStatus.BAD_REQUEST.name())
+						.code(isOrderNotFound ? HttpStatus.NO_CONTENT.value() : HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result.getMessage())
+						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateUserOrderDelete")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);

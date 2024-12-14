@@ -7,7 +7,9 @@ import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.web.aop.annotations.ValidateUserId;
+import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.user.dto.*;
 import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.globals.ApiRoutes;
@@ -37,10 +39,16 @@ public class UserController {
 		Optional<UserDTO> user = userService.findUserDTOById(userId);
 
 		Response response = Response.builder()
-				.statusDescription(user.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
-				.statusCode(user.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-				.errorClass(user.isPresent() ? null : ApiResponses.USER_NOT_FOUND)
-				.errorMessage(user.isPresent() ? null : String.valueOf(userId))
+				.status(Status.builder()
+						.description(user.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
+						.code(user.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(user.isPresent() ? null : ApiResponses.USER_NOT_FOUND)
+						.message(user.isPresent() ? null : String.valueOf(userId))
+						.origin(UserController.class.getSimpleName() + ".findUserById")
+						.logged(false)
+						.build())
 				.payload(user.orElse(null))
 				.build();
 
@@ -54,10 +62,16 @@ public class UserController {
 		Set<Address> userAddressList = userService.findUserAddressListById(userId);
 
 		Response response = Response.builder()
-				.statusDescription(!userAddressList.isEmpty() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
-				.statusCode(!userAddressList.isEmpty() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-				.errorClass(!userAddressList.isEmpty() ? null : ApiResponses.ADDRESS_LIST_EMPTY)
-				.payload(!userAddressList.isEmpty() ? userAddressList : null)
+				.status(Status.builder()
+						.description(!userAddressList.isEmpty() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
+						.code(!userAddressList.isEmpty() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(!userAddressList.isEmpty() ? null : ApiResponses.ADDRESS_LIST_EMPTY)
+						.origin(UserController.class.getSimpleName() + ".findUserAddressListById")
+						.logged(false)
+						.build())
+				.payload(userAddressList.isEmpty() ? null : userAddressList)
 				.build();
 
 		return ResponseEntity.ok(response);
@@ -70,9 +84,15 @@ public class UserController {
 		boolean result = userService.addUserAddress(userId, address);
 
 		Response response = Response.builder()
-				.statusDescription(result ? HttpStatus.CREATED.name() : HttpStatus.BAD_REQUEST.name())
-				.statusCode(result ? HttpStatus.CREATED.value() : HttpStatus.BAD_REQUEST.value())
-				.errorClass(result ? null : ApiResponses.ADDRESS_MAX_SIZE)
+				.status(Status.builder()
+						.description(result ? HttpStatus.CREATED.name() : HttpStatus.BAD_REQUEST.name())
+						.code(result ? HttpStatus.CREATED.value() : HttpStatus.BAD_REQUEST.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result ? null : ApiResponses.ADDRESS_MAX_SIZE)
+						.origin(UserController.class.getSimpleName() + ".createUserAddress")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.status(result ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST).body(response);
@@ -85,9 +105,15 @@ public class UserController {
 		boolean result = userService.removeUserAddress(userId, addressId);
 
 		Response response = Response.builder()
-				.statusDescription(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
-				.statusCode(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-				.errorClass(result ? null : ApiResponses.ADDRESS_NOT_FOUND)
+				.status(Status.builder()
+						.description(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
+						.code(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result ? null : ApiResponses.ADDRESS_NOT_FOUND)
+						.origin(UserController.class.getSimpleName() + ".deleteUserAddress")
+						.logged(false)
+						.build())
 				.build();
 
 		return ResponseEntity.ok(response);
@@ -98,9 +124,12 @@ public class UserController {
 
 		userService.updateUserName(nameChangeDTO.password(), userId, nameChangeDTO.name());
 
+
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.build();
 
 		return ResponseEntity.ok(response);
@@ -116,8 +145,10 @@ public class UserController {
 		userService.updateUserEmail(emailChangeDTO.password(), userId, emailChangeDTO.email());
 
 		Response responseObj = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.build();
 
 		SecurityCookieUtils.eatAllCookies(request, response);
@@ -133,8 +164,10 @@ public class UserController {
 		userService.updateUserContactNumber(contactNumberChangeDTO.password(), userId, contactNumberChangeDTO.contactNumber());
 
 		Response responseObj = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.build();
 
 		return ResponseEntity.ok(responseObj);
@@ -150,8 +183,10 @@ public class UserController {
 		userService.updateUserPassword(passwordChangeDTO.currentPassword(), userId, passwordChangeDTO.newPassword());
 
 		Response responseObj = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.build();
 
 		SecurityCookieUtils.eatAllCookies(request, response);
@@ -169,8 +204,10 @@ public class UserController {
 		userService.deleteUserById(password, id);
 
 		Response responseObj = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.build();
 
 		SecurityCookieUtils.eatAllCookies(request, response);

@@ -3,6 +3,7 @@ package org.pizzeria.api.web.controllers.open;
 import org.pizzeria.api.services.resources.ResourceService;
 import org.pizzeria.api.services.store.StoreService;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,10 @@ public class ResourceController {
 	public ResponseEntity<Response> findAllByType(@RequestParam String type) {
 
 		Response response = Response.builder()
-				.statusCode(HttpStatus.OK.value())
-				.statusDescription(HttpStatus.OK.name())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.payload(resourceService.findAllProductsByType(type))
 				.build();
 
@@ -40,8 +43,10 @@ public class ResourceController {
 	public ResponseEntity<Response> findAllStores() {
 
 		Response response = Response.builder()
-				.statusCode(HttpStatus.OK.value())
-				.statusDescription(HttpStatus.OK.name())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.payload(storeService.findAll())
 				.build();
 
@@ -52,8 +57,10 @@ public class ResourceController {
 	public ResponseEntity<Response> findAllOffers() {
 
 		Response response = Response.builder()
-				.statusCode(HttpStatus.OK.value())
-				.statusDescription(HttpStatus.OK.name())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.payload(resourceService.findAllOffers())
 				.build();
 

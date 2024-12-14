@@ -359,8 +359,8 @@ class AnonControllerAnonOrderTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
 	}
 
 	@Test
@@ -420,8 +420,8 @@ class AnonControllerAnonOrderTests {
 
 		// Assert
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
 	NewAnonOrderDTO anonOrderStub(String customerName, int customerNumber, String customerEmail, String street,

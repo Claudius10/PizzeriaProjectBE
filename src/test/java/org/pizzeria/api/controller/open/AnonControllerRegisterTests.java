@@ -104,8 +104,8 @@ class AnonControllerRegisterTests {
 
 		Response responseObj = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), Response.class);
 
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test

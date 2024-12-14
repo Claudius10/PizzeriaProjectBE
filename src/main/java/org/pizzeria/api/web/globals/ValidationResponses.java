@@ -2,6 +2,8 @@ package org.pizzeria.api.web.globals;
 
 public final class ValidationResponses {
 
+	// TODO - Refactor these messages
+
 	public static final String NAME_INVALID = "El nombre y apellido(s) debe tener una longitud entre 2-50 letras." +
 			" Incluye tildes. No incluye símbolos especiales.";
 

@@ -123,7 +123,7 @@ class UserOrdersControllerTests {
 				.andReturn().getResponse();
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
 	@Test
@@ -159,8 +159,8 @@ class UserOrdersControllerTests {
 				.andReturn().getResponse();
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
 	@Test
@@ -230,8 +230,8 @@ class UserOrdersControllerTests {
 
 		Response responseObjTwo = getResponse(getResponse, objectMapper);
 
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(responseObjTwo.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(responseObjTwo.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 
 		OrderDTO order = objectMapper.convertValue(responseObjTwo.getPayload(), OrderDTO.class);
 		assertThat(order.id()).isEqualTo(orderId);
@@ -264,8 +264,8 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
 	}
 
 	@Test
@@ -313,7 +313,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 
 		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
@@ -368,7 +368,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 
 		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
@@ -429,7 +429,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 
 		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 
@@ -491,8 +491,8 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.ORDER_UPDATE_TIME_ERROR);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.ORDER_UPDATE_TIME_ERROR);
 	}
 
 	@Test
@@ -548,8 +548,8 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
 	}
 
 	@Test
@@ -605,8 +605,8 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
 	}
 
 	@Test
@@ -643,7 +643,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 
 		Long id = objectMapper.convertValue(responseObj.getPayload(), Long.class);
 		assertThat(id).isEqualTo(order.id());
@@ -683,8 +683,8 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.ORDER_DELETE_TIME_ERROR);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.ORDER_DELETE_TIME_ERROR);
 	}
 
 	@Test
@@ -714,7 +714,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
@@ -754,7 +754,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
@@ -787,7 +787,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		OrderSummaryListDTO orderList = objectMapper.convertValue(responseObj.getPayload(), OrderSummaryListDTO.class);
 		assertThat(orderList).isNotNull();
 		assertThat(orderList.orderList()).isEmpty();
@@ -820,8 +820,8 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.USER_NOT_FOUND);
 	}
 
 	OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {

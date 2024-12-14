@@ -4,7 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.globals.SecurityResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,17 @@ public class ValidateUserIdentity {
 
 	@Around(value = "org.pizzeria.api.web.aop.pointcuts.UserPointCuts.requieresUserIdValidation() && args(.., userId, request)", argNames = "pjp,userId,request")
 	public Object validate(ProceedingJoinPoint pjp, Long userId, HttpServletRequest request) throws Throwable {
+
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.UNAUTHORIZED.name())
-				.statusCode(HttpStatus.UNAUTHORIZED.value())
-				.errorClass(SecurityResponses.USER_ID_NO_MATCH)
+				.status(Status.builder()
+						.description(HttpStatus.UNAUTHORIZED.name())
+						.code(HttpStatus.UNAUTHORIZED.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(SecurityResponses.USER_ID_NO_MATCH)
+						.origin(ValidateUserIdentity.class.getSimpleName() + ".validate")
+						.logged(false)
+						.build())
 				.build();
 
 		if (userId == null) {

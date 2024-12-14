@@ -4,7 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.web.aop.annotations.ValidateUserId;
+import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.OrderDTO;
 import org.pizzeria.api.web.dto.order.dto.OrderSummaryListDTO;
@@ -38,8 +40,10 @@ public class UserOrdersController {
 		Long id = orderService.createUserOrder(userId, order);
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.CREATED.name())
-				.statusCode(HttpStatus.CREATED.value())
+				.status(Status.builder()
+						.description(HttpStatus.CREATED.name())
+						.code(HttpStatus.CREATED.value())
+						.build())
 				.payload(id)
 				.build();
 
@@ -53,10 +57,16 @@ public class UserOrdersController {
 		Optional<OrderDTO> projectionById = orderService.findProjectionById(orderId);
 
 		Response response = Response.builder()
-				.statusDescription(projectionById.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
-				.statusCode(projectionById.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-				.errorClass(projectionById.isPresent() ? null : ApiResponses.ORDER_NOT_FOUND)
-				.errorMessage(String.valueOf(orderId))
+				.status(Status.builder()
+						.description(projectionById.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
+						.code(projectionById.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(projectionById.isPresent() ? null : ApiResponses.ORDER_NOT_FOUND)
+						.message(projectionById.isPresent() ? null : String.valueOf(userId))
+						.origin(UserController.class.getSimpleName() + ".findUserOrderDTO")
+						.logged(false)
+						.build())
 				.payload(projectionById.orElse(null))
 				.build();
 
@@ -74,9 +84,15 @@ public class UserOrdersController {
 		boolean result = orderService.updateUserOrder(orderId, order);
 
 		Response response = Response.builder()
-				.statusDescription(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
-				.statusCode(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-				.errorClass(result ? null : ApiResponses.ORDER_NOT_FOUND)
+				.status(Status.builder()
+						.description(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
+						.code(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.build())
+				.error(ApiError.builder()
+						.cause(result ? null : ApiResponses.ORDER_NOT_FOUND)
+						.origin(UserController.class.getSimpleName() + ".updateUserOrder")
+						.logged(false)
+						.build())
 				.payload(orderId)
 				.build();
 
@@ -89,8 +105,10 @@ public class UserOrdersController {
 		orderService.deleteUserOrderById(orderId);
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.payload(orderId)
 				.build();
 
@@ -116,8 +134,10 @@ public class UserOrdersController {
 		);
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.OK.name())
-				.statusCode(HttpStatus.OK.value())
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.build())
 				.payload(orders)
 				.build();
 

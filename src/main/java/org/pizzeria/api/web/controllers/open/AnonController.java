@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.CreatedAnonOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
@@ -37,8 +38,10 @@ public class AnonController {
 		userService.createUser(registerDTO);
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.CREATED.toString())
-				.statusCode(HttpStatus.CREATED.value())
+				.status(Status.builder()
+						.description(HttpStatus.CREATED.name())
+						.code(HttpStatus.CREATED.value())
+						.build())
 				.build();
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -49,8 +52,10 @@ public class AnonController {
 		CreatedAnonOrderDTO createdOrder = orderService.createAnonOrder(newAnonOrder);
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.CREATED.toString())
-				.statusCode(HttpStatus.CREATED.value())
+				.status(Status.builder()
+						.description(HttpStatus.CREATED.name())
+						.code(HttpStatus.CREATED.value())
+						.build())
 				.payload(createdOrder)
 				.build();
 

@@ -100,8 +100,8 @@ class UserIdValidationTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getError().getCause()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
 	}
 
 	@Test
@@ -136,7 +136,7 @@ class UserIdValidationTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	Long createUser(RegisterDTO registerDTO) throws Exception {

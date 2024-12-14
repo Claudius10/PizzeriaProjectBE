@@ -2,11 +2,23 @@ package org.pizzeria.api.web.globals;
 
 public final class ApiRoutes {
 
+	// BASE
+
 	public static final String BASE = "/api";
 
 	public static final String V1 = "/v1";
 
 	public static final String ALL = "/**";
+
+	// AUTH
+
+	public static final String AUTH_BASE = "/auth";
+
+	public static final String AUTH_LOGIN = "/login";
+
+	public static final String AUTH_LOGOUT = "/logout";
+
+	public static final String AUTH_LOGIN_EMAIL = "/logout";
 
 	// ANON
 

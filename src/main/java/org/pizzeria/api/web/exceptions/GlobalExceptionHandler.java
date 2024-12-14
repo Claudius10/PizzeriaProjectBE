@@ -55,8 +55,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		Response response = Response.builder()
 				.statusDescription(HttpStatus.BAD_REQUEST.name())
 				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.errorClass(ex.getClass().getSimpleName())
-				.errorMessage(ex instanceof DataIntegrityViolationException ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getMessage())
+				.errorClass(ex instanceof DataIntegrityViolationException ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
+				.errorMessage(ex.getMessage())
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Response> handleAuthenticationExceptions(AccessDeniedException ex) {
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
+				.statusDescription(HttpStatus.UNAUTHORIZED.name())
 				.statusCode(HttpStatus.UNAUTHORIZED.value())
 				.errorClass(ex.getClass().getSimpleName())
 				.errorMessage(ex.getMessage())
@@ -81,7 +81,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		String errorMessage = ex instanceof BadCredentialsException ? SecurityResponses.BAD_CREDENTIALS : ex.toString();
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
+				.statusDescription(HttpStatus.UNAUTHORIZED.name())
 				.statusCode(HttpStatus.UNAUTHORIZED.value())
 				.errorClass(ex.getClass().getSimpleName())
 				.errorMessage(errorMessage)
@@ -94,7 +94,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Response> handleRoleNotFoundException(RoleNotFoundException ex) {
 
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
+				.statusDescription(HttpStatus.INTERNAL_SERVER_ERROR.name())
 				.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
 				.errorClass(ex.getClass().getSimpleName())
 				.errorMessage(ex.getMessage())

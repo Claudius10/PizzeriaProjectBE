@@ -8,6 +8,7 @@ import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
+import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.order.validation.OrderValidationResult;
 import org.pizzeria.api.web.order.validation.OrderValidator;
 import org.springframework.http.HttpStatus;
@@ -91,9 +92,10 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
+		boolean isOrderNotFound = result.getMessage().equals(ApiResponses.ORDER_NOT_FOUND);
 		Response response = Response.builder()
-				.statusDescription(HttpStatus.BAD_REQUEST.name())
-				.statusCode(HttpStatus.BAD_REQUEST.value())
+				.statusDescription(isOrderNotFound ? HttpStatus.NO_CONTENT.name() : HttpStatus.BAD_REQUEST.name())
+				.statusCode(isOrderNotFound ? HttpStatus.NO_CONTENT.value() : HttpStatus.BAD_REQUEST.value())
 				.errorClass(result.getMessage())
 				.build();
 

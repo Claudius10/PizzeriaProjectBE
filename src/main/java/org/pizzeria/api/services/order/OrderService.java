@@ -18,7 +18,7 @@ public interface OrderService {
 
 	boolean updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder);
 
-	boolean deleteUserOrderById(Long orderId);
+	void deleteUserOrderById(Long orderId);
 
 	Page<OrderSummaryProjection> findUserOrderSummary(Long userId, int size, int page);
 

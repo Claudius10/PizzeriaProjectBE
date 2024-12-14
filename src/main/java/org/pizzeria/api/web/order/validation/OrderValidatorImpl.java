@@ -40,13 +40,6 @@ public class OrderValidatorImpl implements OrderValidator {
 			return new OrderValidationResult(ValidationResponses.ORDER_UPDATE_TIME_ERROR);
 		}
 
-		if (!isCartUpdateTimeLimitValid(createdOn)) {
-			OrderValidationResult result = validate(cart, orderDetails);
-			if (result.isValid()) {
-				return new OrderValidationResult(false);
-			}
-		}
-
 		return validate(cart, orderDetails);
 	}
 
@@ -76,11 +69,6 @@ public class OrderValidatorImpl implements OrderValidator {
 			return true;
 		}
 		return (totalCostAfterOffers <= 0 || billToChange >= totalCostAfterOffers) && (totalCostAfterOffers != 0 || billToChange >= totalCost);
-	}
-
-	@Override
-	public boolean isCartUpdateTimeLimitValid(LocalDateTime createdOn) {
-		return LocalDateTime.now().isBefore(createdOn.plusMinutes(UPDATE_LIMIT));
 	}
 
 	@Override

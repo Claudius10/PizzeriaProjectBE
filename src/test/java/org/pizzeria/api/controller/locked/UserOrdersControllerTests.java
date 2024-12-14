@@ -9,17 +9,20 @@ import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.cart.CartItem;
-import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.order.OrderDetails;
+import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.entity.user.User;
+import org.pizzeria.api.repos.address.AddressRepository;
+import org.pizzeria.api.repos.order.OrderRepository;
+import org.pizzeria.api.repos.user.UserRepository;
+import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.OrderDTO;
 import org.pizzeria.api.web.dto.order.dto.OrderSummaryListDTO;
 import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
-import org.pizzeria.api.entity.role.Role;
-import org.pizzeria.api.repos.address.AddressRepository;
-import org.pizzeria.api.repos.order.OrderRepository;
-import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.web.globals.ApiResponses;
+import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.Constants;
 import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +38,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
@@ -78,7 +82,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -107,13 +111,19 @@ class UserOrdersControllerTests {
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/order", userId)
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER, userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
 	@Test
@@ -121,7 +131,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -137,14 +147,20 @@ class UserOrdersControllerTests {
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, null);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/order", userId)
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER, userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
 	@Test
@@ -153,7 +169,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -182,26 +198,42 @@ class UserOrdersControllerTests {
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/user/{userId}/order", userId)
+		MockHttpServletResponse response = mockMvc.perform(post(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER, userId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
-		Long orderId = Long.valueOf(response.getContentAsString());
+		Response responseObj = getResponse(response, objectMapper);
+		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
 
 		// Act
 
 		// get api call to find user order
-		MockHttpServletResponse getResponse = mockMvc.perform(get("/api/user/{userId}/order/{orderId}", userId, orderId)
+		MockHttpServletResponse getResponse = mockMvc.perform(get(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID,
+						userId, orderId)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(getResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
-		OrderDTO order = objectMapper.readValue(getResponse.getContentAsString(), OrderDTO.class);
+		Response responseObjTwo = getResponse(getResponse, objectMapper);
+
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.CREATED.value());
+		assertThat(responseObjTwo.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+		OrderDTO order = objectMapper.convertValue(responseObjTwo.getData(), OrderDTO.class);
 		assertThat(order.id()).isEqualTo(orderId);
 	}
 
@@ -211,7 +243,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -219,14 +251,21 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to find user order
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/{orderId}", userId, 99)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, 99)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.ACCEPTED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.ORDER_NOT_FOUND, 99));
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
 	}
 
 	@Test
@@ -235,7 +274,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -259,7 +298,13 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
@@ -267,10 +312,13 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		Long orderId = Long.valueOf(response.getContentAsString());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+
 		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(updatedOrder.address().getId()).isEqualTo(newAddressId);
 	}
 
@@ -279,7 +327,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -304,7 +352,13 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
@@ -313,10 +367,12 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		Long orderId = Long.valueOf(response.getContentAsString());
-		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+
+		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 		assertThat(updatedOrder.orderDetails().contentEquals(orderUpdate.orderDetails())).isTrue();
 	}
 
@@ -325,7 +381,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -357,7 +413,13 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
@@ -366,10 +428,12 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		Long orderId = Long.valueOf(response.getContentAsString());
-		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Long orderId = objectMapper.convertValue(responseObj.getData(), Long.class);
+
+		OrderDTO updatedOrder = findOrder(orderId, userId, accessToken);
 		assertThat(updatedOrder.cart().contentEquals(orderUpdate.cart())).isTrue();
 	}
 
@@ -378,7 +442,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -411,7 +475,13 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
@@ -420,16 +490,17 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ORDER_UPDATE_TIME_ERROR);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.ORDER_UPDATE_TIME_ERROR);
 	}
 
 	@Test
-	void givenOrderUpdate_whenOrderNotFound_thenReturnAcceptedWithMessage() throws Exception {
+	void givenOrderUpdate_whenOrderNotFound_thenReturnNoContent() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -461,7 +532,13 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, 99)
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, 99)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
@@ -470,17 +547,17 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_ORDER_UPDATE_ERROR,
-				99, addressId));
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
 	}
 
 	@Test
-	void givenOrderUpdate_whenAddressNotFound_thenReturnAcceptedWithMessage() throws Exception {
+	void givenOrderUpdate_whenAddressNotFound_thenReturnNoContent() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -512,7 +589,13 @@ class UserOrdersControllerTests {
 		// Act
 
 		// put api call to update order
-		MockHttpServletResponse response = mockMvc.perform(put("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(put(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(orderUpdate))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
@@ -521,8 +604,9 @@ class UserOrdersControllerTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_ORDER_UPDATE_ERROR, order.id(), 878678));
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
 	}
 
 	@Test
@@ -530,7 +614,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -545,15 +629,24 @@ class UserOrdersControllerTests {
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(delete(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(Long.valueOf(response.getContentAsString())).isEqualTo(order.id());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+
+		Long id = objectMapper.convertValue(responseObj.getData(), Long.class);
+		assertThat(id).isEqualTo(order.id());
 	}
 
 	@Test
@@ -561,7 +654,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -576,23 +669,30 @@ class UserOrdersControllerTests {
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/order/{orderId}", userId, order.id())
+		MockHttpServletResponse response = mockMvc.perform(delete(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, order.id())
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ORDER_DELETE_TIME_ERROR);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.ORDER_DELETE_TIME_ERROR);
 	}
 
 	@Test
-	void givenOrderDelete_whenOrderNotFound_thenReturnBadRequest() throws Exception {
+	void givenOrderDelete_whenOrderNotFound_thenReturnNoContent() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -600,14 +700,21 @@ class UserOrdersControllerTests {
 		// Act
 
 		// delete api call to delete order
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/user/{userId}/order/{orderId}", userId, 995678)
+		MockHttpServletResponse response = mockMvc.perform(delete(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, 995678)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 
 	@Test
@@ -615,7 +722,7 @@ class UserOrdersControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create address in database
 		Long addressId = createAddressTestSubject("Test", 1);
@@ -633,22 +740,29 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/summary?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_SUMMARY + "?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
-	void givenGetUserOrderSummary_whenNoOrders_thenReturnAcceptedWithMessage() throws Exception {
+	void givenGetUserOrderSummary_whenNoOrders_thenReturnEmptyOrderSummaryList() throws Exception {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserTestSubject();
+		Long userId = createUser();
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -659,16 +773,22 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/summary?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_SUMMARY + "?pageNumber={pN}&pageSize={pS}", userId, pageNumber, pageSize)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		String contentAsString = response.getContentAsString();
-		OrderSummaryListDTO orderList = objectMapper.readValue(contentAsString, OrderSummaryListDTO.class);
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+		OrderSummaryListDTO orderList = objectMapper.convertValue(responseObj.getData(), OrderSummaryListDTO.class);
 		assertThat(orderList).isNotNull();
 		assertThat(orderList.orderList()).isEmpty();
 	}
@@ -686,22 +806,37 @@ class UserOrdersControllerTests {
 		// Act
 
 		// get api call to get OrderSummary
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}/order/summary?pageNumber={pN}&pageSize={pS}", 0, pageNumber, pageSize)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_SUMMARY + "?pageNumber={pN}&pageSize={pS}", 0, pageNumber, pageSize)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 30, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(String.format(ApiResponses.USER_NOT_FOUND, 0));
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_NOT_FOUND);
 	}
 
 	OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {
-		String response = mockMvc.perform(get("/api/user/{userId}/order/{orderId}", userId, orderId)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE
+								+ ApiRoutes.V1
+								+ ApiRoutes.USER_BASE
+								+ ApiRoutes.USER_ID
+								+ ApiRoutes.USER_ORDER
+								+ ApiRoutes.ORDER_ID, userId, orderId)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 1800, true, false)))
-				.andReturn().getResponse().getContentAsString();
-		return objectMapper.readValue(response, OrderDTO.class);
+				.andReturn().getResponse();
+
+		Response responseObj = getResponse(response, objectMapper);
+		return objectMapper.convertValue(responseObj.getData(), OrderDTO.class);
 	}
 
 	OrderDTO createUserOrderTestSubject(int minutesInThePast, long userId, long addressId, String validAccessToken) throws Exception {
@@ -725,7 +860,8 @@ class UserOrdersControllerTests {
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
 
 		// post api call to create user order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/tests/user/{userId}/order?minusMin={minutesInThePast}", userId, minutesInThePast)
+		MockHttpServletResponse response = mockMvc.perform(post(
+						"/api/tests/user/{userId}/order?minusMin={minutesInThePast}", userId, minutesInThePast)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(newUserOrderDTO))
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 1800, true, false)))
@@ -735,16 +871,24 @@ class UserOrdersControllerTests {
 		return findOrder(orderId, userId, validAccessToken);
 	}
 
-	Long createUserTestSubject() throws Exception {
-		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(new RegisterDTO(
-								"Tester",
-								"Tester@gmail.com",
-								"Tester@gmail.com",
-								"Password1",
-								"Password1"))))
-				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
+	Long createUser() throws Exception {
+		mockMvc.perform(post(
+				ApiRoutes.BASE
+						+ ApiRoutes.V1
+						+ ApiRoutes.ANON_BASE
+						+ ApiRoutes.ANON_REGISTER)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(new RegisterDTO(
+						"Tester",
+						"Tester@gmail.com",
+						"Tester@gmail.com",
+						"Password1",
+						"Password1")
+				)));
+
+		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester@gmail.com");
+		assertThat(user.isPresent()).isTrue();
+		return user.get().getId();
 	}
 
 	Long createAddressTestSubject(String streetName, int streetNumber) {

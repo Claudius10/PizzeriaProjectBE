@@ -12,18 +12,21 @@ import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.resources.OfferRepository;
 import org.pizzeria.api.repos.resources.ProductRepository;
 import org.pizzeria.api.services.store.StoreService;
+import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -64,11 +67,17 @@ class ResourceControllerTests {
 		// Act
 
 		// get api call to find product list
-		String response = mockMvc.perform(get("/api/resource/product?type=pizza")).andReturn().getResponse().getContentAsString();
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE +
+								ApiRoutes.V1 +
+								ApiRoutes.RESOURCE_BASE +
+								ApiRoutes.RESOURCE_PRODUCT + "?type=pizza"))
+				.andReturn().getResponse();
 
 		// Assert
 
-		List<Product> productList = Arrays.asList(objectMapper.readValue(response, Product[].class));
+		Response responseObj = getResponse(response, objectMapper);
+		List<Product> productList = objectMapper.convertValue(responseObj.getData(), List.class);
 		assertThat(productList).hasSize(1);
 	}
 
@@ -77,11 +86,17 @@ class ResourceControllerTests {
 		// Act
 
 		// get api call to find store list
-		String response = mockMvc.perform(get("/api/resource/store")).andReturn().getResponse().getContentAsString();
+		MockHttpServletResponse response = mockMvc.perform(get(
+				ApiRoutes.BASE +
+						ApiRoutes.V1 +
+						ApiRoutes.RESOURCE_BASE +
+						ApiRoutes.RESOURCE_STORE
+		)).andReturn().getResponse();
 
 		// Assert
 
-		List<Store> storeList = Arrays.asList(objectMapper.readValue(response, Store[].class));
+		Response responseObj = getResponse(response, objectMapper);
+		List<Store> storeList = objectMapper.convertValue(responseObj.getData(), List.class);
 		assertThat(storeList).hasSize(1);
 	}
 
@@ -90,11 +105,16 @@ class ResourceControllerTests {
 		// Act
 
 		// get api call to find offer list
-		String response = mockMvc.perform(get("/api/resource/offer")).andReturn().getResponse().getContentAsString();
+		MockHttpServletResponse response = mockMvc.perform(get(ApiRoutes.BASE +
+				ApiRoutes.V1 +
+				ApiRoutes.RESOURCE_BASE +
+				ApiRoutes.RESOURCE_OFFER
+		)).andReturn().getResponse();
 
 		// Assert
 
-		List<Offer> offerList = Arrays.asList(objectMapper.readValue(response, Offer[].class));
+		Response responseObj = getResponse(response, objectMapper);
+		List<Offer> offerList = objectMapper.convertValue(responseObj.getData(), List.class);
 		assertThat(offerList).hasSize(1);
 	}
 }

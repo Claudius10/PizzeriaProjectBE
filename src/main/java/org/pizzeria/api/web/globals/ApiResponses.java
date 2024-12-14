@@ -2,7 +2,7 @@ package org.pizzeria.api.web.globals;
 
 public final class ApiResponses {
 
-	public static final String USER_NOT_FOUND = "UserNotFound";
+	public static final String USER_NOT_FOUND = "UsernameNotFoundException";
 
 	public static final String USER_EMAIL_ALREADY_EXISTS = "EmailAlreadyExists";
 

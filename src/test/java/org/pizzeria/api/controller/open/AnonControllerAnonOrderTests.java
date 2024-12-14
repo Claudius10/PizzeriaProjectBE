@@ -7,9 +7,11 @@ import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.cart.CartItem;
 import org.pizzeria.api.entity.order.OrderDetails;
+import org.pizzeria.api.repos.order.OrderRepository;
+import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.order.dto.CustomerDTO;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
-import org.pizzeria.api.repos.order.OrderRepository;
+import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -50,7 +53,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -78,7 +81,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"·$dfsaf3",
@@ -110,7 +113,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -142,7 +145,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -174,7 +177,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -206,7 +209,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -238,7 +241,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -270,7 +273,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -302,7 +305,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -334,7 +337,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/order")
+		MockHttpServletResponse response = mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -355,8 +358,9 @@ class AnonControllerAnonOrderTests {
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
 	}
 
 	@Test
@@ -364,7 +368,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		mockMvc.perform(post("/api/anon/order")
+		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -396,7 +400,7 @@ class AnonControllerAnonOrderTests {
 		// Act
 
 		// post api call to create anon order
-		MockHttpServletResponse response = mockMvc.perform(post("/api/anon/order")
+		MockHttpServletResponse response = mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.ANON_BASE + ApiRoutes.ANON_ORDER)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(anonOrderStub(
 								"customerName",
@@ -415,9 +419,9 @@ class AnonControllerAnonOrderTests {
 				.getResponse();
 
 		// Assert
-
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.getContentAsString()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(ValidationResponses.CART_IS_EMPTY);
 	}
 
 	NewAnonOrderDTO anonOrderStub(String customerName, int customerNumber, String customerEmail, String street,

@@ -9,7 +9,6 @@ import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.role.RoleService;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.user.dto.UserDTO;
-import org.pizzeria.api.web.exceptions.custom.RoleNotFoundException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,12 +40,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void createUser(RegisterDTO registerDTO) throws RoleNotFoundException {
+	public void createUser(RegisterDTO registerDTO) {
 		String encodedPassword = bCryptEncoder.encode(registerDTO.password());
 		Optional<Role> userRole = roleService.findByName("USER");
-		if (userRole.isEmpty()) {
-			throw new RoleNotFoundException("UserRoleNotFound");
-		}
 
 		User user = new User.Builder()
 				.withName(registerDTO.name())

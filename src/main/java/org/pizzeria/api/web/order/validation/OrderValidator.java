@@ -17,8 +17,6 @@ public interface OrderValidator {
 
 	boolean isChangeRequestedValid(Double changeRequested, Double totalCostAfterOffers, Double totalCost);
 
-	boolean isCartUpdateTimeLimitValid(LocalDateTime createdOn);
-
 	boolean isOrderDataUpdateTimeLimitValid(LocalDateTime createdOn);
 
 	Double calculatePaymentChange(Double changeRequested, Double totalCost, Double totalCostAfterOffers);

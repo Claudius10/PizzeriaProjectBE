@@ -159,15 +159,11 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public boolean deleteUserOrderById(Long orderId) {
+	public void deleteUserOrderById(Long orderId) {
 		Optional<Order> dbOrder = findUserOrderById(orderId);
-
-		if (dbOrder.isEmpty()) {
-			return false;
-		}
-
+		// NOTE - there's no need to check whatever order is present here because if it is, OrderValidatorImpl (AOP
+		//  ValidateOrderOperation) will catch it before this method is called
 		orderRepository.delete(dbOrder.get());
-		return true;
 	}
 
 	@Override

@@ -45,6 +45,7 @@ public final class ApiRoutes {
 	public static final String USER_BASE = "/user";
 
 	public static final String USER_ID = "/{userId}";
+	public static final String USER_ORDER = "/order";
 	public static final String USER_ADDRESS_ID = "/{addressId}";
 
 	public static final String USER_ADDRESS = "/address";

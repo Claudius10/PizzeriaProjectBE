@@ -7,8 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.pizzeria.api.configs.web.security.auth.JWTTokenManager;
 import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
-import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.entity.user.User;
+import org.pizzeria.api.repos.user.UserRepository;
+import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.auth.RegisterDTO;
+import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.Constants;
 import org.pizzeria.api.web.globals.SecurityResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +30,12 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
@@ -53,6 +57,9 @@ class UserIdValidationTests {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	@BeforeAll
 	@AfterAll
 	void cleanUp() {
@@ -67,7 +74,7 @@ class UserIdValidationTests {
 
 		// create user test subject
 
-		long testUserId = createUserTestSubject(new RegisterDTO(
+		long testUserId = createUser(new RegisterDTO(
 				"UserIdValidation",
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
@@ -84,15 +91,17 @@ class UserIdValidationTests {
 
 		// Act
 
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", nonMatchingUserId)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID, nonMatchingUserId)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(response.getContentAsString()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
 	}
 
 	@Test
@@ -102,7 +111,7 @@ class UserIdValidationTests {
 
 		// create user test subject
 
-		long testUserId = createUserTestSubject(new RegisterDTO(
+		long testUserId = createUser(new RegisterDTO(
 				"UserIdValidation",
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
@@ -118,21 +127,30 @@ class UserIdValidationTests {
 
 		// Act
 
-		MockHttpServletResponse response = mockMvc.perform(get("/api/user/{userId}", testUserId)
+		MockHttpServletResponse response = mockMvc.perform(get(
+						ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID, testUserId)
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 1800, true, false)))
 				.andReturn()
 				.getResponse();
 
 		// Assert
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
-	Long createUserTestSubject(RegisterDTO registerDTO) throws Exception {
-		return Long.valueOf(mockMvc.perform(post("/api/anon/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(registerDTO))
-						.with(csrf()))
-				.andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
+	Long createUser(RegisterDTO registerDTO) throws Exception {
+		mockMvc.perform(post(
+				ApiRoutes.BASE
+						+ ApiRoutes.V1
+						+ ApiRoutes.ANON_BASE
+						+ ApiRoutes.ANON_REGISTER)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(registerDTO)
+				));
+
+		Optional<User> user = userRepository.findUserByEmailWithRoles(registerDTO.email());
+		assertThat(user.isPresent()).isTrue();
+		return user.get().getId();
 	}
 }

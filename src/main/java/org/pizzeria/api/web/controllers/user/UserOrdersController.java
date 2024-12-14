@@ -86,18 +86,15 @@ public class UserOrdersController {
 	@ValidateUserId
 	@DeleteMapping(ApiRoutes.ORDER_ID)
 	public ResponseEntity<Response> deleteUserOrderById(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) {
-		// NOTE - there's no need to check whatever id is null here because if it is, OrderValidatorImpl will catch it
-
-		boolean result = orderService.deleteUserOrderById(orderId);
+		orderService.deleteUserOrderById(orderId);
 
 		Response response = Response.builder()
-				.statusDescription(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
-				.statusCode(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-				.errorClass(result ? null : ApiResponses.ORDER_NOT_FOUND)
+				.statusDescription(HttpStatus.OK.name())
+				.statusCode(HttpStatus.OK.value())
 				.data(orderId)
 				.build();
 
-		return ResponseEntity.status(result ? HttpStatus.OK : HttpStatus.NO_CONTENT).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@ValidateUserId

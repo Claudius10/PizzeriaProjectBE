@@ -23,8 +23,14 @@ public class ValidateUserIdentity {
 
 	@Around(value = "org.pizzeria.api.web.aop.pointcuts.UserPointCuts.requieresUserIdValidation() && args(.., userId, request)", argNames = "pjp,userId,request")
 	public Object validate(ProceedingJoinPoint pjp, Long userId, HttpServletRequest request) throws Throwable {
+		Response response = Response.builder()
+				.statusDescription(HttpStatus.UNAUTHORIZED.name())
+				.statusCode(HttpStatus.UNAUTHORIZED.value())
+				.errorClass(SecurityResponses.USER_ID_NO_MATCH)
+				.build();
+
 		if (userId == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SecurityResponses.USER_ID_NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		}
 
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -32,13 +38,6 @@ public class ValidateUserIdentity {
 		Jwt validatedAccessToken = (Jwt) authentication.getPrincipal();
 
 		if (!String.valueOf(userId).equals(validatedAccessToken.getClaimAsString("userId"))) {
-
-			Response response = Response.builder()
-					.statusDescription(HttpStatus.UNAUTHORIZED.name())
-					.statusCode(HttpStatus.UNAUTHORIZED.value())
-					.errorClass(SecurityResponses.USER_ID_NO_MATCH)
-					.build();
-
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 		}
 

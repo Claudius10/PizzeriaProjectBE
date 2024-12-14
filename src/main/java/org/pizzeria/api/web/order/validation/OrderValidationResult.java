@@ -14,12 +14,6 @@ public class OrderValidationResult {
 		this.message = null;
 	}
 
-	public OrderValidationResult(boolean isCartUpdateValid) {
-		this.isValid = true;
-		this.isCartUpdateValid = isCartUpdateValid;
-		this.message = null;
-	}
-
 	public OrderValidationResult(String message) {
 		this.isValid = false;
 		this.isCartUpdateValid = false;

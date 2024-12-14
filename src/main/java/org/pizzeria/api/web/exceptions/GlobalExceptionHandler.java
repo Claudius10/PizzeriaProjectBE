@@ -1,7 +1,6 @@
 package org.pizzeria.api.web.exceptions;
 
 import org.pizzeria.api.web.dto.api.Response;
-import org.pizzeria.api.web.exceptions.custom.RoleNotFoundException;
 import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.globals.SecurityResponses;
 import org.springframework.dao.DataAccessException;
@@ -88,18 +87,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	}
-
-	@ExceptionHandler(RoleNotFoundException.class)
-	protected ResponseEntity<Response> handleRoleNotFoundException(RoleNotFoundException ex) {
-
-		Response response = Response.builder()
-				.statusDescription(HttpStatus.INTERNAL_SERVER_ERROR.name())
-				.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-				.errorClass(ex.getClass().getSimpleName())
-				.errorMessage(ex.getMessage())
-				.build();
-
-		return ResponseEntity.internalServerError().body(response);
 	}
 }

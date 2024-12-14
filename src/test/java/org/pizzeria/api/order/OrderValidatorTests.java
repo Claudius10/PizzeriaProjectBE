@@ -138,18 +138,6 @@ class OrderValidatorTests {
 	}
 
 	@Test
-	void givenIsCartUpdateTimeLimitValidMethod_whenCartUpdateWindowPassed_thenReturnFalse() {
-		boolean isCartUpdateValid = orderValidator.isCartUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(11));
-		assertFalse(isCartUpdateValid);
-	}
-
-	@Test
-	void givenIsCartUpdateTimeLimitValidMethod_whenCartUpdateWindowIsValid_thenReturnTrue() {
-		boolean isCartUpdateValid = orderValidator.isCartUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(9));
-		assertTrue(isCartUpdateValid);
-	}
-
-	@Test
 	void givenIsOrderDataUpdateTimeLimitValidMethod_whenOrderUpdateWindowPassed_thenReturnFalse() {
 		boolean isOrderDataUpdateTimeLimitValid = orderValidator.isOrderDataUpdateTimeLimitValid(LocalDateTime.now().minusMinutes(11));
 		assertFalse(isOrderDataUpdateTimeLimitValid);

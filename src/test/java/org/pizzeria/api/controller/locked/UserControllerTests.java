@@ -1,6 +1,5 @@
 package org.pizzeria.api.controller.locked;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -33,13 +32,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -87,7 +85,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_NOT_FOUND);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
@@ -98,7 +96,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -111,10 +109,10 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isNull();
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
-		UserDTO userDTO = getUserDTO(responseObj);
+		UserDTO userDTO = objectMapper.convertValue(responseObj.getData(), UserDTO.class);
 		assertThat(userDTO.id()).isEqualTo(userId);
 	}
 
@@ -124,7 +122,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -186,7 +184,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
 		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -197,7 +195,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -249,7 +247,7 @@ class UserControllerTests {
 		Set<Address> userAddressList = userRepository.findUserAddressListById(userId);
 		assertThat(userAddressList).hasSize(3);
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_MAX_SIZE);
 		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.BAD_REQUEST.name());
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -260,7 +258,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -287,7 +285,7 @@ class UserControllerTests {
 		assertThat(userRepository.count()).isEqualTo(1);
 		assertThat(addressRepository.count()).isEqualTo(1);
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		List<Address> userAddressList = objectMapper.convertValue(responseObj.getData(), List.class);
 		assertThat(userAddressList).hasSize(1);
 	}
@@ -313,7 +311,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
 		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -324,7 +322,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create address object
 		Address address = new Address.Builder()
@@ -376,7 +374,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -398,7 +396,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
 		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -427,7 +425,7 @@ class UserControllerTests {
 				.andReturn().getResponse();
 
 		// Assert
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.USER_ID_NO_MATCH);
 		assertThat(responseObj.getStatusDescription()).isEqualTo(HttpStatus.UNAUTHORIZED.name());
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
@@ -438,7 +436,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create dto object
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("dsa$·", "Password1");
@@ -477,7 +475,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
 
 		// create dto object
 		NameChangeDTO nameChangeDTO = new NameChangeDTO("NewUserName", "Password1");
@@ -502,7 +500,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 	}
 
@@ -511,7 +509,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("invalidEmailFormat", "Password1");
@@ -549,7 +547,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("validEmailFormat@gmail.com", "Password1");
@@ -573,7 +571,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 		User user = userRepository.findUserByEmail(emailChangeDTO.email());
 		assertThat(user.getEmail()).isEqualTo(emailChangeDTO.email());
@@ -584,8 +582,8 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
-		Long userIdTwo = createUserWithEncodedPassword("Tester4@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
+		Long userIdTwo = createUser("Tester4@gmail.com");
 
 		// create dto object
 		EmailChangeDTO emailChangeDTO = new EmailChangeDTO("Tester3@gmail.com", "Password1");
@@ -609,7 +607,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 		assertThat(responseObj.getErrorClass()).isEqualTo(ApiResponses.USER_EMAIL_ALREADY_EXISTS);
 	}
@@ -619,7 +617,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123, "Password1");
@@ -657,7 +655,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
 
 		// create dto object
 		ContactNumberChangeDTO contactNumberChangeDTO = new ContactNumberChangeDTO(123456789, "Password1");
@@ -681,7 +679,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 		User user = userRepository.findUserByEmail("Tester3@gmail.com");
 		assertThat(user.getContactNumber()).isEqualTo(contactNumberChangeDTO.contactNumber());
@@ -692,7 +690,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester@gmail.com");
+		Long userId = createUser("Tester@gmail.com");
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
@@ -719,7 +717,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.BAD_CREDENTIALS);
 	}
@@ -729,7 +727,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester3@gmail.com", List.of(new Role("USER")), userId);
@@ -756,7 +754,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 		User user = userRepository.findUserByEmail("Tester3@gmail.com");
 		assertThat(passwordEncoder.matches(passwordChangeDTO.newPassword(), user.getPassword())).isTrue();
@@ -767,7 +765,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester3@gmail.com", List.of(new Role("USER")), userId);
@@ -787,7 +785,7 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
 		assertThat(responseObj.getErrorClass()).isEqualTo(SecurityResponses.BAD_CREDENTIALS);
 	}
@@ -797,7 +795,7 @@ class UserControllerTests {
 		// Arrange
 
 		// post api call to register new user in database
-		Long userId = createUserWithEncodedPassword("Tester3@gmail.com");
+		Long userId = createUser("Tester3@gmail.com");
 
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester3@gmail.com", List.of(new Role("USER")), userId);
@@ -817,21 +815,13 @@ class UserControllerTests {
 
 		// Assert
 
-		Response responseObj = getResponse(response);
+		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester3@gmail.com");
 		assertThat(user).isEmpty();
 	}
 
-	private Response getResponse(MockHttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
-		return objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), Response.class);
-	}
-
-	private UserDTO getUserDTO(Response responseObj) {
-		return objectMapper.convertValue(responseObj.getData(), UserDTO.class);
-	}
-
-	Long createUserWithEncodedPassword(String email) throws Exception {
+	Long createUser(String email) throws Exception {
 
 		mockMvc.perform(post(
 				ApiRoutes.BASE

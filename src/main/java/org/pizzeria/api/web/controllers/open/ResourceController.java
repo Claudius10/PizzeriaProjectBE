@@ -26,7 +26,8 @@ public class ResourceController {
 	}
 
 	@GetMapping(path = ApiRoutes.RESOURCE_PRODUCT, params = ApiRoutes.RESOURCE_PRODUCT_PARAM)
-	public ResponseEntity<Response> findAllByType(@RequestParam String type) {
+	public ResponseEntity<Response> findAllByType(@RequestParam String type) throws InterruptedException {
+		Thread.sleep(1000);
 
 		Response response = Response.builder()
 				.status(Status.builder()

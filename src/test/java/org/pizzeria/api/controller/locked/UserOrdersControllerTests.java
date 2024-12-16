@@ -265,7 +265,7 @@ class UserOrdersControllerTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 	}
 
 	@Test
@@ -549,7 +549,7 @@ class UserOrdersControllerTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 	}
 
 	@Test
@@ -606,7 +606,7 @@ class UserOrdersControllerTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ORDER_NOT_FOUND);
+		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 	}
 
 	@Test

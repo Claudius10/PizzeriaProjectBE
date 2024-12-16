@@ -48,7 +48,8 @@ public class AnonController {
 	}
 
 	@PostMapping(ApiRoutes.ANON_ORDER)
-	public ResponseEntity<Response> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) {
+	public ResponseEntity<Response> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		CreatedAnonOrderDTO createdOrder = orderService.createAnonOrder(newAnonOrder);
 
 		Response response = Response.builder()

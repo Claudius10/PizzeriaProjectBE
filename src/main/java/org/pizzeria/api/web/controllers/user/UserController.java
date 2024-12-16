@@ -43,12 +43,6 @@ public class UserController {
 						.description(user.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(user.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 						.build())
-				.error(ApiError.builder()
-						.cause(user.isPresent() ? null : ApiResponses.USER_NOT_FOUND)
-						.message(user.isPresent() ? null : String.valueOf(userId))
-						.origin(UserController.class.getSimpleName() + ".findUserById")
-						.logged(false)
-						.build())
 				.payload(user.orElse(null))
 				.build();
 
@@ -66,11 +60,6 @@ public class UserController {
 						.description(!userAddressList.isEmpty() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(!userAddressList.isEmpty() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 						.build())
-				.error(ApiError.builder()
-						.cause(!userAddressList.isEmpty() ? null : ApiResponses.ADDRESS_LIST_EMPTY)
-						.origin(UserController.class.getSimpleName() + ".findUserAddressListById")
-						.logged(false)
-						.build())
 				.payload(userAddressList.isEmpty() ? null : userAddressList)
 				.build();
 
@@ -81,21 +70,24 @@ public class UserController {
 	@PostMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS)
 	public ResponseEntity<Response> createUserAddress(@RequestBody @Valid Address address, @PathVariable Long userId, HttpServletRequest request) {
 
-		boolean result = userService.addUserAddress(userId, address);
+		boolean ok = userService.addUserAddress(userId, address);
 
 		Response response = Response.builder()
 				.status(Status.builder()
-						.description(result ? HttpStatus.CREATED.name() : HttpStatus.BAD_REQUEST.name())
-						.code(result ? HttpStatus.CREATED.value() : HttpStatus.BAD_REQUEST.value())
-						.build())
-				.error(ApiError.builder()
-						.cause(result ? null : ApiResponses.ADDRESS_MAX_SIZE)
-						.origin(UserController.class.getSimpleName() + ".createUserAddress")
-						.logged(false)
+						.description(ok ? HttpStatus.CREATED.name() : HttpStatus.BAD_REQUEST.name())
+						.code(ok ? HttpStatus.CREATED.value() : HttpStatus.BAD_REQUEST.value())
 						.build())
 				.build();
 
-		return ResponseEntity.status(result ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST).body(response);
+		if (!ok) {
+			response.setError(ApiError.builder()
+					.cause(ApiResponses.ADDRESS_MAX_SIZE)
+					.origin(UserController.class.getSimpleName() + ".createUserAddress")
+					.logged(false)
+					.build());
+		}
+
+		return ResponseEntity.status(ok ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST).body(response);
 	}
 
 	@ValidateUserId
@@ -108,11 +100,6 @@ public class UserController {
 				.status(Status.builder()
 						.description(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-						.build())
-				.error(ApiError.builder()
-						.cause(result ? null : ApiResponses.ADDRESS_NOT_FOUND)
-						.origin(UserController.class.getSimpleName() + ".deleteUserAddress")
-						.logged(false)
 						.build())
 				.build();
 

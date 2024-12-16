@@ -86,7 +86,6 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.USER_NOT_FOUND);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 	}
@@ -110,7 +109,6 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getError().getCause()).isNull();
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 		UserDTO userDTO = objectMapper.convertValue(responseObj.getPayload(), UserDTO.class);
 		assertThat(userDTO.id()).isEqualTo(userId);
@@ -312,7 +310,6 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ADDRESS_LIST_EMPTY);
 		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
@@ -397,7 +394,6 @@ class UserControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.ADDRESS_NOT_FOUND);
 		assertThat(responseObj.getStatus().getDescription()).isEqualTo(HttpStatus.NO_CONTENT.name());
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}

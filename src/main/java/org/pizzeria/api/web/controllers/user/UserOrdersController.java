@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.web.aop.annotations.ValidateUserId;
-import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
@@ -12,7 +11,6 @@ import org.pizzeria.api.web.dto.order.dto.OrderDTO;
 import org.pizzeria.api.web.dto.order.dto.OrderSummaryListDTO;
 import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
 import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
-import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -61,12 +59,6 @@ public class UserOrdersController {
 						.description(projectionById.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(projectionById.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
 						.build())
-				.error(ApiError.builder()
-						.cause(projectionById.isPresent() ? null : ApiResponses.ORDER_NOT_FOUND)
-						.message(projectionById.isPresent() ? null : String.valueOf(userId))
-						.origin(UserController.class.getSimpleName() + ".findUserOrderDTO")
-						.logged(false)
-						.build())
 				.payload(projectionById.orElse(null))
 				.build();
 
@@ -87,11 +79,6 @@ public class UserOrdersController {
 				.status(Status.builder()
 						.description(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
-						.build())
-				.error(ApiError.builder()
-						.cause(result ? null : ApiResponses.ORDER_NOT_FOUND)
-						.origin(UserController.class.getSimpleName() + ".updateUserOrder")
-						.logged(false)
 						.build())
 				.payload(orderId)
 				.build();

@@ -26,7 +26,7 @@ public class OrderDetails {
 	private String paymentMethod;
 
 	@Column
-	@DoubleLengthNullable(min = 0, max = 5, message = ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED_LENGTH)
+	@DoubleLengthNullable(min = 0, max = 5, message = ValidationResponses.ORDER_DETAILS_BILL)
 	private Double billToChange;
 
 	@Column

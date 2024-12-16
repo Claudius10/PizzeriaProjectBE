@@ -23,11 +23,11 @@ public class CartItem {
 	private String productType;
 
 	@Column
-	@NotBlank(message = ValidationResponses.CART_ITEM_NAME_MISSING)
+	@NotBlank()
 	private String name;
 
 	@Column
-	@NotBlank(message = ValidationResponses.CART_ITEM_FORMAT_MISSING)
+	@NotBlank()
 	private String format;
 
 	@Column
@@ -35,7 +35,7 @@ public class CartItem {
 	private Integer quantity;
 
 	@Column
-	@DoubleLength(min = 1, max = 5, message = ValidationResponses.CART_ITEM_MAX_PRICE)
+	@DoubleLength(min = 1, max = 5)
 	private Double price;
 
 	@Column

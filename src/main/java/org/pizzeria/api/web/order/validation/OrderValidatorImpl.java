@@ -27,7 +27,7 @@ public class OrderValidatorImpl implements OrderValidator {
 		}
 
 		if (!isChangeRequestedValid(orderDetails.getBillToChange(), cart.getTotalCostOffers(), cart.getTotalCost())) {
-			return new OrderValidationResult(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
+			return new OrderValidationResult(ValidationResponses.ORDER_DETAILS_BILL);
 		}
 
 		orderDetails.setChangeToGive(calculatePaymentChange(orderDetails.getBillToChange(), cart.getTotalCost(), cart.getTotalCostOffers()));

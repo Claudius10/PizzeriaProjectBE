@@ -6,9 +6,9 @@ import org.pizzeria.api.web.globals.ValidationResponses;
 
 public record EmailChangeDTO(
 		@Email(message = ValidationResponses.EMAIL_INVALID)
-		@NotBlank(message = ValidationResponses.EMAIL_MISSING)
+		@NotBlank(message = ValidationResponses.EMAIL_INVALID)
 		String email,
 
-		@NotBlank(message = ValidationResponses.PASSWORD_MISSING)
+		@NotBlank(message = ValidationResponses.PASSWORD_INVALID)
 		String password) {
 }

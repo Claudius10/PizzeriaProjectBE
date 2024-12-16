@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = DoubleLengthNullableValidator.class)
 @Documented
 public @interface DoubleLengthNullable {
-	String message() default "Valor numérico no aceptado";
+	String message() default "InvalidDoubleValue";
 
 	Class<?>[] groups() default {};
 

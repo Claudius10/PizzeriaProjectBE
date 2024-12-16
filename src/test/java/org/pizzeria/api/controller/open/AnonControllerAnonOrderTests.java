@@ -360,7 +360,7 @@ class AnonControllerAnonOrderTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.ORDER_DETAILS_CHANGE_REQUESTED);
+		assertThat(responseObj.getError().getCause()).isEqualTo(ValidationResponses.ORDER_DETAILS_BILL);
 	}
 
 	@Test

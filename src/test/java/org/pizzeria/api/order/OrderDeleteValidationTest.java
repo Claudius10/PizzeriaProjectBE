@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pizzeria.api.services.order.OrderService;
+import org.pizzeria.api.web.globals.ValidationResponses;
 import org.pizzeria.api.web.order.validation.OrderValidationResult;
 import org.pizzeria.api.web.order.validation.OrderValidatorImpl;
 
@@ -31,7 +32,7 @@ class OrderDeleteValidationTest {
 
 		assertAll(() -> {
 			assertFalse(isDeleteRequestValid.isValid());
-			assertEquals("El tiempo límite para anular el pedido (10 minutos) ha finalizado.", isDeleteRequestValid.getMessage());
+			assertEquals(ValidationResponses.ORDER_DELETE_TIME_ERROR, isDeleteRequestValid.getMessage());
 		});
 
 		verify(orderService, times(1)).findCreatedOnById(1L);

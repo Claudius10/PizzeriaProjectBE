@@ -25,11 +25,11 @@ public class Cart {
 	private Integer totalQuantity;
 
 	@Column
-	@DoubleLength(min = 1, max = 6, message = ValidationResponses.CART_COST_INVALID)
+	@DoubleLength(min = 1, max = 6, message = "")
 	private Double totalCost;
 
 	@Column
-	@DoubleLengthNullable(min = 0, max = 6, message = ValidationResponses.CART_COST_INVALID)
+	@DoubleLengthNullable(min = 0, max = 6, message = "")
 	private Double totalCostOffers;
 
 	// INFO to remember about the Cart/CartItem association:

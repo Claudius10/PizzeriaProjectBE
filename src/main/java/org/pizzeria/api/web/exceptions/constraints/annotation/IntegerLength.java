@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = IntegerLengthValidator.class)
 public @interface IntegerLength {
-	String message() default "Valor numérico no aceptado";
+	String message() default "InvalidIntegerValue";
 
 	Class<?>[] groups() default {};
 

@@ -15,11 +15,11 @@ public record RegisterDTO(
 		String name,
 
 		@Email(message = ValidationResponses.EMAIL_INVALID)
-		@NotBlank(message = ValidationResponses.EMAIL_MISSING)
+		@NotBlank(message = ValidationResponses.EMAIL_INVALID)
 		String email,
 
 		@Email(message = ValidationResponses.EMAIL_INVALID)
-		@NotBlank(message = ValidationResponses.EMAIL_MISSING)
+		@NotBlank(message = ValidationResponses.EMAIL_INVALID)
 		String matchingEmail,
 
 		@Pattern(regexp = ValidationRules.USER_PASSWORD, message = ValidationResponses.PASSWORD_INVALID)

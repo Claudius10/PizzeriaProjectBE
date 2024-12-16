@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import org.pizzeria.api.web.globals.ValidationResponses;
 
 public record PasswordDTO(
-		@NotBlank(message = ValidationResponses.PASSWORD_MISSING)
+		@NotBlank(message = ValidationResponses.PASSWORD_INVALID)
 		String password) {
 }

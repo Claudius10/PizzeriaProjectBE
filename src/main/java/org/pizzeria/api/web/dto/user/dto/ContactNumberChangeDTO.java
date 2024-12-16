@@ -8,6 +8,6 @@ public record ContactNumberChangeDTO(
 		@IntegerLength(min = 9, max = 9, message = ValidationResponses.NUMBER_INVALID)
 		Integer contactNumber,
 
-		@NotBlank(message = ValidationResponses.PASSWORD_MISSING)
+		@NotBlank(message = ValidationResponses.PASSWORD_INVALID)
 		String password) {
 }

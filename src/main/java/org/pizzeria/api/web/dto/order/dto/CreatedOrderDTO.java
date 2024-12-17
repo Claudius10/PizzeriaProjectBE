@@ -4,7 +4,7 @@ import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 
-public record CreatedAnonOrderDTO(
+public record CreatedOrderDTO(
 
 		Long id,
 

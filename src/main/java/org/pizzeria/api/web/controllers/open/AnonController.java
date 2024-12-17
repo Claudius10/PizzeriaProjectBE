@@ -7,7 +7,7 @@ import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
-import org.pizzeria.api.web.dto.order.dto.CreatedAnonOrderDTO;
+import org.pizzeria.api.web.dto.order.dto.CreatedOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,7 @@ public class AnonController {
 	@PostMapping(ApiRoutes.ANON_ORDER)
 	public ResponseEntity<Response> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) throws InterruptedException {
 		Thread.sleep(1000);
-		CreatedAnonOrderDTO createdOrder = orderService.createAnonOrder(newAnonOrder);
+		CreatedOrderDTO createdOrder = orderService.createAnonOrder(newAnonOrder);
 
 		Response response = Response.builder()
 				.status(Status.builder()

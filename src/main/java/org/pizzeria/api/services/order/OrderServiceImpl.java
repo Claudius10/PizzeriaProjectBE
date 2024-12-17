@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public CreatedAnonOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder) {
+	public CreatedOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder) {
 		Optional<Address> dbAddress = addressService.findByExample(newAnonOrder.address());
 
 		Cart cart = new Cart.Builder()
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		Order order = orderRepository.save(anonOrder);
-		return new CreatedAnonOrderDTO(
+		return new CreatedOrderDTO(
 				order.getId(),
 				order.getFormattedCreatedOn(),
 				new CustomerDTO(
@@ -87,9 +87,9 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Long createUserOrder(Long userId, NewUserOrderDTO newUserOrder) {
+	public CreatedOrderDTO createUserOrder(Long userId, NewUserOrderDTO newUserOrder) {
 		User user = userService.findUserOrThrow(userId);
-		Address address = addressService.findReference(newUserOrder.addressId());
+		Optional<Address> address = addressService.findAddressById(newUserOrder.addressId());
 
 		Cart cart = new Cart.Builder()
 				.withTotalQuantity(newUserOrder.cart().getTotalQuantity())
@@ -103,12 +103,24 @@ public class OrderServiceImpl implements OrderService {
 				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
 						"dd/MM/yyyy")))
 				.withUser(user)
-				.withAddress(address)
+				.withAddress(address.orElse(null))
 				.withCart(cart)
 				.withOrderDetails(newUserOrder.orderDetails())
 				.build();
 
-		return orderRepository.save(order).getId();
+		Order newOrder = orderRepository.save(order);
+		return new CreatedOrderDTO(
+				newOrder.getId(),
+				newOrder.getFormattedCreatedOn(),
+				new CustomerDTO(
+						user.getName(),
+						user.getContactNumber(),
+						user.getEmail()
+				),
+				address.orElse(null),
+				newOrder.getOrderDetails(),
+				newOrder.getCart()
+		);
 	}
 
 	@Override

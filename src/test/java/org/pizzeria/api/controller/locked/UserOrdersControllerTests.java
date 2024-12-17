@@ -17,10 +17,7 @@ import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
-import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
-import org.pizzeria.api.web.dto.order.dto.OrderDTO;
-import org.pizzeria.api.web.dto.order.dto.OrderSummaryListDTO;
-import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
+import org.pizzeria.api.web.dto.order.dto.*;
 import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.Constants;
@@ -210,7 +207,7 @@ class UserOrdersControllerTests {
 				.andReturn().getResponse();
 
 		Response responseObj = getResponse(response, objectMapper);
-		Long orderId = objectMapper.convertValue(responseObj.getPayload(), Long.class);
+		CreatedOrderDTO createdOrder = objectMapper.convertValue(responseObj.getPayload(), CreatedOrderDTO.class);
 
 		// Act
 
@@ -222,7 +219,7 @@ class UserOrdersControllerTests {
 								+ ApiRoutes.USER_ID
 								+ ApiRoutes.USER_ORDER
 								+ ApiRoutes.ORDER_ID,
-						userId, orderId)
+						userId, createdOrder.id())
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, accessToken, 60, true, false)))
 				.andReturn().getResponse();
 
@@ -234,7 +231,7 @@ class UserOrdersControllerTests {
 		assertThat(responseObjTwo.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
 
 		OrderDTO order = objectMapper.convertValue(responseObjTwo.getPayload(), OrderDTO.class);
-		assertThat(order.id()).isEqualTo(orderId);
+		assertThat(order.id()).isEqualTo(createdOrder.id());
 	}
 
 	@Test

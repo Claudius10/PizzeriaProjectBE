@@ -12,9 +12,9 @@ public interface OrderService {
 
 	Optional<OrderDTO> findProjectionById(Long orderId);
 
-	CreatedAnonOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder);
+	CreatedOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder);
 
-	Long createUserOrder(Long orderId, NewUserOrderDTO newUserOrder);
+	CreatedOrderDTO createUserOrder(Long orderId, NewUserOrderDTO newUserOrder);
 
 	boolean updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder);
 

@@ -6,10 +6,7 @@ import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.web.aop.annotations.ValidateUserId;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
-import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
-import org.pizzeria.api.web.dto.order.dto.OrderDTO;
-import org.pizzeria.api.web.dto.order.dto.OrderSummaryListDTO;
-import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
+import org.pizzeria.api.web.dto.order.dto.*;
 import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.data.domain.Page;
@@ -35,14 +32,14 @@ public class UserOrdersController {
 	@PostMapping
 	public ResponseEntity<Response> createUserOrder(@RequestBody @Valid NewUserOrderDTO order, @PathVariable Long userId, HttpServletRequest request) {
 
-		Long id = orderService.createUserOrder(userId, order);
+		CreatedOrderDTO createdOrder = orderService.createUserOrder(userId, order);
 
 		Response response = Response.builder()
 				.status(Status.builder()
 						.description(HttpStatus.CREATED.name())
 						.code(HttpStatus.CREATED.value())
 						.build())
-				.payload(id)
+				.payload(createdOrder)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);

@@ -33,7 +33,7 @@ public class OrderDetails {
 	private Double changeToGive;
 
 	@Column
-	@Pattern(regexp = ValidationRules.ORDER_DETAILS_COMMENT, message = ValidationResponses.ORDER_DETAILS_COMMENT)
+	@Pattern(regexp = ValidationRules.COMPLEX_LETTERS_NUMBERS_MAX_150_OPTIONAL, message = ValidationResponses.ORDER_DETAILS_COMMENT)
 	private String comment;
 
 	@OneToOne(fetch = FetchType.LAZY)

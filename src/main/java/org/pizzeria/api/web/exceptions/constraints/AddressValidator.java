@@ -23,7 +23,7 @@ public class AddressValidator implements ConstraintValidator<ValidAddress, Addre
 			return true;
 		}
 
-		if (!address.getStreet().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
+		if (!address.getStreet().matches(ValidationRules.SIMPLE_LETTERS_ONLY_MAX_25_INSENSITIVE_REQUIERED)) {
 			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_STREET).addPropertyNode("street").addConstraintViolation();
 			return false;
 		}
@@ -34,7 +34,7 @@ public class AddressValidator implements ConstraintValidator<ValidAddress, Addre
 			return false;
 		}
 
-		if (address.getDetails() != null && !address.getDetails().matches(ValidationRules.ADDRESS_STRING_FIELD)) {
+		if (address.getDetails() != null && !address.getDetails().matches(ValidationRules.COMPLEX_LETTERS_NUMBERS_MAX_150_OPTIONAL)) {
 			context.buildConstraintViolationWithTemplate(ValidationResponses.ADDRESS_DETAILS).addPropertyNode("details").addConstraintViolation();
 			return false;
 		}

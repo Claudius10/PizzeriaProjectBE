@@ -2,11 +2,11 @@ package org.pizzeria.api.web.globals;
 
 public final class ValidationRules {
 
-	public static final String ADDRESS_STRING_FIELD = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ-]{1,25}$";
+	public static final String SIMPLE_LETTERS_ONLY_MAX_25_INSENSITIVE_REQUIERED = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ-]{1,25}$";
 
-	public static final String USER_NAME = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$";
+	public static final String SIMPLE_LETTERS_ONLY_MAX_50_INSENSITIVE_REQUIERED = "^[a-zA-Z\sÁÉÍÓÚáéíóúÑñ]{2,50}$";
 
-	public static final String ORDER_DETAILS_COMMENT = "^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ!¡¿?.,\s]{0,150}$";
+	public static final String COMPLEX_LETTERS_NUMBERS_MAX_150_OPTIONAL = "^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ!¡¿?.-:;,ºª\"\s]{0,150}$";
 
 	public static final String USER_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
 

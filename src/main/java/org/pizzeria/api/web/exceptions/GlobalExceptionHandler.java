@@ -30,6 +30,8 @@ import java.util.List;
 @AllArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+	private static final String CLASS_NAME_SHORT = "G.E.H";
+
 	private final ErrorRepository errorRepository;
 
 	@Override
@@ -57,7 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.error(Error.builder()
 						.cause(ex.getClass().getSimpleName())
 						.message(String.valueOf(errorMessages))
-						.origin(GlobalExceptionHandler.class.getSimpleName() + ".handleMethodArgumentNotValid")
+						.origin(CLASS_NAME_SHORT + ".handleMethodArgumentNotValid")
 						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
 						.fatal(false)
@@ -74,7 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		Error error = Error.builder()
 				.cause(uniqueEmailConstraint ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
-				.origin(GlobalExceptionHandler.class.getSimpleName() + ".dataAccessException")
+				.origin(CLASS_NAME_SHORT + ".dataAccessException")
 				.path(((ServletWebRequest) request).getRequest().getServletPath())
 				.message(uniqueEmailConstraint ? null : ex.getMessage())
 				.logged(!uniqueEmailConstraint)
@@ -107,7 +109,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.error(Error.builder()
 						.cause(ex.getClass().getSimpleName())
 						.message(ex.getMessage())
-						.origin(GlobalExceptionHandler.class.getSimpleName() + ".accessDeniedException")
+						.origin(CLASS_NAME_SHORT  + ".accessDeniedException")
 						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
 						.fatal(false)
@@ -130,7 +132,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.error(Error.builder()
 						.cause(ex.getClass().getSimpleName())
 						.message(errorMessage)
-						.origin(GlobalExceptionHandler.class.getSimpleName() + ".authenticationException")
+						.origin(CLASS_NAME_SHORT  + ".authenticationException")
 						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
 						.fatal(false)
@@ -146,7 +148,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		Error error = Error.builder()
 				.cause(ex.getClass().getSimpleName())
 				.message(ex.getMessage())
-				.origin(GlobalExceptionHandler.class.getSimpleName() + ".unknownException")
+				.origin(CLASS_NAME_SHORT  + ".unknownException")
 				.path(((ServletWebRequest) request).getRequest().getServletPath())
 				.logged(true)
 				.fatal(true)

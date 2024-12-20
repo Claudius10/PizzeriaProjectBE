@@ -12,7 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "User")
-@Table(name = "user")
+@Table(name = "user",
+		uniqueConstraints = @UniqueConstraint(name = "USER_EMAIL", columnNames = "email")
+)
 public class User implements UserDetails {
 
 	@Id
@@ -20,14 +22,16 @@ public class User implements UserDetails {
 	@SequenceGenerator(name = "user_generator", sequenceName = "user_seq", allocationSize = 1)
 	private Long id;
 
+	@Column
 	private String name;
 
-	@Column(unique = true)
+	@Column
 	private String email;
 
 	@Column
 	private Integer contactNumber;
 
+	@Column
 	private String password;
 
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})

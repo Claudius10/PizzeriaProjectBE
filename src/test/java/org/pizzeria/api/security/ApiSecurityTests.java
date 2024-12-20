@@ -69,7 +69,7 @@ class ApiSecurityTests {
 		// Act
 
 		// post api call to check csrf protection
-		mockMvc.perform(get("/api/tests/security")
+		mockMvc.perform(get("/api/tests")
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 30, true, false)))
 
 				// Assert
@@ -90,7 +90,7 @@ class ApiSecurityTests {
 		// Act
 
 		// post api call to check csrf protection
-		mockMvc.perform(get("/api/tests/security/admin")
+		mockMvc.perform(get("/api/tests/admin")
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 30, true, false)))
 
 				// Assert
@@ -103,7 +103,7 @@ class ApiSecurityTests {
 		// Act
 
 		// get api call to check security
-		mockMvc.perform(get("/api/tests/security"))
+		mockMvc.perform(get("/api/tests"))
 
 				// Assert
 

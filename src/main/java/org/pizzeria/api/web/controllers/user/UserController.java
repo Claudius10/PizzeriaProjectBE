@@ -5,9 +5,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.address.Address;
+import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.web.aop.annotations.ValidateUserId;
-import org.pizzeria.api.web.dto.api.ApiError;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.user.dto.*;
@@ -34,8 +34,8 @@ public class UserController {
 
 	@ValidateUserId
 	@GetMapping(ApiRoutes.USER_ID)
-	public ResponseEntity<Response> findUserById(@PathVariable Long userId, HttpServletRequest request) {
-
+	public ResponseEntity<Response> findUserById(@PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		Optional<UserDTO> user = userService.findUserDTOById(userId);
 
 		Response response = Response.builder()
@@ -51,8 +51,8 @@ public class UserController {
 
 	@ValidateUserId
 	@GetMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS)
-	public ResponseEntity<Response> findUserAddressListById(@PathVariable Long userId, HttpServletRequest request) {
-
+	public ResponseEntity<Response> findUserAddressListById(@PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		Set<Address> userAddressList = userService.findUserAddressListById(userId);
 
 		Response response = Response.builder()
@@ -68,8 +68,8 @@ public class UserController {
 
 	@ValidateUserId
 	@PostMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS)
-	public ResponseEntity<Response> createUserAddress(@RequestBody @Valid Address address, @PathVariable Long userId, HttpServletRequest request) {
-
+	public ResponseEntity<Response> createUserAddress(@RequestBody @Valid Address address, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		boolean ok = userService.addUserAddress(userId, address);
 
 		Response response = Response.builder()
@@ -80,10 +80,12 @@ public class UserController {
 				.build();
 
 		if (!ok) {
-			response.setError(ApiError.builder()
+			response.setError(Error.builder()
 					.cause(ApiResponses.ADDRESS_MAX_SIZE)
 					.origin(UserController.class.getSimpleName() + ".createUserAddress")
+					.path(request.getPathInfo())
 					.logged(false)
+					.fatal(false)
 					.build());
 		}
 
@@ -92,8 +94,8 @@ public class UserController {
 
 	@ValidateUserId
 	@DeleteMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS + ApiRoutes.USER_ADDRESS_ID)
-	public ResponseEntity<Response> deleteUserAddress(@PathVariable Long addressId, @PathVariable Long userId, HttpServletRequest request) {
-
+	public ResponseEntity<Response> deleteUserAddress(@PathVariable Long addressId, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		boolean result = userService.removeUserAddress(userId, addressId);
 
 		Response response = Response.builder()
@@ -186,8 +188,8 @@ public class UserController {
 			@RequestParam Long id,
 			@RequestParam String password,
 			HttpServletRequest request,
-			HttpServletResponse response) {
-
+			HttpServletResponse response) throws InterruptedException {
+		Thread.sleep(1000);
 		userService.deleteUserById(password, id);
 
 		Response responseObj = Response.builder()

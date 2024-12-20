@@ -30,8 +30,8 @@ public class UserOrdersController {
 
 	@ValidateUserId
 	@PostMapping
-	public ResponseEntity<Response> createUserOrder(@RequestBody @Valid NewUserOrderDTO order, @PathVariable Long userId, HttpServletRequest request) {
-
+	public ResponseEntity<Response> createUserOrder(@RequestBody @Valid NewUserOrderDTO order, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		CreatedOrderDTO createdOrder = orderService.createUserOrder(userId, order);
 
 		Response response = Response.builder()
@@ -47,8 +47,8 @@ public class UserOrdersController {
 
 	@ValidateUserId
 	@GetMapping(ApiRoutes.ORDER_ID)
-	public ResponseEntity<Response> findUserOrderDTO(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) {
-
+	public ResponseEntity<Response> findUserOrderDTO(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		Optional<OrderDTO> projectionById = orderService.findProjectionById(orderId);
 
 		Response response = Response.builder()
@@ -85,9 +85,9 @@ public class UserOrdersController {
 
 	@ValidateUserId
 	@DeleteMapping(ApiRoutes.ORDER_ID)
-	public ResponseEntity<Response> deleteUserOrderById(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) {
+	public ResponseEntity<Response> deleteUserOrderById(@PathVariable Long orderId, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
 		orderService.deleteUserOrderById(orderId);
-
+		Thread.sleep(1000);
 		Response response = Response.builder()
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
@@ -105,8 +105,8 @@ public class UserOrdersController {
 			@RequestParam(name = ApiRoutes.ORDER_SUMMARY_PAGE_NUMBER) Integer pageNumber,
 			@RequestParam(name = ApiRoutes.ORDER_SUMMARY_PAGE_SIZE) Integer pageSize,
 			@PathVariable Long userId,
-			HttpServletRequest request) {
-
+			HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		Page<OrderSummaryProjection> orderSummaryPage = orderService.findUserOrderSummary(userId, pageSize, pageNumber);
 
 		OrderSummaryListDTO orders = new OrderSummaryListDTO(

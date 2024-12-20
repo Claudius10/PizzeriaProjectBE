@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.pizzeria.api.web.dto.api.ApiError;
+import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.globals.SecurityResponses;
@@ -31,10 +31,12 @@ public class ValidateUserIdentity {
 						.description(HttpStatus.UNAUTHORIZED.name())
 						.code(HttpStatus.UNAUTHORIZED.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(SecurityResponses.USER_ID_NO_MATCH)
 						.origin(ValidateUserIdentity.class.getSimpleName() + ".validate")
+						.path(request.getPathInfo())
 						.logged(false)
+						.fatal(true)
 						.build())
 				.build();
 

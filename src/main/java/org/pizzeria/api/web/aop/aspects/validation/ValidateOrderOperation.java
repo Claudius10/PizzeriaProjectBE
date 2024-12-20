@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.pizzeria.api.web.dto.api.ApiError;
+import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
@@ -40,10 +40,12 @@ public class ValidateOrderOperation {
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateNewAnonOrder")
+						.path(request.getPathInfo())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 
@@ -64,10 +66,12 @@ public class ValidateOrderOperation {
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateNewUserOrder")
+						.path(request.getPathInfo())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 
@@ -93,10 +97,12 @@ public class ValidateOrderOperation {
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateUserOrderUpdate")
+						.path(request.getPathInfo())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 
@@ -119,10 +125,12 @@ public class ValidateOrderOperation {
 						.description(isOrderNotFound ? HttpStatus.NO_CONTENT.name() : HttpStatus.BAD_REQUEST.name())
 						.code(isOrderNotFound ? HttpStatus.NO_CONTENT.value() : HttpStatus.BAD_REQUEST.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateUserOrderDelete")
+						.path(request.getPathInfo())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 

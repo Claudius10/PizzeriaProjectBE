@@ -33,8 +33,8 @@ public class AnonController {
 	}
 
 	@PostMapping(ApiRoutes.ANON_REGISTER)
-	public ResponseEntity<Response> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) {
-
+	public ResponseEntity<Response> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) throws InterruptedException {
+		Thread.sleep(1000);
 		userService.createUser(registerDTO);
 
 		Response response = Response.builder()

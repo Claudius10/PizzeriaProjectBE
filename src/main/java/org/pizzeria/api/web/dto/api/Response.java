@@ -3,6 +3,7 @@ package org.pizzeria.api.web.dto.api;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.pizzeria.api.entity.error.Error;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +17,7 @@ public class Response {
 
 	private Status status;
 
-	private ApiError error;
+	private Error error;
 
 	private Object payload;
 }

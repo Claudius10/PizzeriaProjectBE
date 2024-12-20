@@ -1,6 +1,8 @@
 package org.pizzeria.api.web.exceptions;
 
-import org.pizzeria.api.web.dto.api.ApiError;
+import lombok.AllArgsConstructor;
+import org.pizzeria.api.entity.error.Error;
+import org.pizzeria.api.repos.error.ErrorRepository;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.globals.ApiResponses;
@@ -17,6 +19,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -24,7 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
+@AllArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+	private final ErrorRepository errorRepository;
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -37,7 +43,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		List<String> errorMessages = new ArrayList<>();
 
 		ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
-			errorMessages.add(String.format("Error: %s - Value: %s", fieldError.getDefaultMessage(), fieldError.getRejectedValue()));
+			errorMessages.add(String.format("Field: %s - Error: %s - Value: %s",
+					fieldError.getField(),
+					fieldError.getDefaultMessage(),
+					fieldError.getRejectedValue()));
 		});
 
 		Response response = Response.builder()
@@ -45,11 +54,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(ex.getClass().getSimpleName())
 						.message(String.valueOf(errorMessages))
 						.origin(GlobalExceptionHandler.class.getSimpleName() + ".handleMethodArgumentNotValid")
+						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 
@@ -57,37 +68,49 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler({DataAccessException.class})
-	protected ResponseEntity<Response> dataAccessException(DataAccessException ex) {
+	protected ResponseEntity<Response> dataAccessException(DataAccessException ex, WebRequest request) {
+
+		boolean uniqueEmailConstraint = ex instanceof DataIntegrityViolationException && ex.getMessage().contains("constraint [USER_EMAIL]");
+
+		Error error = Error.builder()
+				.cause(uniqueEmailConstraint ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
+				.origin(GlobalExceptionHandler.class.getSimpleName() + ".dataAccessException")
+				.path(((ServletWebRequest) request).getRequest().getServletPath())
+				.message(uniqueEmailConstraint ? null : ex.getMessage())
+				.logged(!uniqueEmailConstraint)
+				.fatal(!uniqueEmailConstraint)
+				.build();
+
+		if (!uniqueEmailConstraint) {
+			errorRepository.save(error);
+		}
 
 		Response response = Response.builder()
 				.status(Status.builder()
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
 						.build())
-				.error(ApiError.builder()
-						.cause(ex instanceof DataIntegrityViolationException ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
-						.message(ex.getMessage())
-						.origin(GlobalExceptionHandler.class.getSimpleName() + ".dataAccessException")
-						.logged(false)
-						.build())
+				.error(error)
 				.build();
 
 		return ResponseEntity.badRequest().body(response);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
-	protected ResponseEntity<Response> accessDenied(AccessDeniedException ex) {
+	protected ResponseEntity<Response> accessDeniedException(AccessDeniedException ex, WebRequest request) {
 
 		Response response = Response.builder()
 				.status(Status.builder()
 						.description(HttpStatus.UNAUTHORIZED.name())
 						.code(HttpStatus.UNAUTHORIZED.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(ex.getClass().getSimpleName())
 						.message(ex.getMessage())
-						.origin(GlobalExceptionHandler.class.getSimpleName() + ".accessDenied")
+						.origin(GlobalExceptionHandler.class.getSimpleName() + ".accessDeniedException")
+						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 
@@ -95,7 +118,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(AuthenticationException.class)
-	protected ResponseEntity<Response> authenticationException(AuthenticationException ex) {
+	protected ResponseEntity<Response> authenticationException(AuthenticationException ex, WebRequest request) {
 
 		String errorMessage = ex instanceof BadCredentialsException ? SecurityResponses.BAD_CREDENTIALS : ex.getMessage();
 
@@ -104,14 +127,41 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 						.description(HttpStatus.UNAUTHORIZED.name())
 						.code(HttpStatus.UNAUTHORIZED.value())
 						.build())
-				.error(ApiError.builder()
+				.error(Error.builder()
 						.cause(ex.getClass().getSimpleName())
 						.message(errorMessage)
 						.origin(GlobalExceptionHandler.class.getSimpleName() + ".authenticationException")
+						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
+						.fatal(false)
 						.build())
 				.build();
 
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
+
+	@ExceptionHandler(Exception.class)
+	protected ResponseEntity<Response> unknownException(Exception ex, WebRequest request) {
+
+		Error error = Error.builder()
+				.cause(ex.getClass().getSimpleName())
+				.message(ex.getMessage())
+				.origin(GlobalExceptionHandler.class.getSimpleName() + ".unknownException")
+				.path(((ServletWebRequest) request).getRequest().getServletPath())
+				.logged(true)
+				.fatal(true)
+				.build();
+
+		errorRepository.save(error);
+
+		Response response = Response.builder()
+				.status(Status.builder()
+						.description(HttpStatus.INTERNAL_SERVER_ERROR.name())
+						.code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+						.build())
+				.error(error)
+				.build();
+
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
 }

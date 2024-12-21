@@ -1,5 +1,7 @@
 package org.pizzeria.api.controller.locked;
 
+import ch.vorburger.exec.ManagedProcessException;
+import ch.vorburger.mariadb4j.MariaDB4jService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -23,14 +25,13 @@ import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.Constants;
 import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,7 +43,6 @@ import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @Sql(scripts = {"file:src/test/resources/db/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc

@@ -15,8 +15,6 @@ import org.pizzeria.api.services.store.StoreService;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -24,13 +22,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @DirtiesContext
@@ -55,9 +53,14 @@ class ResourceControllerTests {
 	private StoreService storeService;
 
 	@BeforeAll
-	void data() {
+	public void init() {
+		Offer offer = new Offer();
+		offer.setName(Map.of("name1", "name1", "name2", "name2"));
+		offer.setDescription(Map.of("description1", "description1", "description2", "description2"));
+		offer.setCaveat(Map.of("caveat1", "caveat1", "caveat2", "caveat2"));
+
 		productRepository.save(new Product(null, "pizza", null, "", "", 1D, ""));
-		offerRepository.save(new Offer());
+		offerRepository.save(offer);
 		addressRepository.save(new Address.Builder().withStreet("Street").withNumber(5).build());
 		storeService.createStore(1L, "", null, "", "");
 	}

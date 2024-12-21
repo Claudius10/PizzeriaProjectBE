@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestControllerAdvice
 @AllArgsConstructor
@@ -55,8 +56,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(Status.builder()
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(ex.getClass().getSimpleName())
 						.message(String.valueOf(errorMessages))
 						.origin(CLASS_NAME_SHORT + ".handleMethodArgumentNotValid")
@@ -75,6 +78,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		boolean uniqueEmailConstraint = ex instanceof DataIntegrityViolationException && ex.getMessage().contains("constraint [USER_EMAIL]");
 
 		Error error = Error.builder()
+				.id(UUID.randomUUID().getMostSignificantBits())
 				.cause(uniqueEmailConstraint ? ApiResponses.USER_EMAIL_ALREADY_EXISTS : ex.getClass().getSimpleName())
 				.origin(CLASS_NAME_SHORT + ".dataAccessException")
 				.path(((ServletWebRequest) request).getRequest().getServletPath())
@@ -84,6 +88,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		if (!uniqueEmailConstraint) {
+			error.setId(null);
 			errorRepository.save(error);
 		}
 
@@ -91,6 +96,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(Status.builder()
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
+						.isError(true)
 						.build())
 				.error(error)
 				.build();
@@ -105,11 +111,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(Status.builder()
 						.description(HttpStatus.UNAUTHORIZED.name())
 						.code(HttpStatus.UNAUTHORIZED.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(ex.getClass().getSimpleName())
 						.message(ex.getMessage())
-						.origin(CLASS_NAME_SHORT  + ".accessDeniedException")
+						.origin(CLASS_NAME_SHORT + ".accessDeniedException")
 						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
 						.fatal(false)
@@ -128,11 +136,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(Status.builder()
 						.description(HttpStatus.UNAUTHORIZED.name())
 						.code(HttpStatus.UNAUTHORIZED.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(ex.getClass().getSimpleName())
 						.message(errorMessage)
-						.origin(CLASS_NAME_SHORT  + ".authenticationException")
+						.origin(CLASS_NAME_SHORT + ".authenticationException")
 						.path(((ServletWebRequest) request).getRequest().getServletPath())
 						.logged(false)
 						.fatal(false)
@@ -148,7 +158,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		Error error = Error.builder()
 				.cause(ex.getClass().getSimpleName())
 				.message(ex.getMessage())
-				.origin(CLASS_NAME_SHORT  + ".unknownException")
+				.origin(CLASS_NAME_SHORT + ".unknownException")
 				.path(((ServletWebRequest) request).getRequest().getServletPath())
 				.logged(true)
 				.fatal(true)
@@ -160,6 +170,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(Status.builder()
 						.description(HttpStatus.INTERNAL_SERVER_ERROR.name())
 						.code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+						.isError(true)
 						.build())
 				.error(error)
 				.build();

@@ -10,12 +10,13 @@ import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewUserOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.UpdateUserOrderDTO;
-import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.order.validation.OrderValidationResult;
 import org.pizzeria.api.web.order.validation.OrderValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @Aspect
@@ -39,8 +40,10 @@ public class ValidateOrderOperation {
 				.status(Status.builder()
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateNewAnonOrder")
 						.path(request.getPathInfo())
@@ -65,8 +68,10 @@ public class ValidateOrderOperation {
 				.status(Status.builder()
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateNewUserOrder")
 						.path(request.getPathInfo())
@@ -96,8 +101,10 @@ public class ValidateOrderOperation {
 				.status(Status.builder()
 						.description(HttpStatus.BAD_REQUEST.name())
 						.code(HttpStatus.BAD_REQUEST.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateUserOrderUpdate")
 						.path(request.getPathInfo())
@@ -118,14 +125,14 @@ public class ValidateOrderOperation {
 			return pjp.proceed();
 		}
 
-		boolean isOrderNotFound = result.getMessage().equals(ApiResponses.ORDER_NOT_FOUND);
-
 		Response response = Response.builder()
 				.status(Status.builder()
-						.description(isOrderNotFound ? HttpStatus.NO_CONTENT.name() : HttpStatus.BAD_REQUEST.name())
-						.code(isOrderNotFound ? HttpStatus.NO_CONTENT.value() : HttpStatus.BAD_REQUEST.value())
+						.description(HttpStatus.BAD_REQUEST.name())
+						.code(HttpStatus.BAD_REQUEST.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(result.getMessage())
 						.origin(ValidateOrderOperation.class.getSimpleName() + ".validateUserOrderDelete")
 						.path(request.getPathInfo())

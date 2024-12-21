@@ -41,6 +41,7 @@ public class AnonController {
 				.status(Status.builder()
 						.description(HttpStatus.CREATED.name())
 						.code(HttpStatus.CREATED.value())
+						.isError(false)
 						.build())
 				.build();
 
@@ -56,6 +57,7 @@ public class AnonController {
 				.status(Status.builder()
 						.description(HttpStatus.CREATED.name())
 						.code(HttpStatus.CREATED.value())
+						.isError(false)
 						.build())
 				.payload(createdOrder)
 				.build();

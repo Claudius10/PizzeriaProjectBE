@@ -33,6 +33,7 @@ public class ResourceController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.payload(resourceService.findAllProductsByType(type))
 				.build();
@@ -47,6 +48,7 @@ public class ResourceController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.payload(storeService.findAll())
 				.build();
@@ -61,6 +63,7 @@ public class ResourceController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.payload(resourceService.findAllOffers())
 				.build();

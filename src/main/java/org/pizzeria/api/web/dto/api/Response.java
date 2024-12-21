@@ -17,7 +17,7 @@ public class Response {
 
 	private Status status;
 
-	private Error error;
-
 	private Object payload;
+
+	private Error error;
 }

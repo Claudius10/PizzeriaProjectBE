@@ -38,6 +38,7 @@ public class UserOrdersController {
 				.status(Status.builder()
 						.description(HttpStatus.CREATED.name())
 						.code(HttpStatus.CREATED.value())
+						.isError(false)
 						.build())
 				.payload(createdOrder)
 				.build();
@@ -55,6 +56,7 @@ public class UserOrdersController {
 				.status(Status.builder()
 						.description(projectionById.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(projectionById.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.isError(false)
 						.build())
 				.payload(projectionById.orElse(null))
 				.build();
@@ -76,6 +78,7 @@ public class UserOrdersController {
 				.status(Status.builder()
 						.description(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.isError(false)
 						.build())
 				.payload(orderId)
 				.build();
@@ -92,6 +95,7 @@ public class UserOrdersController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.payload(orderId)
 				.build();
@@ -121,6 +125,7 @@ public class UserOrdersController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.payload(orders)
 				.build();

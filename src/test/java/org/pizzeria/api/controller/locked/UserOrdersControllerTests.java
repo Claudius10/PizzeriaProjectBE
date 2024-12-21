@@ -711,7 +711,7 @@ class UserOrdersControllerTests {
 		// Assert
 
 		Response responseObj = getResponse(response, objectMapper);
-		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test

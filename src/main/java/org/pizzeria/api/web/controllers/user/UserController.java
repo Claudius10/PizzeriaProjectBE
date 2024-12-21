@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE)
@@ -42,6 +43,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(user.isPresent() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(user.isPresent() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.isError(false)
 						.build())
 				.payload(user.orElse(null))
 				.build();
@@ -59,6 +61,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(!userAddressList.isEmpty() ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(!userAddressList.isEmpty() ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.isError(false)
 						.build())
 				.payload(userAddressList.isEmpty() ? null : userAddressList)
 				.build();
@@ -76,11 +79,13 @@ public class UserController {
 				.status(Status.builder()
 						.description(ok ? HttpStatus.CREATED.name() : HttpStatus.BAD_REQUEST.name())
 						.code(ok ? HttpStatus.CREATED.value() : HttpStatus.BAD_REQUEST.value())
+						.isError(!ok)
 						.build())
 				.build();
 
 		if (!ok) {
 			response.setError(Error.builder()
+					.id(UUID.randomUUID().getMostSignificantBits())
 					.cause(ApiResponses.ADDRESS_MAX_SIZE)
 					.origin(UserController.class.getSimpleName() + ".createUserAddress")
 					.path(request.getPathInfo())
@@ -102,6 +107,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(result ? HttpStatus.OK.name() : HttpStatus.NO_CONTENT.name())
 						.code(result ? HttpStatus.OK.value() : HttpStatus.NO_CONTENT.value())
+						.isError(false)
 						.build())
 				.build();
 
@@ -113,11 +119,11 @@ public class UserController {
 
 		userService.updateUserName(nameChangeDTO.password(), userId, nameChangeDTO.name());
 
-
 		Response response = Response.builder()
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.build();
 
@@ -137,6 +143,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.build();
 
@@ -156,6 +163,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.build();
 
@@ -175,6 +183,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.build();
 
@@ -196,6 +205,7 @@ public class UserController {
 				.status(Status.builder()
 						.description(HttpStatus.OK.name())
 						.code(HttpStatus.OK.value())
+						.isError(false)
 						.build())
 				.build();
 

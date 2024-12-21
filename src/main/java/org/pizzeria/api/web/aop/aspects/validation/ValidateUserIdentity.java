@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @Aspect
 public class ValidateUserIdentity {
@@ -30,8 +32,10 @@ public class ValidateUserIdentity {
 				.status(Status.builder()
 						.description(HttpStatus.UNAUTHORIZED.name())
 						.code(HttpStatus.UNAUTHORIZED.value())
+						.isError(true)
 						.build())
 				.error(Error.builder()
+						.id(UUID.randomUUID().getMostSignificantBits())
 						.cause(SecurityResponses.USER_ID_NO_MATCH)
 						.origin(ValidateUserIdentity.class.getSimpleName() + ".validate")
 						.path(request.getPathInfo())

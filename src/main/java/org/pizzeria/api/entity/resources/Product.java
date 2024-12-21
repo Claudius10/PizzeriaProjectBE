@@ -1,9 +1,21 @@
 package org.pizzeria.api.entity.resources;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
+
+import java.util.Map;
 
 @Entity
 @Table(name = "product")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Product {
 
 	@Id
@@ -11,92 +23,23 @@ public class Product {
 	@SequenceGenerator(name = "product_generator", sequenceName = "product_seq", allocationSize = 1)
 	private Long id;
 
-	@Column(name = "product_type")
 	private String productType;
 
-	@Column(name = "image")
 	private String image;
 
-	@Column(name = "name")
-	private String name;
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, String> name;
 
-	@Column(name = "description")
-	private String description;
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, String> description;
 
-	@Column(name = "price")
-	private double price;
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, Double> price;
 
-	@Column(name = "format")
-	private String format;
-
-	public Product(Long id, String productType, String image, String name, String description, double price,
-				   String format) {
-		this.id = id;
-		this.productType = productType;
-		this.image = image;
-		this.name = name;
-		this.description = description;
-		this.price = price;
-		this.format = format;
-	}
-
-	public Product() {
-		// The JPA specification requires all Entity classes to have a default no-arg constructor.
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getProductType() {
-		return productType;
-	}
-
-	public void setProductType(String productType) {
-		this.productType = productType;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
-	public String getFormat() {
-		return format;
-	}
-
-	public void setFormat(String format) {
-		this.format = format;
-	}
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, Map<String, String>> format; // <"m", <"en": "Medium">, <"es": "Mediana">; "l", <"en": "Familiar">,<"es": "Familiar">>
 }

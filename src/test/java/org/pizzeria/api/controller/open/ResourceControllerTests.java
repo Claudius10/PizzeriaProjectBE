@@ -59,10 +59,20 @@ class ResourceControllerTests {
 		offer.setDescription(Map.of("description1", "description1", "description2", "description2"));
 		offer.setCaveat(Map.of("caveat1", "caveat1", "caveat2", "caveat2"));
 
-		productRepository.save(new Product(null, "pizza", null, "", "", 1D, ""));
+		//HttpMessageNotReadableException
+
+		productRepository.save(new Product(
+				null,
+				"pizza",
+				null,
+				Map.of(),
+				Map.of(),
+				Map.of("m", 13.3),
+				Map.of("m", Map.of("en", "Medium")
+				)));
 		offerRepository.save(offer);
 		addressRepository.save(new Address.Builder().withStreet("Street").withNumber(5).build());
-		storeService.createStore(1L, "", null, "", "");
+		storeService.createStore(1L, "", null, Map.of(), "");
 	}
 
 	@Test
@@ -82,6 +92,9 @@ class ResourceControllerTests {
 		Response responseObj = getResponse(response, objectMapper);
 		List<Product> productList = objectMapper.convertValue(responseObj.getPayload(), List.class);
 		assertThat(productList).hasSize(1);
+		Product product = objectMapper.convertValue(productList.get(0), Product.class);
+		assertThat(product.getFormat().get("m").get("en")).isEqualTo("Medium");
+		assertThat(product.getPrice().get("m")).isEqualTo(13.3);
 	}
 
 	@Test

@@ -8,6 +8,7 @@ import org.pizzeria.api.services.address.AddressService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -23,9 +24,9 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	@Override
-	public void createStore(Long addressId, String name, Integer number, String schedule, String image) {
+	public void createStore(Long addressId, String name, Integer number, Map<String, String> schedule, String image) {
 		Address address = addressService.findReference(addressId);
-		storeRepository.save(new Store(null, name, address, number, schedule, image));
+		storeRepository.save(new Store(null, image, name, number, schedule, address));
 	}
 
 	@Override

@@ -1,9 +1,21 @@
 package org.pizzeria.api.entity.resources;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
+
+import java.util.Map;
 
 @Entity
 @Table(name = "offer")
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class Offer {
 
 	@Id
@@ -11,59 +23,17 @@ public class Offer {
 	@SequenceGenerator(name = "offer_generator", sequenceName = "offer_seq", allocationSize = 1)
 	private Long id;
 
-	@Column(name = "image")
 	private String image;
 
-	@Column(name = "name")
-	private String name;
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, String> name; // <"es":"texto", "en":"text">
 
-	@Column(name = "description")
-	private String description;
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, String> description;
 
-	@Column(name = "caveat")
-	private String caveat;
-
-	public Offer() {
-		// The JPA specification requires all Entity classes to have a default no-arg constructor.
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getCaveat() {
-		return caveat;
-	}
-
-	public void setCaveat(String caveat) {
-		this.caveat = caveat;
-	}
+	@Type(JsonType.class)
+	@Column(columnDefinition = "json")
+	private Map<String, String> caveat;
 }

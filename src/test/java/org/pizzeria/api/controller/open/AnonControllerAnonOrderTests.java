@@ -426,10 +426,8 @@ class AnonControllerAnonOrderTests {
 								  String deliveryHour, String paymentType, String comment,
 								  boolean emptyCart) {
 		Cart cartStub = new Cart.Builder()
-				.withCartItems(List.of(new CartItem.Builder()
-						.withProductType("pizza")
-						.withWithName("Carbonara")
-						.withFormat("Mediana")
+				.withCartItems(List.of(CartItem.builder()
+						.withCode("P2M")
 						.withQuantity(1)
 						.withPrice(14.75)
 						.build()))

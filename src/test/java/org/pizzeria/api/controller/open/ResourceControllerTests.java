@@ -63,8 +63,9 @@ class ResourceControllerTests {
 
 		productRepository.save(new Product(
 				null,
+				"P1",
 				"pizza",
-				null,
+				"",
 				Map.of(),
 				Map.of(),
 				Map.of("m", 13.3),
@@ -93,8 +94,8 @@ class ResourceControllerTests {
 		List<Product> productList = objectMapper.convertValue(responseObj.getPayload(), List.class);
 		assertThat(productList).hasSize(1);
 		Product product = objectMapper.convertValue(productList.get(0), Product.class);
-		assertThat(product.getFormat().get("m").get("en")).isEqualTo("Medium");
-		assertThat(product.getPrice().get("m")).isEqualTo(13.3);
+		assertThat(product.getFormats().get("m").get("en")).isEqualTo("Medium");
+		assertThat(product.getPrices().get("m")).isEqualTo(13.3);
 	}
 
 	@Test

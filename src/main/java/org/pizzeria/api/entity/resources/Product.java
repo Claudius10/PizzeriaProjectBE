@@ -23,6 +23,8 @@ public class Product {
 	@SequenceGenerator(name = "product_generator", sequenceName = "product_seq", allocationSize = 1)
 	private Long id;
 
+	private String code;
+
 	private String productType;
 
 	private String image;
@@ -37,9 +39,10 @@ public class Product {
 
 	@Type(JsonType.class)
 	@Column(columnDefinition = "json")
-	private Map<String, Double> price;
+	private Map<String, Double> prices;
 
 	@Type(JsonType.class)
 	@Column(columnDefinition = "json")
-	private Map<String, Map<String, String>> format; // <"m", <"en": "Medium">, <"es": "Mediana">; "l", <"en": "Familiar">,<"es": "Familiar">>
+	private Map<String, Map<String, String>> formats; // <"m", <"en": "Medium">, <"es": "Mediana">; "l", <"en": "Familiar">,
+	// <"es": "Familiar">>
 }

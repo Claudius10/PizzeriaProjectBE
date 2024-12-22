@@ -69,12 +69,10 @@ class OrderValidatorTests {
 	@Test
 	void givenIsCartEmptyMethod_whenValidatingNonEmptyCart_thenReturnFalse() {
 		Cart cart = new Cart.Builder().withCartItems
-						(Collections.singletonList(new CartItem.Builder()
+						(Collections.singletonList(CartItem.builder()
 								.withPrice(5D)
-								.withWithName("Chocolate dreams")
-								.withProductType("Ice cream")
+								.withCode("B3L")
 								.withQuantity(1)
-								.withFormat("500g")
 								.build()))
 				.withTotalQuantity(1)
 				.withTotalCost(5D)

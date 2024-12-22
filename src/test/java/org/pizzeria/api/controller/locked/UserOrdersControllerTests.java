@@ -1,7 +1,5 @@
 package org.pizzeria.api.controller.locked;
 
-import ch.vorburger.exec.ManagedProcessException;
-import ch.vorburger.mariadb4j.MariaDB4jService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -89,10 +86,8 @@ class UserOrdersControllerTests {
 
 		// create DTO object
 		Cart cart = new Cart.Builder()
-				.withCartItems(List.of(new CartItem.Builder()
-						.withWithName("Pepperoni")
-						.withFormat("Familiar")
-						.withProductType("Pizza")
+				.withCartItems(List.of(CartItem.builder()
+						.withCode("P1M")
 						.withQuantity(1)
 						.withPrice(18.30)
 						.build()))
@@ -176,10 +171,8 @@ class UserOrdersControllerTests {
 
 		// create DTO object
 		Cart cart = new Cart.Builder()
-				.withCartItems(List.of(new CartItem.Builder()
-						.withWithName("Pepperoni")
-						.withFormat("Familiar")
-						.withProductType("Pizza")
+				.withCartItems(List.of(CartItem.builder()
+						.withCode("P1L")
 						.withQuantity(1)
 						.withPrice(18.30)
 						.build()))
@@ -395,11 +388,9 @@ class UserOrdersControllerTests {
 				order.createdOn(),
 				order.orderDetails(),
 				new Cart.Builder()
-						.withCartItems(List.of(new CartItem.Builder()
+						.withCartItems(List.of(CartItem.builder()
 								.withQuantity(1)
-								.withProductType("Pizza")
-								.withFormat("Mediana")
-								.withWithName("Carbonara")
+								.withCode("P2M")
 								.withPrice(14.75)
 								.build()))
 						.withId(order.id())
@@ -457,11 +448,9 @@ class UserOrdersControllerTests {
 				order.createdOn(),
 				order.orderDetails(),
 				new Cart.Builder()
-						.withCartItems(List.of(new CartItem.Builder()
+						.withCartItems(List.of(CartItem.builder()
 								.withQuantity(1)
-								.withProductType("Pizza")
-								.withFormat("Mediana")
-								.withWithName("Carbonara")
+								.withCode("P2M")
 								.withPrice(14.75)
 								.build()))
 						.withId(order.id())
@@ -514,11 +503,9 @@ class UserOrdersControllerTests {
 				order.createdOn(),
 				order.orderDetails(),
 				new Cart.Builder()
-						.withCartItems(List.of(new CartItem.Builder()
+						.withCartItems(List.of(CartItem.builder()
 								.withQuantity(1)
-								.withProductType("Pizza")
-								.withFormat("Mediana")
-								.withWithName("Carbonara")
+								.withCode("P2M")
 								.withPrice(14.75)
 								.build()))
 						.withId(order.id())
@@ -571,11 +558,9 @@ class UserOrdersControllerTests {
 				order.createdOn(),
 				order.orderDetails(),
 				new Cart.Builder()
-						.withCartItems(List.of(new CartItem.Builder()
+						.withCartItems(List.of(CartItem.builder()
 								.withQuantity(1)
-								.withProductType("Pizza")
-								.withFormat("Mediana")
-								.withWithName("Carbonara")
+								.withCode("P2M")
 								.withPrice(14.75)
 								.build()))
 						.withId(order.id())
@@ -838,10 +823,8 @@ class UserOrdersControllerTests {
 
 	OrderDTO createUserOrderTestSubject(int minutesInThePast, long userId, long addressId, String validAccessToken) throws Exception {
 		Cart cart = new Cart.Builder()
-				.withCartItems(List.of(new CartItem.Builder()
-						.withWithName("Pepperoni")
-						.withFormat("Familiar")
-						.withProductType("Pizza")
+				.withCartItems(List.of(CartItem.builder()
+						.withCode("P1L")
 						.withQuantity(1)
 						.withPrice(18.30)
 						.build()))

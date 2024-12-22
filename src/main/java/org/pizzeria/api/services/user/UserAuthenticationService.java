@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import static org.pizzeria.api.web.globals.SecurityResponses.USER_NOT_FOUND;
+
 @Service
 @Transactional
 public class UserAuthenticationService implements UserDetailsService {
@@ -20,6 +22,6 @@ public class UserAuthenticationService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return userRepository.findUserByEmailWithRoles(username)
-				.orElseThrow(() -> new UsernameNotFoundException(String.format("UserNotFound %s", username)));
+				.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND)); // this ends up as AuthenticationException
 	}
 }

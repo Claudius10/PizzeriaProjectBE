@@ -30,8 +30,6 @@ public final class ValidationResponses {
 
 	public static final String CART_IS_EMPTY = "InvalidCartIsEmpty";
 
-	public static final String CART_ITEM_TYPE_MISSING = "InvalidCartItem";
-
 	public static final String ORDER_UPDATE_TIME_ERROR = "InvalidOrderUpdateTime";
 
 	public static final String ORDER_DELETE_TIME_ERROR = "InvalidOrderDeleteTime";

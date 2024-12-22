@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "error")
+@ToString
 public class Error {
 
 	@Id
@@ -19,6 +20,7 @@ public class Error {
 
 	private String cause;
 
+	@Column(length = 8000)
 	private String message;
 
 	private String origin;

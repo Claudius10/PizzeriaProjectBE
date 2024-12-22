@@ -18,10 +18,7 @@ import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.*;
-import org.pizzeria.api.web.globals.ApiResponses;
-import org.pizzeria.api.web.globals.ApiRoutes;
-import org.pizzeria.api.web.globals.Constants;
-import org.pizzeria.api.web.globals.ValidationResponses;
+import org.pizzeria.api.web.globals.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -803,7 +800,7 @@ class UserOrdersControllerTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(responseObj.getError().getCause()).isEqualTo(ApiResponses.USER_NOT_FOUND);
+		assertThat(responseObj.getError().getCause()).isEqualTo("UsernameNotFoundException");
 	}
 
 	OrderDTO findOrder(Long orderId, long userId, String validAccessToken) throws Exception {

@@ -11,6 +11,9 @@ import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.web.dto.order.dto.*;
 import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
+import org.pizzeria.api.web.globals.ApiResponses;
+import org.pizzeria.api.web.globals.SecurityResponses;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -181,7 +184,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Page<OrderSummaryProjection> findUserOrderSummary(Long userId, int size, int page) {
 		if (!userService.existsById(userId)) {
-			throw new UsernameNotFoundException(String.format("UserNotFound %s", userId));
+			throw new UsernameNotFoundException(SecurityResponses.USER_NOT_FOUND); // this ends up as AuthenticationException
 		}
 
 		Sort.TypedSort<Order> order = Sort.sort(Order.class);
@@ -200,6 +203,11 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public LocalDateTime findCreatedOnById(Long orderId) {
 		Optional<CreatedOnDTO> createdOn = orderRepository.findCreatedOnById(orderId);
-		return createdOn.map(CreatedOnDTO::createdOn).orElse(null);
+
+		if (createdOn.isEmpty()) {
+			throw new DataRetrievalFailureException(ApiResponses.ORDER_NOT_FOUND);
+		}
+
+		return createdOn.get().createdOn();
 	}
 }

@@ -3,7 +3,6 @@ package org.pizzeria.api.web.order.validation;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.services.order.OrderService;
-import org.pizzeria.api.web.globals.ApiResponses;
 import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @Component
 public class OrderValidatorImpl implements OrderValidator {
 
-	private final static int UPDATE_LIMIT = 10;
+	private final static int UPDATE_TIME_LIMIT_MIN = 10;
 
 	private final OrderService orderService;
 
@@ -46,11 +45,7 @@ public class OrderValidatorImpl implements OrderValidator {
 	public OrderValidationResult validateDelete(Long orderId) {
 		LocalDateTime createdOn = orderService.findCreatedOnById(orderId);
 
-		if (createdOn == null) {
-			return new OrderValidationResult(ApiResponses.ORDER_NOT_FOUND);
-		}
-
-		if (LocalDateTime.now().isAfter(createdOn.plusMinutes(UPDATE_LIMIT))) {
+		if (LocalDateTime.now().isAfter(createdOn.plusMinutes(UPDATE_TIME_LIMIT_MIN))) {
 			return new OrderValidationResult(ValidationResponses.ORDER_DELETE_TIME_ERROR);
 		}
 
@@ -73,7 +68,7 @@ public class OrderValidatorImpl implements OrderValidator {
 
 	@Override
 	public boolean isOrderDataUpdateTimeLimitValid(LocalDateTime createdOn) {
-		return LocalDateTime.now().isBefore(createdOn.plusMinutes(UPDATE_LIMIT));
+		return LocalDateTime.now().isBefore(createdOn.plusMinutes(UPDATE_TIME_LIMIT_MIN));
 	}
 
 	// changeRequested == null || (changeRequested - totalCostOffers || totalCost)

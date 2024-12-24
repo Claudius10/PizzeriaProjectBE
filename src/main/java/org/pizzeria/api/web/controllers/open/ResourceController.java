@@ -1,7 +1,7 @@
 package org.pizzeria.api.web.controllers.open;
 
+import lombok.RequiredArgsConstructor;
 import org.pizzeria.api.services.resources.ResourceService;
-import org.pizzeria.api.services.store.StoreService;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.globals.ApiRoutes;
@@ -13,17 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.RESOURCE_BASE)
 public class ResourceController {
 
 	private final ResourceService resourceService;
-
-	private final StoreService storeService;
-
-	public ResourceController(ResourceService resourceService, StoreService storeService) {
-		this.resourceService = resourceService;
-		this.storeService = storeService;
-	}
 
 	@GetMapping(path = ApiRoutes.RESOURCE_PRODUCT, params = ApiRoutes.RESOURCE_PRODUCT_PARAM)
 	public ResponseEntity<Response> findAllByType(@RequestParam String type) throws InterruptedException {
@@ -50,7 +44,7 @@ public class ResourceController {
 						.code(HttpStatus.OK.value())
 						.isError(false)
 						.build())
-				.payload(storeService.findAll())
+				.payload(resourceService.findAllStores())
 				.build();
 
 		return ResponseEntity.ok(response);

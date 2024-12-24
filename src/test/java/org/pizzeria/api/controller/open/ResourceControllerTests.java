@@ -11,7 +11,7 @@ import org.pizzeria.api.entity.resources.Store;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.resources.OfferRepository;
 import org.pizzeria.api.repos.resources.ProductRepository;
-import org.pizzeria.api.services.store.StoreService;
+import org.pizzeria.api.repos.resources.StoreRepository;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class ResourceControllerTests {
 	private AddressRepository addressRepository;
 
 	@Autowired
-	private StoreService storeService;
+	private StoreRepository storeRepository;
 
 	@BeforeAll
 	public void init() {
@@ -73,7 +73,7 @@ class ResourceControllerTests {
 				)));
 		offerRepository.save(offer);
 		addressRepository.save(new Address.Builder().withStreet("Street").withNumber(5).build());
-		storeService.createStore(1L, "", null, Map.of(), "");
+		storeRepository.save(new Store(null, "", "", 123, Map.of(), new Address.Builder().withStreet("Street").withNumber(5).build()));
 	}
 
 	@Test

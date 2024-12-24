@@ -38,6 +38,8 @@ public final class ApiRoutes {
 
 	public static final String RESOURCE_STORE = "/store";
 
+	public static final String RESOURCE_STORE_ID = "/{storeId}";
+
 	public static final String RESOURCE_OFFER = "/offer";
 
 	// USER

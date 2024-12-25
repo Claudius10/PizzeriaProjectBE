@@ -19,6 +19,21 @@ public class ResourceController {
 
 	private final ResourceService resourceService;
 
+	@GetMapping(path = ApiRoutes.RESOURCE_PRODUCT)
+	public ResponseEntity<Response> findAllByType() {
+
+		Response response = Response.builder()
+				.status(Status.builder()
+						.description(HttpStatus.OK.name())
+						.code(HttpStatus.OK.value())
+						.isError(false)
+						.build())
+				.payload(resourceService.findAllProducts())
+				.build();
+
+		return ResponseEntity.ok(response);
+	}
+
 	@GetMapping(path = ApiRoutes.RESOURCE_PRODUCT, params = ApiRoutes.RESOURCE_PRODUCT_PARAM)
 	public ResponseEntity<Response> findAllByType(@RequestParam String type) throws InterruptedException {
 		Thread.sleep(1200);

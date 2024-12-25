@@ -11,6 +11,8 @@ public interface ResourceService {
 
 	Optional<Store> findStoreByAddressId(Long id);
 
+	List<Product> findAllProducts();
+
 	List<Product> findAllProductsByType(String productType);
 
 	List<Offer> findAllOffers();

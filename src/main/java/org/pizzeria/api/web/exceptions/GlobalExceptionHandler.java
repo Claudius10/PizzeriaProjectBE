@@ -19,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -75,7 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		log.info(INFO_LOG, response);
-		return ResponseEntity.badRequest().body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@ExceptionHandler({DataAccessException.class})
@@ -115,7 +116,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		log.info(INFO_LOG, response);
-		return ResponseEntity.badRequest().body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
@@ -141,7 +142,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		log.info(INFO_LOG, response);
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@ExceptionHandler(AuthenticationException.class)
@@ -150,13 +151,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		String errorMessage;
 		boolean fatal = false;
 
-		if (ex instanceof BadCredentialsException) {
-			errorMessage = SecurityResponses.BAD_CREDENTIALS;
-		} else if (ex instanceof UsernameNotFoundException) {
-			errorMessage = SecurityResponses.USER_NOT_FOUND;
-		} else {
-			fatal = true;
-			errorMessage = ex.getMessage();
+		switch (ex) {
+			case BadCredentialsException ignored -> errorMessage = SecurityResponses.BAD_CREDENTIALS;
+			case UsernameNotFoundException ignored -> errorMessage = SecurityResponses.USER_NOT_FOUND;
+			case InvalidBearerTokenException ignored -> errorMessage = SecurityResponses.INVALID_TOKEN;
+			default -> {
+				fatal = true;
+				errorMessage = ex.getMessage();
+			}
 		}
 
 		Error error = Error.builder()
@@ -185,7 +187,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		log.info(INFO_LOG, response);
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -212,6 +214,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.build();
 
 		log.info(INFO_LOG, response);
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 }

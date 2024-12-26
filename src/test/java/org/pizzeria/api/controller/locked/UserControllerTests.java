@@ -454,7 +454,7 @@ class UserControllerTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("name");
@@ -526,7 +526,7 @@ class UserControllerTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
@@ -634,7 +634,7 @@ class UserControllerTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("contactNumber");

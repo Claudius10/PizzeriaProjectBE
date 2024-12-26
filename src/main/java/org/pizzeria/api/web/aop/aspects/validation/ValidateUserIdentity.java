@@ -45,7 +45,7 @@ public class ValidateUserIdentity {
 				.build();
 
 		if (userId == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 		}
 
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -53,7 +53,7 @@ public class ValidateUserIdentity {
 		Jwt validatedAccessToken = (Jwt) authentication.getPrincipal();
 
 		if (!String.valueOf(userId).equals(validatedAccessToken.getClaimAsString("userId"))) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 		}
 
 		return pjp.proceed();

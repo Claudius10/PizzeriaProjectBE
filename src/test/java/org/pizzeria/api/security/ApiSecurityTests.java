@@ -1,15 +1,18 @@
 package org.pizzeria.api.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.pizzeria.api.configs.web.security.auth.JWTTokenManager;
 import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.role.Role;
+import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.globals.ApiRoutes;
 import org.pizzeria.api.web.globals.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.pizzeria.api.utils.TestUtils.getResponse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +35,9 @@ class ApiSecurityTests {
 
 	@Autowired
 	private JWTTokenManager JWTTokenManager;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Test
 	void givenLogoutApiCall_whenCredentialsArePresent_thenEraseCredentials() throws Exception {
@@ -90,12 +97,17 @@ class ApiSecurityTests {
 		// Act
 
 		// post api call to check csrf protection
-		mockMvc.perform(get("/api/tests/admin")
+		MockHttpServletResponse response = mockMvc.perform(get("/api/tests/admin")
 						.cookie(SecurityCookieUtils.prepareCookie(Constants.TOKEN_COOKIE_NAME, validAccessToken, 30, true, false)))
 
-				// Assert
 
-				.andExpect(status().isUnauthorized());
+				.andReturn().getResponse();
+
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getStatus().isError()).isTrue();
+		assertThat(responseObj.getError().isFatal()).isTrue();
 	}
 
 	@Test
@@ -103,10 +115,11 @@ class ApiSecurityTests {
 		// Act
 
 		// get api call to check security
-		mockMvc.perform(get("/api/tests"))
-
-				// Assert
-
-				.andExpect(status().isUnauthorized());
+		MockHttpServletResponse response = mockMvc.perform(get("/api/tests")).andReturn().getResponse();
+		Response responseObj = getResponse(response, objectMapper);
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(responseObj.getStatus().isError()).isTrue();
+		assertThat(responseObj.getError().isFatal()).isTrue();
 	}
 }

@@ -1,11 +1,12 @@
 package org.pizzeria.api.web.dto.api;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Builder
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class Status {
 

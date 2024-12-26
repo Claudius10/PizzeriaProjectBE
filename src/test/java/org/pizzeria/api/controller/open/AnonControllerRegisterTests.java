@@ -97,7 +97,7 @@ class AnonControllerRegisterTests {
 		// Assert
 
 
-		assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
 		Response responseObj = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), Response.class);
 
@@ -122,7 +122,7 @@ class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("name");
@@ -149,7 +149,7 @@ class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
@@ -175,7 +175,7 @@ class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("email");
@@ -201,7 +201,7 @@ class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("password");
@@ -227,7 +227,7 @@ class AnonControllerRegisterTests {
 				// Assert
 
 				.andExpect(result -> {
-							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+							assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 							MethodArgumentNotValidException exception = (MethodArgumentNotValidException) result.getResolvedException();
 							assert exception != null;
 							List<FieldError> errors = exception.getBindingResult().getFieldErrors("password");

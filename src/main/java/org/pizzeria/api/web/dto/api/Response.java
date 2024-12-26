@@ -1,9 +1,6 @@
 package org.pizzeria.api.web.dto.api;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.pizzeria.api.entity.error.Error;
 
 import java.time.LocalDateTime;
@@ -11,6 +8,8 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class Response {
 

@@ -52,7 +52,7 @@ public class ValidateOrderOperation {
 						.build())
 				.build();
 
-		return ResponseEntity.badRequest().body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@Around(value = "execution(* org.pizzeria.api.web.controllers.user.UserOrdersController.createUserOrder(..)) && args" +
@@ -80,7 +80,7 @@ public class ValidateOrderOperation {
 						.build())
 				.build();
 
-		return ResponseEntity.badRequest().body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@Around(value = "execution(* org.pizzeria.api.web.controllers.user.UserOrdersController.updateUserOrder(..)) && args" +
@@ -113,7 +113,7 @@ public class ValidateOrderOperation {
 						.build())
 				.build();
 
-		return ResponseEntity.badRequest().body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 
 	@Around(value = "execution(* org.pizzeria.api.web.controllers.user.UserOrdersController.deleteUserOrderById(..)) && args" +
@@ -141,6 +141,6 @@ public class ValidateOrderOperation {
 						.build())
 				.build();
 
-		return ResponseEntity.badRequest().body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response); // return OK to get the ResponseDTO in onSuccess callback
 	}
 }

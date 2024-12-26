@@ -9,6 +9,7 @@ import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.user.UserService;
+import org.pizzeria.api.utils.TimeUtils;
 import org.pizzeria.api.web.dto.order.dto.*;
 import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
 import org.pizzeria.api.web.globals.ApiResponses;
@@ -58,8 +59,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order anonOrder = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
-				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
-						"dd/MM/yyyy")))
+				.withFormattedCreatedOn(TimeUtils.getNowAsStringAccountingDST())
 				.withAnonCustomer(
 						newAnonOrder.customer().name(),
 						newAnonOrder.customer().contactNumber(),
@@ -103,8 +103,7 @@ public class OrderServiceImpl implements OrderService {
 
 		Order order = new Order.Builder()
 				.withCreatedOn(LocalDateTime.now())
-				.withFormattedCreatedOn(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ofPattern("HH:mm - " +
-						"dd/MM/yyyy")))
+				.withFormattedCreatedOn(TimeUtils.getNowAsStringAccountingDST())
 				.withUser(user)
 				.withAddress(address.orElse(null))
 				.withCart(cart)

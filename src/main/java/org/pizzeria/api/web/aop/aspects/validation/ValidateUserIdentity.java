@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
-import org.pizzeria.api.web.globals.SecurityResponses;
+import org.pizzeria.api.web.constants.SecurityResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

@@ -7,7 +7,7 @@ import org.pizzeria.api.entity.order.Order;
 import org.pizzeria.api.web.exceptions.constraints.annotation.DoubleLength;
 import org.pizzeria.api.web.exceptions.constraints.annotation.DoubleLengthNullable;
 import org.pizzeria.api.web.exceptions.constraints.annotation.IntegerLength;
-import org.pizzeria.api.web.globals.ValidationResponses;
+import org.pizzeria.api.web.constants.ValidationResponses;
 
 import java.util.ArrayList;
 import java.util.List;

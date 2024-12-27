@@ -4,8 +4,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.web.exceptions.constraints.annotation.ValidAddress;
-import org.pizzeria.api.web.globals.ValidationResponses;
-import org.pizzeria.api.web.globals.ValidationRules;
+import org.pizzeria.api.web.constants.ValidationResponses;
+import org.pizzeria.api.web.constants.ValidationRules;
 
 public class AddressValidator implements ConstraintValidator<ValidAddress, Address> {
 

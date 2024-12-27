@@ -20,7 +20,7 @@ class AddressRepositoryTests {
 	void givenAddress_thenCreateAddress() {
 		// Arrange
 
-		Address testAddress = new Address.Builder()
+		Address testAddress = Address.builder()
 				.withStreet("Test Street")
 				.withNumber(9)
 				.build();

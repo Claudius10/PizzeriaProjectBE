@@ -1,4 +1,4 @@
-package org.pizzeria.api.web.globals;
+package org.pizzeria.api.web.constants;
 
 public final class ApiResponses {
 
@@ -7,6 +7,8 @@ public final class ApiResponses {
 	public static final String ADDRESS_MAX_SIZE = "UserAddressListFull";
 
 	public static final String ORDER_NOT_FOUND = "UserOrderNotFound";
+
+	public static final String DUMMY_ACCOUNT_ERROR = "DummyAccountError";
 
 	private ApiResponses() {
 	}

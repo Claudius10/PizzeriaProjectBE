@@ -30,7 +30,7 @@ public interface UserService {
 
 	void updateUserPassword(String password, Long userId, String newPassword);
 
-	void deleteUserById(String password, Long userId);
+	boolean deleteUserById(String password, Long userId);
 
 	User findUserOrThrow(Long userId);
 

@@ -9,7 +9,7 @@ import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.CreatedOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
-import org.pizzeria.api.web.globals.ApiRoutes;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

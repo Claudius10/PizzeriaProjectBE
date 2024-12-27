@@ -8,11 +8,11 @@ import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.cart.CartItem;
 import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.repos.order.OrderRepository;
+import org.pizzeria.api.web.constants.ApiRoutes;
+import org.pizzeria.api.web.constants.ValidationResponses;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.order.dto.CustomerDTO;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
-import org.pizzeria.api.web.globals.ApiRoutes;
-import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -445,16 +445,16 @@ class AnonControllerAnonOrderTests {
 						customerName,
 						customerNumber,
 						customerEmail),
-				new Address.Builder()
+				Address.builder()
 						.withStreet(street)
 						.withNumber(streetNumber)
 						.withDetails(floor + " " + door)
 						.build(),
-				new OrderDetails.Builder()
-						.withDeliveryHour(deliveryHour)
-						.withPaymentType(paymentType)
-						.withChangeRequested(changeRequested)
-						.withDeliveryComment(comment)
+				OrderDetails.builder()
+						.withDeliveryTime(deliveryHour)
+						.withPaymentMethod(paymentType)
+						.withBillToChange(changeRequested)
+						.withComment(comment)
 						.build(),
 				cartStub
 		);

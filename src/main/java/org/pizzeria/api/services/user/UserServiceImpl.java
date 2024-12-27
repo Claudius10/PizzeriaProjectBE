@@ -7,6 +7,7 @@ import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.services.address.AddressService;
 import org.pizzeria.api.services.role.RoleService;
+import org.pizzeria.api.utils.Constants;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.user.dto.UserDTO;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -117,9 +118,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUserById(String password, Long userId) {
+	public boolean deleteUserById(String password, Long userId) {
 		User user = findUserOrThrow(userId);
+
+		if (Constants.DUMMY_ACCOUNT_EMAIL.equals(user.getEmail())) {
+			return true;
+		}
+
 		userRepository.deleteById(user.getId());
+		return false;
 	}
 
 	@Override

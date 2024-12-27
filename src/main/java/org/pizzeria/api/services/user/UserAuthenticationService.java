@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static org.pizzeria.api.web.globals.SecurityResponses.USER_NOT_FOUND;
+import static org.pizzeria.api.web.constants.SecurityResponses.USER_NOT_FOUND;
 
 @Service
 @Transactional

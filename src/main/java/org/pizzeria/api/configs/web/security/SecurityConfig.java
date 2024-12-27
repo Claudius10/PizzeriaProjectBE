@@ -13,7 +13,7 @@ import org.pizzeria.api.configs.web.security.access.CookieBearerTokenResolver;
 import org.pizzeria.api.configs.web.security.access.login.InvalidLoginHandler;
 import org.pizzeria.api.configs.web.security.access.login.ValidLoginHandler;
 import org.pizzeria.api.configs.web.security.keys.RSAKeyPair;
-import org.pizzeria.api.web.globals.ApiRoutes;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

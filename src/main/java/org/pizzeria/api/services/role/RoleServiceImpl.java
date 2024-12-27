@@ -18,6 +18,11 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
+	public void createRole(Role role) {
+		this.roleRepository.save(role);
+	}
+
+	@Override
 	public Optional<Role> findByName(String roleName) {
 		return roleRepository.findByName(roleName);
 	}

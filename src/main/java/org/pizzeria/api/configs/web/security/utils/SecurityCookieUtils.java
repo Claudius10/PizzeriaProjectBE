@@ -3,7 +3,7 @@ package org.pizzeria.api.configs.web.security.utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.pizzeria.api.web.globals.Constants;
+import org.pizzeria.api.utils.Constants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 

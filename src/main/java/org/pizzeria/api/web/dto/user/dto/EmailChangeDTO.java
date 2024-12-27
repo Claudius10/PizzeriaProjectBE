@@ -2,7 +2,7 @@ package org.pizzeria.api.web.dto.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.pizzeria.api.web.globals.ValidationResponses;
+import org.pizzeria.api.web.constants.ValidationResponses;
 
 public record EmailChangeDTO(
 		@Email(message = ValidationResponses.EMAIL_INVALID)

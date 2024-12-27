@@ -9,7 +9,7 @@ import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.repos.error.ErrorRepository;
 import org.pizzeria.api.web.dto.api.Response;
-import org.pizzeria.api.web.globals.Constants;
+import org.pizzeria.api.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -15,12 +15,12 @@ import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.order.OrderRepository;
 import org.pizzeria.api.repos.user.UserRepository;
+import org.pizzeria.api.utils.Constants;
+import org.pizzeria.api.web.constants.ApiRoutes;
+import org.pizzeria.api.web.constants.ValidationResponses;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.*;
-import org.pizzeria.api.web.globals.ApiRoutes;
-import org.pizzeria.api.web.globals.Constants;
-import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -94,9 +94,9 @@ class UserOrdersControllerTests {
 				.withTotalCost(18.30)
 				.build();
 
-		OrderDetails orderDetails = new OrderDetails.Builder()
-				.withDeliveryHour("ASAP")
-				.withPaymentType("Card")
+		OrderDetails orderDetails = OrderDetails.builder()
+				.withDeliveryTime("ASAP")
+				.withPaymentMethod("Card")
 				.build();
 
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
@@ -130,9 +130,9 @@ class UserOrdersControllerTests {
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
-		OrderDetails orderDetails = new OrderDetails.Builder()
-				.withDeliveryHour("ASAP")
-				.withPaymentType("Card")
+		OrderDetails orderDetails = OrderDetails.builder()
+				.withDeliveryTime("ASAP")
+				.withPaymentMethod("Card")
 				.build();
 
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, null);
@@ -179,9 +179,9 @@ class UserOrdersControllerTests {
 				.withTotalCost(18.30)
 				.build();
 
-		OrderDetails orderDetails = new OrderDetails.Builder()
-				.withDeliveryHour("ASAP")
-				.withPaymentType("Card")
+		OrderDetails orderDetails = OrderDetails.builder()
+				.withDeliveryTime("ASAP")
+				.withPaymentMethod("Card")
 				.build();
 
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
@@ -331,10 +331,10 @@ class UserOrdersControllerTests {
 		UpdateUserOrderDTO orderUpdate = new UpdateUserOrderDTO(
 				addressId,
 				order.createdOn(),
-				new OrderDetails.Builder()
+				OrderDetails.builder()
 						.withId(order.id())
-						.withDeliveryHour("Soon")
-						.withPaymentType("Cash")
+						.withDeliveryTime("Soon")
+						.withPaymentMethod("Cash")
 						.build(),
 				order.cart());
 
@@ -831,9 +831,9 @@ class UserOrdersControllerTests {
 				.withTotalCost(18.30)
 				.build();
 
-		OrderDetails orderDetails = new OrderDetails.Builder()
-				.withDeliveryHour("ASAP")
-				.withPaymentType("Card")
+		OrderDetails orderDetails = OrderDetails.builder()
+				.withDeliveryTime("ASAP")
+				.withPaymentMethod("Card")
 				.build();
 
 		NewUserOrderDTO newUserOrderDTO = new NewUserOrderDTO(addressId, orderDetails, cart);
@@ -873,7 +873,7 @@ class UserOrdersControllerTests {
 
 	Long createAddressTestSubject(String streetName, int streetNumber) {
 		return addressRepository.save(
-						new Address.Builder()
+						Address.builder()
 								.withStreet(streetName)
 								.withNumber(streetNumber)
 								.build())

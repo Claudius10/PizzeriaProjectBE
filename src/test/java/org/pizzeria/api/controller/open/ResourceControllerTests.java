@@ -12,8 +12,8 @@ import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.resources.OfferRepository;
 import org.pizzeria.api.repos.resources.ProductRepository;
 import org.pizzeria.api.repos.resources.StoreRepository;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.pizzeria.api.web.dto.api.Response;
-import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,8 +72,9 @@ class ResourceControllerTests {
 				Map.of("m", Map.of("en", "Medium")
 				)));
 		offerRepository.save(offer);
-		addressRepository.save(new Address.Builder().withStreet("Street").withNumber(5).build());
-		storeRepository.save(new Store(null, "", "", 123, Map.of(), new Address.Builder().withStreet("Street").withNumber(5).build()));
+		addressRepository.save(Address.builder().withStreet("Street").withNumber(5).build());
+		storeRepository.save(new Store(null, "", "", 123, Map.of(),
+				Address.builder().withStreet("Street").withNumber(5).build()));
 	}
 
 	@Test

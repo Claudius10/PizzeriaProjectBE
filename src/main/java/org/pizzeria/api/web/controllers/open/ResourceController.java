@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.pizzeria.api.services.resources.ResourceService;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
-import org.pizzeria.api.web.globals.ApiRoutes;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

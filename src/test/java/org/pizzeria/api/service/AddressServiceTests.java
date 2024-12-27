@@ -28,7 +28,7 @@ class AddressServiceTests {
 	void givenAddress_thenCreateAddress() {
 		// Arrange
 
-		Address testAddress = new Address.Builder()
+		Address testAddress = Address.builder()
 				.withStreet("Test Street")
 				.withNumber(9)
 				.build();
@@ -46,7 +46,7 @@ class AddressServiceTests {
 	void givenAddress_whenExample_thenFindAddress() {
 		// Arrange
 
-		Address testAddress = new Address.Builder()
+		Address testAddress = Address.builder()
 				.withStreet("Test Street")
 				.withNumber(9)
 				.build();
@@ -64,7 +64,7 @@ class AddressServiceTests {
 	void givenAddressId_thenFindAddressById() {
 		// Arrange
 
-		Address testAddress = new Address.Builder()
+		Address testAddress = Address.builder()
 				.withStreet("Test Street")
 				.withNumber(9)
 				.build();

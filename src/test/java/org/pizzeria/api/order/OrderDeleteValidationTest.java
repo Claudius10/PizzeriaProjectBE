@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.pizzeria.api.services.order.OrderService;
-import org.pizzeria.api.web.globals.ValidationResponses;
+import org.pizzeria.api.web.constants.ValidationResponses;
 import org.pizzeria.api.web.order.validation.OrderValidationResult;
 import org.pizzeria.api.web.order.validation.OrderValidatorImpl;
 

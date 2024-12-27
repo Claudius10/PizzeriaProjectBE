@@ -1,6 +1,8 @@
-package org.pizzeria.api.web.globals;
+package org.pizzeria.api.utils;
 
 public final class Constants {
+
+	public static final String DUMMY_ACCOUNT_EMAIL = "donQuijote@gmail.com";
 
 	public static final String TOKEN_COOKIE_NAME = "token";
 

@@ -8,11 +8,11 @@ import org.pizzeria.api.entity.address.Address;
 import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.services.user.UserService;
 import org.pizzeria.api.web.aop.annotations.ValidateUserId;
+import org.pizzeria.api.web.constants.ApiResponses;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.user.dto.*;
-import org.pizzeria.api.web.globals.ApiResponses;
-import org.pizzeria.api.web.globals.ApiRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -199,17 +199,31 @@ public class UserController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws InterruptedException {
 		Thread.sleep(1000);
-		userService.deleteUserById(password, id);
+
+		boolean isError = userService.deleteUserById(password, id);
 
 		Response responseObj = Response.builder()
 				.status(Status.builder()
-						.description(HttpStatus.OK.name())
-						.code(HttpStatus.OK.value())
-						.isError(false)
+						.description(isError ? HttpStatus.BAD_REQUEST.name() : HttpStatus.OK.name())
+						.code(isError ? HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value())
+						.isError(isError)
 						.build())
 				.build();
 
-		SecurityCookieUtils.eatAllCookies(request, response);
+		if (isError) {
+			responseObj.setError(Error.builder()
+					.id(UUID.randomUUID().getMostSignificantBits())
+					.cause(ApiResponses.DUMMY_ACCOUNT_ERROR)
+					.origin(UserController.class.getSimpleName() + ".deleteUser")
+					.path(request.getPathInfo())
+					.logged(false)
+					.fatal(false)
+					.build());
+		}
+
+		if (!isError) {
+			SecurityCookieUtils.eatAllCookies(request, response);
+		}
 
 		return ResponseEntity.ok(responseObj);
 	}

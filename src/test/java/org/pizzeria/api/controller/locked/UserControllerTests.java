@@ -10,10 +10,14 @@ import org.pizzeria.api.entity.role.Role;
 import org.pizzeria.api.entity.user.User;
 import org.pizzeria.api.repos.address.AddressRepository;
 import org.pizzeria.api.repos.user.UserRepository;
+import org.pizzeria.api.utils.Constants;
+import org.pizzeria.api.web.constants.ApiResponses;
+import org.pizzeria.api.web.constants.ApiRoutes;
+import org.pizzeria.api.web.constants.SecurityResponses;
+import org.pizzeria.api.web.constants.ValidationResponses;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.user.dto.*;
-import org.pizzeria.api.web.globals.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -123,7 +127,7 @@ class UserControllerTests {
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), userId);
 
 		// create address object
-		Address address = new Address.Builder()
+		Address address = Address.builder()
 				.withStreet("Street")
 				.withDetails("Gate")
 				.withNumber(1)
@@ -157,7 +161,7 @@ class UserControllerTests {
 		// create access token
 		String accessToken = JWTTokenManager.getAccessToken("Tester@gmail.com", List.of(new Role("USER")), 2L);
 		// create address object
-		Address address = new Address.Builder()
+		Address address = Address.builder()
 				.withStreet("Street")
 				.withNumber(1)
 				.build();
@@ -198,7 +202,7 @@ class UserControllerTests {
 		// post api call to add address to user
 		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(new Address.Builder()
+				.content(objectMapper.writeValueAsString(Address.builder()
 						.withStreet("Street")
 						.withNumber(1)
 						.build()))
@@ -207,7 +211,7 @@ class UserControllerTests {
 		// post api call to add address to user
 		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(new Address.Builder()
+				.content(objectMapper.writeValueAsString(Address.builder()
 						.withStreet("Street")
 						.withNumber(2)
 						.build()))
@@ -216,7 +220,7 @@ class UserControllerTests {
 		// post api call to add address to user
 		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(new Address.Builder()
+				.content(objectMapper.writeValueAsString(Address.builder()
 						.withStreet("Street")
 						.withNumber(3)
 						.build()))
@@ -227,7 +231,7 @@ class UserControllerTests {
 		// post api call to add address to user
 		MockHttpServletResponse response = mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(new Address.Builder()
+						.content(objectMapper.writeValueAsString(Address.builder()
 								.withStreet("Street")
 								.withNumber(4)
 								.build()))
@@ -261,7 +265,7 @@ class UserControllerTests {
 		// post api call to add address to user
 		mockMvc.perform(post(ApiRoutes.BASE + ApiRoutes.V1 + ApiRoutes.USER_BASE + ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS, userId)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(new Address.Builder()
+				.content(objectMapper.writeValueAsString(Address.builder()
 						.withStreet("Street")
 						.withNumber(1)
 						.build()))
@@ -319,7 +323,7 @@ class UserControllerTests {
 		Long userId = createUser("Tester@gmail.com");
 
 		// create address object
-		Address address = new Address.Builder()
+		Address address = Address.builder()
 				.withStreet("Street")
 				.withNumber(1)
 				.build();
@@ -790,6 +794,9 @@ class UserControllerTests {
 		// post api call to register new user in database
 		Long userId = createUser("Tester3@gmail.com");
 
+		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester3@gmail.com");
+		assertThat(user).isPresent();
+
 		// create JWT token
 		String accessToken = JWTTokenManager.getAccessToken("Tester3@gmail.com", List.of(new Role("USER")), userId);
 
@@ -810,8 +817,8 @@ class UserControllerTests {
 
 		Response responseObj = getResponse(response, objectMapper);
 		assertThat(responseObj.getStatus().getCode()).isEqualTo(HttpStatus.OK.value());
-		Optional<User> user = userRepository.findUserByEmailWithRoles("Tester3@gmail.com");
-		assertThat(user).isEmpty();
+		Optional<User> userAfter = userRepository.findUserByEmailWithRoles("Tester3@gmail.com");
+		assertThat(userAfter).isEmpty();
 	}
 
 	Long createUser(String email) throws Exception {

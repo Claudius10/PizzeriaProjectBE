@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.pizzeria.api.web.exceptions.constraints.annotation.FieldMatch;
 import org.pizzeria.api.web.exceptions.constraints.annotation.IntegerLength;
-import org.pizzeria.api.web.globals.ValidationResponses;
-import org.pizzeria.api.web.globals.ValidationRules;
+import org.pizzeria.api.web.constants.ValidationResponses;
+import org.pizzeria.api.web.constants.ValidationRules;
 
 @FieldMatch.List({
 		@FieldMatch(first = "email", second = "matchingEmail", message = ValidationResponses.EMAIL_NO_MATCH),

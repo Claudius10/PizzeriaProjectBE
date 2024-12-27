@@ -1,4 +1,4 @@
-package org.pizzeria.api.web.globals;
+package org.pizzeria.api.web.constants;
 
 public final class ApiRoutes {
 

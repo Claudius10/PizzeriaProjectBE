@@ -3,7 +3,7 @@ package org.pizzeria.api.web.order.validation;
 import org.pizzeria.api.entity.cart.Cart;
 import org.pizzeria.api.entity.order.OrderDetails;
 import org.pizzeria.api.services.order.OrderService;
-import org.pizzeria.api.web.globals.ValidationResponses;
+import org.pizzeria.api.web.constants.ValidationResponses;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

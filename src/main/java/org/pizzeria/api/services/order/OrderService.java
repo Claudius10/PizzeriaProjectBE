@@ -14,7 +14,7 @@ public interface OrderService {
 
 	CreatedOrderDTO createAnonOrder(NewAnonOrderDTO newAnonOrder);
 
-	CreatedOrderDTO createUserOrder(Long orderId, NewUserOrderDTO newUserOrder);
+	CreatedOrderDTO createUserOrder(Long userId, NewUserOrderDTO newUserOrder);
 
 	boolean updateUserOrder(Long orderId, UpdateUserOrderDTO updateUserOrder);
 

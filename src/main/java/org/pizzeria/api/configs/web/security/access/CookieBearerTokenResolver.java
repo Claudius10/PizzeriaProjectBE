@@ -2,7 +2,7 @@ package org.pizzeria.api.configs.web.security.access;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.pizzeria.api.web.globals.Constants;
+import org.pizzeria.api.utils.Constants;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;

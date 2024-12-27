@@ -8,7 +8,7 @@ import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.order.dto.*;
 import org.pizzeria.api.web.dto.order.projection.OrderSummaryProjection;
-import org.pizzeria.api.web.globals.ApiRoutes;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

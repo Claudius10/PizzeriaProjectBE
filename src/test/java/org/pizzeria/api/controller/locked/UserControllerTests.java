@@ -826,6 +826,7 @@ class UserControllerTests {
 						"Tester",
 						email,
 						email,
+						123456789,
 						"Password1",
 						"Password1")
 				)));

@@ -44,6 +44,7 @@ class LoginTests {
 				"tester",
 				"test@gmail.com",
 				"test@gmail.com",
+				123456789,
 				"password",
 				"password"));
 	}

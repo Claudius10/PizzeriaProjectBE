@@ -59,6 +59,7 @@ class AnonControllerRegisterTests {
 								new RegisterDTO("Clau",
 										"clau2@gmail.com",
 										"clau2@gmail.com",
+										123456789,
 										"Password1",
 										"Password1"))))
 				.andExpect(status().isCreated());
@@ -78,6 +79,7 @@ class AnonControllerRegisterTests {
 				"RegisterTest",
 				"registerAnExistingUser@gmail.com",
 				"registerAnExistingUser@gmail.com",
+				123456789,
 				"Password1",
 				"Password1"));
 
@@ -90,6 +92,7 @@ class AnonControllerRegisterTests {
 								new RegisterDTO("Clau",
 										"registerAnExistingUser@gmail.com",
 										"registerAnExistingUser@gmail.com",
+										123456789,
 										"Password1",
 										"Password1"))))
 				.andReturn().getResponse();
@@ -116,6 +119,7 @@ class AnonControllerRegisterTests {
 								"UserToRegi·%$ster",
 								"emailRegister@gmail.com",
 								"emailRegister@gmail.com",
+								123456789,
 								"Password1",
 								"Password1")
 						)))
@@ -142,6 +146,7 @@ class AnonControllerRegisterTests {
 								"UserToRegister",
 								"emailRegiste2@gmail.com",
 								"emailRegister@gmail.com",
+								123456789,
 								"Password1",
 								"Password1")
 
@@ -169,6 +174,7 @@ class AnonControllerRegisterTests {
 								"UserToRegister",
 								"emailRegister$·%·$$gmail.com",
 								"emailRegister$·%·$$gmail.com",
+								123456789,
 								"Password1",
 								"Password1")
 						)))
@@ -195,6 +201,7 @@ class AnonControllerRegisterTests {
 								"UserToRegister",
 								"emailRegister@gmail.com",
 								"emailRegister@gmail.com",
+								123456789,
 								"Password1",
 								"Password12")
 						)))
@@ -221,6 +228,7 @@ class AnonControllerRegisterTests {
 								"UserToRegister",
 								"emailRegister@gmail.com",
 								"emailRegister@gmail.com",
+								123456789,
 								"Password",
 								"Password")
 						)))

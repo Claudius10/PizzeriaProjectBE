@@ -18,7 +18,9 @@ import org.pizzeria.api.repos.user.UserRepository;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.*;
-import org.pizzeria.api.web.globals.*;
+import org.pizzeria.api.web.globals.ApiRoutes;
+import org.pizzeria.api.web.globals.Constants;
+import org.pizzeria.api.web.globals.ValidationResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -859,6 +861,7 @@ class UserOrdersControllerTests {
 						"Tester",
 						"Tester@gmail.com",
 						"Tester@gmail.com",
+						123456789,
 						"Password1",
 						"Password1")
 				)));

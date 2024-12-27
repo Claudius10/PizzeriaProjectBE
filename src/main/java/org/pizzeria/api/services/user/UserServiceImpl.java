@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
 		User user = new User.Builder()
 				.withName(registerDTO.name())
 				.withEmail(registerDTO.email())
+				.withContactNumber(registerDTO.contactNumber())
 				.withPassword(encodedPassword)
 				.withRoles(userRole.get())
 				.build();

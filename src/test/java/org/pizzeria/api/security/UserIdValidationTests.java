@@ -75,6 +75,7 @@ class UserIdValidationTests {
 				"UserIdValidation",
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
 				"UserIdValidationTestNonMatchingCookieUserIdAndJwtuserId@gmail.com",
+				123456789,
 				"Password1",
 				"Password1"));
 
@@ -112,6 +113,7 @@ class UserIdValidationTests {
 				"UserIdValidation",
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
 				"UserIdValidationTestMatchingUserIdCookieAndJwtUserIdClaim@gmail.com",
+				123456789,
 				"Password1",
 				"Password1"));
 

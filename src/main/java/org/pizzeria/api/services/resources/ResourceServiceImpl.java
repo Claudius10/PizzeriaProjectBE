@@ -30,7 +30,7 @@ public class ResourceServiceImpl implements ResourceService {
 		return storeRepository.findByAddressId(id);
 	}
 
-	@Cacheable("allProducts")
+	//@Cacheable("allProducts")
 	@Override
 	public List<Product> findAllProducts() {
 		return productRepository.findAll();
@@ -41,13 +41,13 @@ public class ResourceServiceImpl implements ResourceService {
 		return productRepository.findAllByProductType(productType);
 	}
 
-	@Cacheable("offers")
+	//@Cacheable("offers")
 	@Override
 	public List<Offer> findAllOffers() {
 		return offerRepository.findAll();
 	}
 
-	@Cacheable("stores")
+	//@Cacheable("stores")
 	@Override
 	public List<Store> findAllStores() {
 		return storeRepository.findAll();

@@ -140,7 +140,7 @@ public class SecurityConfig {
 	private CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(
-				Arrays.asList("http://192.168.1.128:4200", "https://pizzeriaproject-production.up.railway.app"));
+				Arrays.asList("http://192.168.1.128:4200", "https://pizzeriaangularfe-production.up.railway.app", "https://pizzeriaproject-production.up.railway.app"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setExposedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));
 		configuration.setAllowedHeaders(Arrays.asList("Content-Type", "x-xsrf-token"));

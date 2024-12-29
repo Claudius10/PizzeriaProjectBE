@@ -4,12 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.pizzeria.api.services.order.OrderService;
 import org.pizzeria.api.services.user.UserService;
+import org.pizzeria.api.web.constants.ApiRoutes;
 import org.pizzeria.api.web.dto.api.Response;
 import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.dto.auth.RegisterDTO;
 import org.pizzeria.api.web.dto.order.dto.CreatedOrderDTO;
 import org.pizzeria.api.web.dto.order.dto.NewAnonOrderDTO;
-import org.pizzeria.api.web.constants.ApiRoutes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,8 +33,7 @@ public class AnonController {
 	}
 
 	@PostMapping(ApiRoutes.ANON_REGISTER)
-	public ResponseEntity<Response> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) throws InterruptedException {
-		Thread.sleep(1000);
+	public ResponseEntity<Response> registerAnonUser(@RequestBody @Valid RegisterDTO registerDTO, HttpServletRequest request) {
 		userService.createUser(registerDTO);
 
 		Response response = Response.builder()
@@ -49,8 +48,7 @@ public class AnonController {
 	}
 
 	@PostMapping(ApiRoutes.ANON_ORDER)
-	public ResponseEntity<Response> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) throws InterruptedException {
-		Thread.sleep(1000);
+	public ResponseEntity<Response> createAnonOrder(@RequestBody @Valid NewAnonOrderDTO newAnonOrder, HttpServletRequest request) {
 		CreatedOrderDTO createdOrder = orderService.createAnonOrder(newAnonOrder);
 
 		Response response = Response.builder()

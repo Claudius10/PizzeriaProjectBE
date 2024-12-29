@@ -35,8 +35,7 @@ public class UserController {
 
 	@ValidateUserId
 	@GetMapping(ApiRoutes.USER_ID)
-	public ResponseEntity<Response> findUserById(@PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
-		Thread.sleep(1000);
+	public ResponseEntity<Response> findUserById(@PathVariable Long userId, HttpServletRequest request) {
 		Optional<UserDTO> user = userService.findUserDTOById(userId);
 
 		Response response = Response.builder()
@@ -53,8 +52,7 @@ public class UserController {
 
 	@ValidateUserId
 	@GetMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS)
-	public ResponseEntity<Response> findUserAddressListById(@PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
-		Thread.sleep(1000);
+	public ResponseEntity<Response> findUserAddressListById(@PathVariable Long userId, HttpServletRequest request) {
 		Set<Address> userAddressList = userService.findUserAddressListById(userId);
 
 		Response response = Response.builder()
@@ -71,8 +69,7 @@ public class UserController {
 
 	@ValidateUserId
 	@PostMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS)
-	public ResponseEntity<Response> createUserAddress(@RequestBody @Valid Address address, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
-		Thread.sleep(1000);
+	public ResponseEntity<Response> createUserAddress(@RequestBody @Valid Address address, @PathVariable Long userId, HttpServletRequest request) {
 		boolean ok = userService.addUserAddress(userId, address);
 
 		Response response = Response.builder()
@@ -99,8 +96,7 @@ public class UserController {
 
 	@ValidateUserId
 	@DeleteMapping(ApiRoutes.USER_ID + ApiRoutes.USER_ADDRESS + ApiRoutes.USER_ADDRESS_ID)
-	public ResponseEntity<Response> deleteUserAddress(@PathVariable Long addressId, @PathVariable Long userId, HttpServletRequest request) throws InterruptedException {
-		Thread.sleep(1000);
+	public ResponseEntity<Response> deleteUserAddress(@PathVariable Long addressId, @PathVariable Long userId, HttpServletRequest request) {
 		boolean result = userService.removeUserAddress(userId, addressId);
 
 		Response response = Response.builder()

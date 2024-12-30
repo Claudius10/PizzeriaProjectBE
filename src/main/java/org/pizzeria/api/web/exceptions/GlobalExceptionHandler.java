@@ -2,12 +2,13 @@ package org.pizzeria.api.web.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.pizzeria.api.configs.web.security.utils.SecurityCookieUtils;
 import org.pizzeria.api.entity.error.Error;
 import org.pizzeria.api.repos.error.ErrorRepository;
-import org.pizzeria.api.web.dto.api.Response;
-import org.pizzeria.api.web.dto.api.Status;
 import org.pizzeria.api.web.constants.ApiResponses;
 import org.pizzeria.api.web.constants.SecurityResponses;
+import org.pizzeria.api.web.dto.api.Response;
+import org.pizzeria.api.web.dto.api.Status;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -150,11 +151,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		String errorMessage;
 		boolean fatal = false;
+		boolean deleteCookies = false;
 
 		switch (ex) {
 			case BadCredentialsException ignored -> errorMessage = SecurityResponses.BAD_CREDENTIALS;
 			case UsernameNotFoundException ignored -> errorMessage = SecurityResponses.USER_NOT_FOUND;
-			case InvalidBearerTokenException ignored -> errorMessage = SecurityResponses.INVALID_TOKEN;
+			case InvalidBearerTokenException ignored -> {
+				errorMessage = SecurityResponses.INVALID_TOKEN;
+				deleteCookies = true;
+			}
 			default -> {
 				fatal = true;
 				errorMessage = ex.getMessage();
@@ -175,6 +180,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			error.setId(null);
 			Error savedError = this.errorRepository.save(error);
 			error.setId(savedError.getId());
+		}
+
+		if (deleteCookies) {
+			SecurityCookieUtils.eatAllCookies(((ServletWebRequest) request).getRequest(), ((ServletWebRequest) request).getResponse());
 		}
 
 		Response response = Response.builder()
